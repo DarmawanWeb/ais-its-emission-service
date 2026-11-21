@@ -18,8 +18,12 @@ export class SeempScenariosRepository {
   constructor(@InjectDb() private readonly db: Database<typeof schema>) {}
 
   async insert(scenario: NewSeempScenario): Promise<SeempScenario> {
-    const [row] = await this.db.insert(seempScenarios).values(scenario).returning();
-    if (row === undefined) throw new Error('INSERT … RETURNING returned no row');
+    const [row] = await this.db
+      .insert(seempScenarios)
+      .values(scenario)
+      .returning();
+    if (row === undefined)
+      throw new Error('INSERT … RETURNING returned no row');
     return row;
   }
 
@@ -38,7 +42,10 @@ export class SeempScenariosRepository {
     mmsi: number | undefined,
     page: { readonly offset: number; readonly limit: number },
   ): Promise<{ rows: SeempScenario[]; total: number }> {
-    const where = and(scopeCondition(scope), mmsi === undefined ? undefined : eq(seempScenarios.mmsi, mmsi));
+    const where = and(
+      scopeCondition(scope),
+      mmsi === undefined ? undefined : eq(seempScenarios.mmsi, mmsi),
+    );
     const [rows, totals] = await Promise.all([
       this.db
         .select()
@@ -53,7 +60,10 @@ export class SeempScenariosRepository {
   }
 
   /** Deletes a scenario of the scope; `undefined` when none matched. */
-  async delete(id: string, scope: OrgScope): Promise<SeempScenario | undefined> {
+  async delete(
+    id: string,
+    scope: OrgScope,
+  ): Promise<SeempScenario | undefined> {
     const [row] = await this.db
       .delete(seempScenarios)
       .where(and(eq(seempScenarios.id, id), scopeCondition(scope)))
@@ -65,5 +75,7 @@ export class SeempScenariosRepository {
 function scopeCondition(scope: OrgScope): SQL | undefined {
   if (scope.kind === 'all') return undefined;
   // Without an active organization a non-admin sees nothing (spec §8.5).
-  return scope.orgId === null ? sql`false` : eq(seempScenarios.orgId, scope.orgId);
+  return scope.orgId === null
+    ? sql`false`
+    : eq(seempScenarios.orgId, scope.orgId);
 }

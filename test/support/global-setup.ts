@@ -7,7 +7,7 @@ import type { TestProject } from 'vitest/node';
 import { SERVICE } from '../../src/service.js';
 
 /**
- * Starts TimescaleDB/PostGIS and NATS once for all integration test files,
+ * Starts TimescaleDB/PostGIS, NATS and Valkey once for all integration test files,
  * provisions the service schema and role like `infra/postgres/bootstrap.sql`
  * and provides the endpoints (`inject('infra')`).
  */
@@ -16,13 +16,21 @@ export async function setup(
 ): Promise<() => Promise<void>> {
   // `test.env` does not reach the main process that runs this setup.
   process.env.TESTCONTAINERS_RYUK_DISABLED ??= 'true';
-  const infra = await startTestInfra({ postgres: true, nats: true });
+  const infra = await startTestInfra({
+    postgres: true,
+    nats: true,
+    redis: true,
+  });
   try {
     const databaseUrl = await provisionServiceSchema(
       infra.postgres.adminUrl,
       SERVICE.schema,
     );
-    project.provide('infra', { databaseUrl, natsUrl: infra.nats.url });
+    project.provide('infra', {
+      databaseUrl,
+      natsUrl: infra.nats.url,
+      redisUrl: infra.redis.url,
+    });
   } catch (error) {
     await infra.stop();
     throw error;
@@ -36,6 +44,8 @@ declare module 'vitest' {
       /** `DATABASE_URL` of the service role. */
       databaseUrl: string;
       natsUrl: string;
+      /** `REDIS_URL` of the Valkey container (weather cache). */
+      redisUrl: string;
     };
   }
 }

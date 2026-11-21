@@ -9,13 +9,20 @@ export class RecomputeJobDto {
   @ApiProperty() readonly mmsi: number;
   @ApiProperty({ format: 'date-time' }) readonly from: string;
   @ApiProperty({ format: 'date-time' }) readonly to: string;
-  @ApiProperty({ enum: ['running', 'succeeded', 'failed'] }) readonly status: 'running' | 'succeeded' | 'failed';
-  @ApiProperty({ description: 'Position events replayed in the range' }) readonly replayed: number;
+  @ApiProperty({ enum: ['running', 'succeeded', 'failed'] }) readonly status:
+    'running' | 'succeeded' | 'failed';
+  @ApiProperty({ description: 'Position events replayed in the range' })
+  readonly replayed: number;
   @ApiProperty({ description: 'Segments written' }) readonly segments: number;
-  @ApiProperty({ description: 'Segments removed before the rebuild' }) readonly deleted: number;
+  @ApiProperty({
+    description:
+      'Segments of the range the replay did not produce again (deleted)',
+  })
+  readonly deleted: number;
   @ApiProperty({ type: String, nullable: true }) readonly error: string | null;
   @ApiProperty({ format: 'date-time' }) readonly createdAt: string;
-  @ApiProperty({ type: String, format: 'date-time', nullable: true }) readonly finishedAt: string | null;
+  @ApiProperty({ type: String, format: 'date-time', nullable: true })
+  readonly finishedAt: string | null;
 
   constructor(job: RecomputeJob) {
     this.id = job.id;

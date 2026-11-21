@@ -8,7 +8,9 @@ import type { HullForm } from './types.js';
  *
  * @method resistance.hull_volumes_and_lengths
  */
-export function lengthDisplacement(hull: Pick<HullForm, 'lwl' | 'lpp'>): number {
+export function lengthDisplacement(
+  hull: Pick<HullForm, 'lwl' | 'lpp'>,
+): number {
   return (hull.lwl + hull.lpp) / 2;
 }
 

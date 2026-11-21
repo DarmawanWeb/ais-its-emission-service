@@ -4,14 +4,23 @@
 import type { VesselSnapshotV1 } from '@darmawanweb/ais-its-contracts/events';
 import * as pg from 'drizzle-orm/pg-core';
 
-import type { SeempCostModel, SeempReductionModel } from '../domain/seemp/measures.js';
+import type {
+  SeempCostModel,
+  SeempReductionModel,
+} from '../domain/seemp/measures.js';
 
 /** The service's PostgreSQL schema, owned by the role `emission_svc`. */
 export const serviceSchema = pg.pgSchema('emission');
 
 const timestamps = {
-  createdAt: pg.timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: pg.timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: pg
+    .timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: pg
+    .timestamp('updated_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 };
 
 /** FLEET projection (`0001_init.sql`). */
@@ -20,7 +29,9 @@ export const vesselProfiles = serviceSchema.table('vessel_profiles', {
   mmsi: pg.integer('mmsi').notNull().unique(),
   orgId: pg.uuid('org_id'),
   snapshot: pg.jsonb('snapshot').$type<VesselSnapshotV1>().notNull(),
-  snapshotUpdatedAt: pg.timestamp('snapshot_updated_at', { withTimezone: true }).notNull(),
+  snapshotUpdatedAt: pg
+    .timestamp('snapshot_updated_at', { withTimezone: true })
+    .notNull(),
   ...timestamps,
 });
 
@@ -35,7 +46,10 @@ export const fuelReadings = serviceSchema.table(
     fuelAeTon: pg.doublePrecision('fuel_ae_ton').notNull(),
     deviceId: pg.uuid('device_id'),
     source: pg.text('source').notNull(),
-    receivedAt: pg.timestamp('received_at', { withTimezone: true }).notNull().defaultNow(),
+    receivedAt: pg
+      .timestamp('received_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (table) => [pg.primaryKey({ columns: [table.mmsi, table.time] })],
 );
@@ -68,13 +82,20 @@ export const segments = serviceSchema.table(
     fuelMeTon: pg.doublePrecision('fuel_me_ton').notNull(),
     fuelAeTon: pg.doublePrecision('fuel_ae_ton').notNull(),
     co2Ton: pg.doublePrecision('co2_ton').notNull(),
-    method: pg.text('method', { enum: ['telemetry', 'first_formula', 'holtrop', 'none'] }).notNull(),
+    method: pg
+      .text('method', {
+        enum: ['telemetry', 'first_formula', 'holtrop', 'none'],
+      })
+      .notNull(),
     navstatus: pg.smallint('navstatus').notNull(),
     fuelCode: pg.text('fuel_code').notNull(),
     conversionFactor: pg.doublePrecision('conversion_factor').notNull(),
     weather: pg.jsonb('weather').$type<SegmentWeather>(),
     flags: pg.text('flags').array().notNull().default([]),
-    computedAt: pg.timestamp('computed_at', { withTimezone: true }).notNull().defaultNow(),
+    computedAt: pg
+      .timestamp('computed_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (table) => [pg.primaryKey({ columns: [table.mmsi, table.timeStart] })],
 );
@@ -112,7 +133,9 @@ export const ciiAnnualManual = serviceSchema.table(
 export const seempMeasures = serviceSchema.table('seemp_measures', {
   code: pg.text('code').primaryKey(),
   name: pg.text('name').notNull(),
-  category: pg.text('category', { enum: ['technical', 'operational', 'fuel', 'energy'] }).notNull(),
+  category: pg
+    .text('category', { enum: ['technical', 'operational', 'fuel', 'energy'] })
+    .notNull(),
   legacyOrder: pg.integer('legacy_order').notNull().unique(),
   methodId: pg.text('method_id').notNull(),
   reduction: pg.jsonb('reduction').$type<SeempReductionModel>().notNull(),
@@ -138,7 +161,9 @@ export const seempScenarios = serviceSchema.table(
     ...timestamps,
   },
   (table) => [
-    pg.index('seemp_scenarios_org_created_idx').on(table.orgId, table.createdAt.desc(), table.id.desc()),
+    pg
+      .index('seemp_scenarios_org_created_idx')
+      .on(table.orgId, table.createdAt.desc(), table.id.desc()),
     pg.index('seemp_scenarios_mmsi_idx').on(table.mmsi),
   ],
 );
@@ -157,13 +182,18 @@ export const recomputeJobs = serviceSchema.table('recompute_jobs', {
   mmsi: pg.integer('mmsi').notNull(),
   fromTime: pg.timestamp('from_time', { withTimezone: true }).notNull(),
   toTime: pg.timestamp('to_time', { withTimezone: true }).notNull(),
-  status: pg.text('status', { enum: ['running', 'succeeded', 'failed'] }).notNull(),
+  status: pg
+    .text('status', { enum: ['running', 'succeeded', 'failed'] })
+    .notNull(),
   requestedBy: pg.uuid('requested_by'),
   replayed: pg.integer('replayed').notNull().default(0),
   segments: pg.integer('segments').notNull().default(0),
   deleted: pg.integer('deleted').notNull().default(0),
   error: pg.text('error'),
-  createdAt: pg.timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: pg
+    .timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
   finishedAt: pg.timestamp('finished_at', { withTimezone: true }),
 });
 
@@ -174,10 +204,16 @@ const aggregateColumns = {
   fuelAeTon: pg.doublePrecision('fuel_ae_ton').notNull(),
   co2Ton: pg.doublePrecision('co2_ton').notNull(),
   segments: pg.bigint('segments', { mode: 'number' }).notNull(),
-  telemetrySegments: pg.bigint('telemetry_segments', { mode: 'number' }).notNull(),
-  firstFormulaSegments: pg.bigint('first_formula_segments', { mode: 'number' }).notNull(),
+  telemetrySegments: pg
+    .bigint('telemetry_segments', { mode: 'number' })
+    .notNull(),
+  firstFormulaSegments: pg
+    .bigint('first_formula_segments', { mode: 'number' })
+    .notNull(),
   holtropSegments: pg.bigint('holtrop_segments', { mode: 'number' }).notNull(),
-  excludedSegments: pg.bigint('excluded_segments', { mode: 'number' }).notNull(),
+  excludedSegments: pg
+    .bigint('excluded_segments', { mode: 'number' })
+    .notNull(),
   lastTime: pg.timestamp('last_time', { withTimezone: true }),
 };
 

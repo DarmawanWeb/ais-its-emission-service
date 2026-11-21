@@ -15,8 +15,12 @@ export const APPENDAGE_FORM_FACTOR = 4.3;
  * @method resistance.holtrop.appendage
  * @see docs/METHODOLOGY.md#resistance.holtrop.appendage
  */
-export function appendageArea(hull: Pick<HullForm, 'c1' | 'c2' | 'c3' | 'c5' | 'lwl' | 't'>): number {
-  return hull.c1 * hull.c2 * hull.c3 * hull.c5 * ((1.75 * hull.lwl * hull.t) / 100);
+export function appendageArea(
+  hull: Pick<HullForm, 'c1' | 'c2' | 'c3' | 'c5' | 'lwl' | 't'>,
+): number {
+  return (
+    hull.c1 * hull.c2 * hull.c3 * hull.c5 * ((1.75 * hull.lwl * hull.t) / 100)
+  );
 }
 
 /**
@@ -27,6 +31,17 @@ export function appendageArea(hull: Pick<HullForm, 'c1' | 'c2' | 'c3' | 'c5' | '
  * @method resistance.holtrop.appendage
  * @param speedMs calm-water-equivalent speed, m/s.
  */
-export function appendageResistance(speedMs: number, cf: number, area: number): number {
-  return 0.5 * FRICTION_WATER_DENSITY * Math.pow(speedMs, 2) * cf * area * APPENDAGE_FORM_FACTOR;
+export function appendageResistance(
+  speedMs: number,
+  cf: number,
+  area: number,
+): number {
+  return (
+    0.5 *
+    FRICTION_WATER_DENSITY *
+    Math.pow(speedMs, 2) *
+    cf *
+    area *
+    APPENDAGE_FORM_FACTOR
+  );
 }

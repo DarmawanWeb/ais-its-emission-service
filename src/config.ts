@@ -31,11 +31,15 @@ export const configSchema = defineConfig({
   CII_PUBLISH_INTERVAL_S: envInteger(1, 86_400).default(60),
   /** How often pending CII publications are checked, milliseconds. */
   CII_PUBLISH_POLL_MS: envInteger(50, 600_000).default(5_000),
+  /** Longest delay before late segment changes (older days) reach the CII aggregates, milliseconds. */
+  CII_AGGREGATE_REFRESH_MS: envInteger(100, 3_600_000).default(30_000),
   /** Longest range of a recomputation by replay, days (AIS_POSITION keeps 7 d). */
   RECOMPUTE_MAX_DAYS: envInteger(1, 7).default(7),
 
   /** Base URL of the Open-Meteo API (forecast endpoint at /v1/forecast). */
-  WEATHER_API_URL: envUrl(['http', 'https']).default('https://api.open-meteo.com'),
+  WEATHER_API_URL: envUrl(['http', 'https']).default(
+    'https://api.open-meteo.com',
+  ),
   /** `false` uses calm weather (flag weather_unavailable) without any request. */
   WEATHER_ENABLED: envBoolean().default(true),
   /** Timeout of one weather request, milliseconds. */

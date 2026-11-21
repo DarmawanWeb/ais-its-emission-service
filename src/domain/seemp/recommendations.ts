@@ -1,8 +1,18 @@
 import type { CiiGrade } from '@darmawanweb/ais-its-contracts/domain';
 
-import { costPerYear, formatCost, investmentCost, yearsUntilInferior } from './cost.js';
+import {
+  costPerYear,
+  formatCost,
+  investmentCost,
+  yearsUntilInferior,
+} from './cost.js';
 import { reductionMethodId, type SeempMeasure } from './measures.js';
-import { rateAfter, reductionType1, reductionType2, reductionType3 } from './reduction.js';
+import {
+  rateAfter,
+  reductionType1,
+  reductionType2,
+  reductionType3,
+} from './reduction.js';
 import type { SeempContext } from './types.js';
 
 /** A measure evaluated for a vessel (legacy `ISEEMPFormulaResult` + name). */
@@ -25,16 +35,33 @@ export interface MeasureEvaluation {
 }
 
 /** The attained CII after one measure, by its reduction type. */
-export function attainedAfterMeasure(measure: SeempMeasure, context: SeempContext): number {
+export function attainedAfterMeasure(
+  measure: SeempMeasure,
+  context: SeempContext,
+): number {
   const { vessel } = context;
   const model = measure.reduction;
   switch (model.type) {
     case 'operational':
-      return reductionType1(context.ciiAttained, vessel.annualVoyagePercentage, model.potentialPercent);
+      return reductionType1(
+        context.ciiAttained,
+        vessel.annualVoyagePercentage,
+        model.potentialPercent,
+      );
     case 'fuel_switch':
-      return reductionType2(context.annual, vessel.capacity, model.conversionFactor);
+      return reductionType2(
+        context.annual,
+        vessel.capacity,
+        model.conversionFactor,
+      );
     case 'auxiliary':
-      return reductionType3(context.annual, vessel.capacity, vessel.conversionFactor, model, vessel.annualVoyagePercentage);
+      return reductionType3(
+        context.annual,
+        vessel.capacity,
+        vessel.conversionFactor,
+        model,
+        vessel.annualVoyagePercentage,
+      );
   }
 }
 
@@ -43,7 +70,10 @@ export function measureCost(
   measures: readonly SeempMeasure[],
   context: SeempContext,
   ciiRatingAfter: number,
-): Pick<MeasureEvaluation, 'yearsUntilInferior' | 'cost' | 'costDisplay' | 'costRange'> {
+): Pick<
+  MeasureEvaluation,
+  'yearsUntilInferior' | 'cost' | 'costDisplay' | 'costRange'
+> {
   const years = yearsUntilInferior(ciiRatingAfter, context);
   let low = 0;
   let high = 0;
@@ -61,7 +91,9 @@ export function measureCost(
   return {
     yearsUntilInferior: years,
     cost: mean,
-    costDisplay: ranged ? `${formatCost(low)} - ${formatCost(high)}` : formatCost(mean),
+    costDisplay: ranged
+      ? `${formatCost(low)} - ${formatCost(high)}`
+      : formatCost(mean),
     costRange: { low, high },
   };
 }
@@ -80,9 +112,16 @@ export function measureCost(
  * @method seemp.cost_by_power
  * @method seemp.cost_amortization
  */
-export function evaluateMeasure(measure: SeempMeasure, context: SeempContext): MeasureEvaluation {
+export function evaluateMeasure(
+  measure: SeempMeasure,
+  context: SeempContext,
+): MeasureEvaluation {
   const ciiAttainedAfter = attainedAfterMeasure(measure, context);
-  const rated = rateAfter(ciiAttainedAfter, context.ciiRequired, context.vessel.d);
+  const rated = rateAfter(
+    ciiAttainedAfter,
+    context.ciiRequired,
+    context.vessel.d,
+  );
   return {
     measure,
     ciiAttainedAfter,
@@ -112,11 +151,16 @@ export const RECOMMENDED_GRADES: readonly CiiGrade[] = ['A', 'B', 'C'];
  * @method seemp.filter_sort_output
  * @see docs/METHODOLOGY.md#seemp.filter_sort_output
  */
-export function recommendMeasures(measures: readonly SeempMeasure[], context: SeempContext): MeasureEvaluation[] {
+export function recommendMeasures(
+  measures: readonly SeempMeasure[],
+  context: SeempContext,
+): MeasureEvaluation[] {
   return [...measures]
     .sort((a, b) => a.legacyOrder - b.legacyOrder)
     .map((measure) => evaluateMeasure(measure, context))
-    .filter((evaluation) => RECOMMENDED_GRADES.includes(evaluation.ciiGradeAfter))
+    .filter((evaluation) =>
+      RECOMMENDED_GRADES.includes(evaluation.ciiGradeAfter),
+    )
     .sort((a, b) => a.cost - b.cost);
 }
 

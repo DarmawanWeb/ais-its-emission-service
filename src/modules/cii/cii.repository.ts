@@ -52,7 +52,10 @@ export class CiiRepository {
   constructor(@InjectPool() private readonly pool: Pool) {}
 
   /** Totals of a vessel-year, `undefined` without counted segments. */
-  async yearTotals(mmsi: number, year: number): Promise<YearTotals | undefined> {
+  async yearTotals(
+    mmsi: number,
+    year: number,
+  ): Promise<YearTotals | undefined> {
     const rows = await this.years([mmsi], year);
     return rows[0];
   }
@@ -102,33 +105,19 @@ export class CiiRepository {
               ytd_fuel_ae_ton::double precision AS "ytdFuelAeTon",
               ytd_co2_ton::double precision AS "ytdCo2Ton"
          FROM daily WHERE day >= $3 ORDER BY day`,
-      [mmsi, yearStart, new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate())), to],
+      [
+        mmsi,
+        yearStart,
+        new Date(
+          Date.UTC(
+            from.getUTCFullYear(),
+            from.getUTCMonth(),
+            from.getUTCDate(),
+          ),
+        ),
+        to,
+      ],
     );
     return result.rows;
-  }
-
-  /**
-   * Re-materializes the aggregates over complete past buckets of `[from, to)`
-   * (after a recomputation). The current day and year are never refreshed:
-   * they stay real-time.
-   */
-  async refresh(from: Date, to: Date, now: Date): Promise<void> {
-    const dayStart = (date: Date): number => Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-    const dailyFrom = dayStart(from);
-    const dailyTo = Math.min(dayStart(to) + 86_400_000, dayStart(now));
-    if (dailyTo > dailyFrom) {
-      await this.pool.query(`CALL refresh_continuous_aggregate('cii_daily', $1::timestamptz, $2::timestamptz)`, [
-        new Date(dailyFrom),
-        new Date(dailyTo),
-      ]);
-    }
-    const annualFrom = Date.UTC(from.getUTCFullYear(), 0, 1);
-    const annualTo = Math.min(Date.UTC(to.getUTCFullYear() + 1, 0, 1), Date.UTC(now.getUTCFullYear(), 0, 1));
-    if (annualTo > annualFrom) {
-      await this.pool.query(`CALL refresh_continuous_aggregate('cii_annual', $1::timestamptz, $2::timestamptz)`, [
-        new Date(annualFrom),
-        new Date(annualTo),
-      ]);
-    }
   }
 }

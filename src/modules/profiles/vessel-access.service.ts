@@ -1,4 +1,7 @@
-import { assertOrgAccess, type Principal } from '@darmawanweb/ais-its-nest/auth';
+import {
+  assertOrgAccess,
+  type Principal,
+} from '@darmawanweb/ais-its-nest/auth';
 import { Injectable } from '@nestjs/common';
 
 import { VesselNotFoundError } from '../../common/errors.js';

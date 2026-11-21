@@ -1,0 +1,3296 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v2/cii/vessels/{mmsi}/current": {
+      "get": {
+        "operationId": "CiiController_current",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Calendar year (UTC); default the current year",
+            "schema": {
+              "minimum": 2000,
+              "maximum": 2200,
+              "example": 2026,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CiiSummaryDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Year-to-date CII of a vessel with a linear year-end projection",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/cii/vessels/{mmsi}/daily": {
+      "get": {
+        "operationId": "CiiController_daily",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Start (ISO-8601); default: endpoint specific",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "End (ISO-8601); default: now",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyCiiDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Daily CII points with the cumulative (year-to-date) attained CII; default from 1 January of the year of to",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/cii/vessels/{mmsi}/annual": {
+      "get": {
+        "operationId": "CiiController_annual",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnualCiiDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Annual CII per year with the grade boundaries d_i × required",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/cii/vessels/{mmsi}/segments": {
+      "get": {
+        "operationId": "CiiController_segments",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "Opaque cursor from `page.nextCursor` of the previous page",
+            "schema": {
+              "maxLength": 1024,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Start (ISO-8601); default: endpoint specific",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "End (ISO-8601); default: now",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page of the time-ordered list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "page"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SegmentDto"
+                      }
+                    },
+                    "page": {
+                      "$ref": "#/components/schemas/CursorPageInfoDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Voyage segments of a vessel, newest first (default: the last 24 h, at most 31 days)",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/cii/fleet/summary": {
+      "get": {
+        "operationId": "CiiController_fleetSummary",
+        "parameters": [
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Calendar year (UTC); default the current year",
+            "schema": {
+              "minimum": 2000,
+              "maximum": 2200,
+              "example": 2026,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": false,
+            "in": "query",
+            "description": "Organization (super_admin only; others always see their active organization)",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FleetSummaryDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "CII grade distribution of the fleet of the active organization (super_admin: all or ?orgId)",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/cii/vessels/{mmsi}/annual-manual/{year}": {
+      "get": {
+        "operationId": "CiiController_getManual",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "year",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnualManualDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Manual / imported annual CII record of a vessel-year",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "vessel:write"
+        ]
+      },
+      "put": {
+        "operationId": "CiiController_putManual",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "year",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutAnnualManualDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnualManualDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create or replace the manual annual CII of a vessel-year (used when the year has no segments)",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "vessel:write"
+        ]
+      }
+    },
+    "/api/v2/cii/vessels/{mmsi}/recompute": {
+      "post": {
+        "operationId": "CiiController_startRecompute",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Start (ISO-8601); default: endpoint specific",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "End (ISO-8601); default: now",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecomputeJobDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Recompute the segments of a range by replaying AIS_POSITION (super_admin, ≤ 7 days)",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/cii/recompute-jobs/{id}": {
+      "get": {
+        "operationId": "CiiController_recomputeJob",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecomputeJobDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Status of a recomputation (super_admin)",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/reduction-factors": {
+      "get": {
+        "operationId": "ReductionFactorsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReductionFactorListDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Reduction factors Z per year with their sources",
+        "tags": [
+          "reduction-factors"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      },
+      "put": {
+        "operationId": "ReductionFactorsController_put",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutReductionFactorsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReductionFactorListDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Insert or replace reduction factors of the given years (other years are kept)",
+        "tags": [
+          "reduction-factors"
+        ],
+        "x-required-permissions": [
+          "reference:write"
+        ]
+      }
+    },
+    "/api/v2/seemp/measures": {
+      "get": {
+        "operationId": "SeempController_measures",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeempMeasureListDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Catalog of the SEEMP measures (legacy recommender)",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:read"
+        ]
+      }
+    },
+    "/api/v2/seemp/vessels/{mmsi}/recommendations": {
+      "get": {
+        "operationId": "SeempController_recommendations",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Baseline year (default: previous year, else the latest year with data)",
+            "schema": {
+              "minimum": 2000,
+              "maximum": 2200,
+              "type": "number"
+            }
+          },
+          {
+            "name": "targetYear",
+            "required": false,
+            "in": "query",
+            "description": "Year the measures are rated in (default: current year)",
+            "schema": {
+              "minimum": 2000,
+              "maximum": 2200,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeempRecommendationsDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "SEEMP recommendations: measures with grade A–C after, cheapest first (legacy calculateSEEMPbyMMSI)",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:read"
+        ]
+      }
+    },
+    "/api/v2/seemp/vessels/{mmsi}/simulate": {
+      "post": {
+        "operationId": "SeempController_simulate",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeempSimulationDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "What-if simulation of a combination of measures",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:simulate"
+        ]
+      }
+    },
+    "/api/v2/seemp/scenarios": {
+      "get": {
+        "operationId": "SeempController_listScenarios",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 525005223,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page of the list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SeempScenarioDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PageMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Saved simulations of the organization, newest first",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:read"
+        ]
+      },
+      "post": {
+        "operationId": "SeempController_createScenario",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScenarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeempScenarioDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Simulate and save a scenario",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:simulate"
+        ]
+      }
+    },
+    "/api/v2/seemp/scenarios/{id}": {
+      "get": {
+        "operationId": "SeempController_getScenario",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeempScenarioDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "A saved scenario",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:read"
+        ]
+      },
+      "delete": {
+        "operationId": "SeempController_deleteScenario",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Delete a saved scenario",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:simulate"
+        ]
+      }
+    },
+    "/api/v2/emission/vessels/{mmsi}/dcs": {
+      "get": {
+        "operationId": "DcsController_summary",
+        "parameters": [
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Calendar year (UTC); default the current year",
+            "schema": {
+              "minimum": 2000,
+              "maximum": 2200,
+              "example": 2026,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DcsSummaryDto"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/DcsSummaryDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Annual fuel by type, distance, hours under way and CO2 (Accept: text/csv for CSV; default: current year)",
+        "tags": [
+          "emission"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/emission/methodology": {
+      "get": {
+        "operationId": "MethodologyController_describe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmissionMethodologyDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Methods implemented by this service with formulas, variables and sources; active reduction factors; vessel type parameters",
+        "tags": [
+          "methodology"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "AIS Maritime Intelligence — AIS ITS Emission Service",
+    "description": "Fuel and CO2 per voyage segment, IMO CII (daily/annual, rating A-E), reduction factors, SEEMP recommendations and what-if simulation, IMO DCS summary",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "cii",
+      "description": "CII of vessels: year-to-date, daily, annual, segments, fleet summary, manual records, recomputation"
+    },
+    {
+      "name": "reduction-factors",
+      "description": "Reduction factors Z of the required CII (MEPC.338(76), MEPC.400(83))"
+    },
+    {
+      "name": "seemp",
+      "description": "SEEMP measures, recommendations, what-if simulation and saved scenarios"
+    },
+    {
+      "name": "emission",
+      "description": "IMO DCS-style annual summary (JSON or CSV)"
+    },
+    {
+      "name": "methodology",
+      "description": "Methods of the methodology catalog implemented here (spec §17)"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Access token (EdDSA JWT)"
+      },
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key sk_<id>_<secret>"
+      },
+      "internalToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Internal-Token",
+        "description": "Service-to-service token"
+      }
+    },
+    "schemas": {
+      "MethodCountsDto": {
+        "type": "object",
+        "properties": {
+          "telemetry": {
+            "type": "number"
+          },
+          "firstFormula": {
+            "type": "number"
+          },
+          "holtrop": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "telemetry",
+          "firstFormula",
+          "holtrop"
+        ]
+      },
+      "DdVectorDto": {
+        "type": "object",
+        "properties": {
+          "d1": {
+            "type": "number",
+            "example": 0.72
+          },
+          "d2": {
+            "type": "number",
+            "example": 0.9
+          },
+          "d3": {
+            "type": "number",
+            "example": 1.12
+          },
+          "d4": {
+            "type": "number",
+            "example": 1.41
+          }
+        },
+        "required": [
+          "d1",
+          "d2",
+          "d3",
+          "d4"
+        ]
+      },
+      "CiiProjectionDto": {
+        "type": "object",
+        "properties": {
+          "yearFraction": {
+            "type": "number",
+            "description": "Elapsed fraction of the calendar year at asOf",
+            "example": 0.45
+          },
+          "distanceNm": {
+            "type": "number",
+            "description": "Projected distance, nm"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "description": "Projected main engine fuel, t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "description": "Projected auxiliary engine fuel, t"
+          },
+          "co2Ton": {
+            "type": "number",
+            "description": "Projected CO2, t"
+          },
+          "attained": {
+            "type": "number",
+            "description": "Year-end attained CII from the linear trend of the daily cumulative values"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ]
+          }
+        },
+        "required": [
+          "yearFraction",
+          "distanceNm",
+          "fuelMeTon",
+          "fuelAeTon",
+          "co2Ton",
+          "attained",
+          "rating",
+          "grade"
+        ]
+      },
+      "CiiSummaryDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "example": 2026
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ],
+            "description": "manual = cii_annual_manual fallback for a year without segments"
+          },
+          "distanceNm": {
+            "type": "number",
+            "description": "Distance, nm"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "description": "Main engine fuel, t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "description": "Auxiliary engine fuel, t"
+          },
+          "co2Ton": {
+            "type": "number",
+            "nullable": true,
+            "description": "CO2, t"
+          },
+          "segments": {
+            "type": "number",
+            "nullable": true,
+            "description": "Counted segments (null for manual records)"
+          },
+          "methods": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MethodCountsDto"
+              }
+            ]
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "End of the last segment included"
+          },
+          "zPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Reduction factor Z of the year, %"
+          },
+          "attained": {
+            "type": "number",
+            "description": "Attained CII, g CO2 / (capacity · nm)"
+          },
+          "required": {
+            "type": "number",
+            "nullable": true,
+            "description": "Required CII, g CO2 / (capacity · nm)"
+          },
+          "rating": {
+            "type": "number",
+            "nullable": true,
+            "description": "attained / required"
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "ddVector": {
+            "nullable": true,
+            "description": "Absolute grade boundaries d_i × required (legacy ddVector)",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DdVectorDto"
+              }
+            ]
+          },
+          "methodIds": {
+            "example": [
+              "fuel.first_formula",
+              "cii.attained_accumulation",
+              "cii.required",
+              "cii.rating_grade"
+            ],
+            "description": "Methodology catalog ids behind the figure (GET /api/v2/emission/methodology)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mmsi": {
+            "type": "number",
+            "example": 525005223
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "CII capacity (type.capacityFixed ?? dimensions.capacity)"
+          },
+          "lastMethod": {
+            "type": "string",
+            "enum": [
+              "telemetry",
+              "first_formula",
+              "holtrop"
+            ],
+            "nullable": true,
+            "description": "Fuel method of the most recent segment"
+          },
+          "projection": {
+            "nullable": true,
+            "description": "Linear year-end projection (current year only)",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CiiProjectionDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "year",
+          "source",
+          "distanceNm",
+          "fuelMeTon",
+          "fuelAeTon",
+          "co2Ton",
+          "segments",
+          "methods",
+          "asOf",
+          "zPercent",
+          "attained",
+          "required",
+          "rating",
+          "grade",
+          "ddVector",
+          "methodIds",
+          "mmsi",
+          "vesselId",
+          "capacity",
+          "lastMethod",
+          "projection"
+        ]
+      },
+      "DailyCiiPointDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03-10"
+          },
+          "distanceNm": {
+            "type": "number",
+            "description": "nm"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "co2Ton": {
+            "type": "number",
+            "description": "t"
+          },
+          "segments": {
+            "type": "number"
+          },
+          "methods": {
+            "$ref": "#/components/schemas/MethodCountsDto"
+          },
+          "attained": {
+            "type": "number",
+            "nullable": true,
+            "description": "Attained CII of the day"
+          },
+          "cumulativeAttained": {
+            "type": "number",
+            "nullable": true,
+            "description": "Year-to-date attained CII at the end of the day"
+          },
+          "required": {
+            "type": "number",
+            "nullable": true,
+            "description": "Required CII of the year"
+          },
+          "cumulativeRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "cumulativeGrade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "day",
+          "distanceNm",
+          "fuelMeTon",
+          "fuelAeTon",
+          "co2Ton",
+          "segments",
+          "methods",
+          "attained",
+          "cumulativeAttained",
+          "required",
+          "cumulativeRating",
+          "cumulativeGrade"
+        ]
+      },
+      "DailyCiiDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DailyCiiPointDto"
+            }
+          },
+          "methodIds": {
+            "example": [
+              "fuel.first_formula",
+              "cii.attained_accumulation",
+              "cii.required",
+              "cii.rating_grade"
+            ],
+            "description": "Methodology catalog ids behind the figure (GET /api/v2/emission/methodology)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "mmsi",
+          "from",
+          "to",
+          "points",
+          "methodIds"
+        ]
+      },
+      "CiiYearDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "example": 2026
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ],
+            "description": "manual = cii_annual_manual fallback for a year without segments"
+          },
+          "distanceNm": {
+            "type": "number",
+            "description": "Distance, nm"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "description": "Main engine fuel, t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "description": "Auxiliary engine fuel, t"
+          },
+          "co2Ton": {
+            "type": "number",
+            "nullable": true,
+            "description": "CO2, t"
+          },
+          "segments": {
+            "type": "number",
+            "nullable": true,
+            "description": "Counted segments (null for manual records)"
+          },
+          "methods": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MethodCountsDto"
+              }
+            ]
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "End of the last segment included"
+          },
+          "zPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Reduction factor Z of the year, %"
+          },
+          "attained": {
+            "type": "number",
+            "description": "Attained CII, g CO2 / (capacity · nm)"
+          },
+          "required": {
+            "type": "number",
+            "nullable": true,
+            "description": "Required CII, g CO2 / (capacity · nm)"
+          },
+          "rating": {
+            "type": "number",
+            "nullable": true,
+            "description": "attained / required"
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "ddVector": {
+            "nullable": true,
+            "description": "Absolute grade boundaries d_i × required (legacy ddVector)",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DdVectorDto"
+              }
+            ]
+          },
+          "methodIds": {
+            "example": [
+              "fuel.first_formula",
+              "cii.attained_accumulation",
+              "cii.required",
+              "cii.rating_grade"
+            ],
+            "description": "Methodology catalog ids behind the figure (GET /api/v2/emission/methodology)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "year",
+          "source",
+          "distanceNm",
+          "fuelMeTon",
+          "fuelAeTon",
+          "co2Ton",
+          "segments",
+          "methods",
+          "asOf",
+          "zPercent",
+          "attained",
+          "required",
+          "rating",
+          "grade",
+          "ddVector",
+          "methodIds"
+        ]
+      },
+      "AnnualCiiDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dVector": {
+            "description": "d-vector of the ship type (relative)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DdVectorDto"
+              }
+            ]
+          },
+          "years": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CiiYearDto"
+            }
+          }
+        },
+        "required": [
+          "mmsi",
+          "vesselId",
+          "dVector",
+          "years"
+        ]
+      },
+      "SegmentWeatherDto": {
+        "type": "object",
+        "properties": {
+          "windSpeedKn": {
+            "type": "number",
+            "description": "kn"
+          },
+          "windDirectionDeg": {
+            "type": "number",
+            "description": "degrees"
+          },
+          "beaufortNumber": {
+            "type": "number"
+          },
+          "encounterAngleDeg": {
+            "type": "number",
+            "description": "degrees"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "open-meteo",
+              "calm_fallback"
+            ]
+          },
+          "hour": {
+            "type": "string",
+            "example": "2026-03-10T08:00"
+          },
+          "cellLat": {
+            "type": "number",
+            "example": 1.25
+          },
+          "cellLon": {
+            "type": "number",
+            "example": 104
+          }
+        },
+        "required": [
+          "windSpeedKn",
+          "windDirectionDeg",
+          "beaufortNumber",
+          "encounterAngleDeg",
+          "source",
+          "hour",
+          "cellLat",
+          "cellLon"
+        ]
+      },
+      "SegmentDto": {
+        "type": "object",
+        "properties": {
+          "timeStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "distanceNm": {
+            "type": "number",
+            "description": "nm"
+          },
+          "speedKn": {
+            "type": "number",
+            "description": "kn (capped at 30)"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "co2Ton": {
+            "type": "number",
+            "description": "t"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "telemetry",
+              "first_formula",
+              "holtrop",
+              "none"
+            ],
+            "description": "none = not counted (see flags)"
+          },
+          "navstatus": {
+            "type": "number",
+            "description": "AIS navstatus of the previous fix"
+          },
+          "fuelCode": {
+            "type": "string",
+            "example": "MDO"
+          },
+          "conversionFactor": {
+            "type": "number",
+            "description": "C_F used, t CO2 / t fuel"
+          },
+          "weather": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SegmentWeatherDto"
+              }
+            ]
+          },
+          "flags": {
+            "example": [
+              "weather_unavailable"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "timeStart",
+          "timeEnd",
+          "mmsi",
+          "vesselId",
+          "distanceNm",
+          "speedKn",
+          "fuelMeTon",
+          "fuelAeTon",
+          "co2Ton",
+          "method",
+          "navstatus",
+          "fuelCode",
+          "conversionFactor",
+          "weather",
+          "flags"
+        ]
+      },
+      "CursorPageInfoDto": {
+        "type": "object",
+        "properties": {
+          "nextCursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "Opaque cursor of the next page; null on the last page"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+          }
+        },
+        "required": [
+          "nextCursor",
+          "limit"
+        ]
+      },
+      "GradeCountsDto": {
+        "type": "object",
+        "properties": {
+          "A": {
+            "type": "number"
+          },
+          "B": {
+            "type": "number"
+          },
+          "C": {
+            "type": "number"
+          },
+          "D": {
+            "type": "number"
+          },
+          "E": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ]
+      },
+      "FleetVesselCiiDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "nullable": true
+          },
+          "attained": {
+            "type": "number",
+            "nullable": true
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "mmsi",
+          "vesselId",
+          "name",
+          "grade",
+          "rating",
+          "attained",
+          "source"
+        ]
+      },
+      "FleetSummaryDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number"
+          },
+          "orgId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "null = every organization (super_admin)"
+          },
+          "vessels": {
+            "type": "number"
+          },
+          "grades": {
+            "$ref": "#/components/schemas/GradeCountsDto"
+          },
+          "notAvailable": {
+            "type": "number",
+            "description": "Vessels without CII data for the year"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FleetVesselCiiDto"
+            }
+          },
+          "methodIds": {
+            "example": [
+              "fuel.first_formula",
+              "cii.attained_accumulation",
+              "cii.required",
+              "cii.rating_grade"
+            ],
+            "description": "Methodology catalog ids behind the figure (GET /api/v2/emission/methodology)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "year",
+          "orgId",
+          "vessels",
+          "grades",
+          "notAvailable",
+          "items",
+          "methodIds"
+        ]
+      },
+      "AnnualManualDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "year": {
+            "type": "number"
+          },
+          "attained": {
+            "type": "number"
+          },
+          "required": {
+            "type": "number",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "nullable": true
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "distanceNm": {
+            "type": "number"
+          },
+          "fuelMeTon": {
+            "type": "number"
+          },
+          "fuelAeTon": {
+            "type": "number"
+          },
+          "co2Ton": {
+            "type": "number",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "mmsi",
+          "year",
+          "attained",
+          "required",
+          "rating",
+          "grade",
+          "distanceNm",
+          "fuelMeTon",
+          "fuelAeTon",
+          "co2Ton",
+          "note",
+          "updatedBy",
+          "updatedAt"
+        ]
+      },
+      "PutAnnualManualDto": {
+        "type": "object",
+        "properties": {
+          "attained": {
+            "type": "number",
+            "example": 60.40916223,
+            "description": "Attained CII, g CO2 / (capacity · nm)"
+          },
+          "distanceNm": {
+            "type": "number",
+            "example": 20300.58816,
+            "description": "Distance, nm"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "example": 366.831416415746,
+            "description": "Main engine fuel, t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "example": 737.33114699565,
+            "description": "Auxiliary engine fuel, t"
+          },
+          "required": {
+            "type": "number",
+            "example": 65.3817582530913,
+            "description": "Required CII as imported; computed from Z when omitted"
+          },
+          "rating": {
+            "type": "number",
+            "example": 0.923945208,
+            "description": "Rating as imported; attained / required when omitted"
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "description": "Grade as imported; from the d-vector when omitted"
+          },
+          "co2Ton": {
+            "type": "number",
+            "description": "CO2, t"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "attained",
+          "distanceNm",
+          "fuelMeTon",
+          "fuelAeTon"
+        ]
+      },
+      "RecomputeJobDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mmsi": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "succeeded",
+              "failed"
+            ]
+          },
+          "replayed": {
+            "type": "number",
+            "description": "Position events replayed in the range"
+          },
+          "segments": {
+            "type": "number",
+            "description": "Segments written"
+          },
+          "deleted": {
+            "type": "number",
+            "description": "Segments of the range the replay did not produce again (deleted)"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "mmsi",
+          "from",
+          "to",
+          "status",
+          "replayed",
+          "segments",
+          "deleted",
+          "error",
+          "createdAt",
+          "finishedAt"
+        ]
+      },
+      "ReductionFactorDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "example": 2026
+          },
+          "zPercent": {
+            "type": "number",
+            "example": 11,
+            "description": "Z, percent"
+          },
+          "source": {
+            "type": "string",
+            "example": "IMO Resolution MEPC.338(76) (2021), G3 reduction factors"
+          }
+        },
+        "required": [
+          "year",
+          "zPercent",
+          "source"
+        ]
+      },
+      "ReductionFactorListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReductionFactorDto"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ReductionFactorInputDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "minimum": 2019,
+            "maximum": 2100,
+            "example": 2031
+          },
+          "zPercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 99.999,
+            "example": 24.125,
+            "description": "Z, percent"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "example": "IMO Resolution MEPC.400(83)"
+          }
+        },
+        "required": [
+          "year",
+          "zPercent",
+          "source"
+        ]
+      },
+      "PutReductionFactorsDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReductionFactorInputDto"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "SeempMeasureDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "hull_coating"
+          },
+          "name": {
+            "type": "string",
+            "example": "Hull coating maintenance on the hull surface",
+            "description": "Exactly the legacy recommendation text"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "technical",
+              "operational",
+              "fuel",
+              "energy"
+            ]
+          },
+          "legacyOrder": {
+            "type": "number"
+          },
+          "methodId": {
+            "type": "string",
+            "example": "seemp.measure.hull_coating"
+          },
+          "reduction": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Reduction model (type operational | fuel_switch | auxiliary)"
+          },
+          "cost": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Cost model (type loa_bands | range | wetted_surface | installed_power)"
+          },
+          "source": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "category",
+          "legacyOrder",
+          "methodId",
+          "reduction",
+          "cost",
+          "source"
+        ]
+      },
+      "SeempMeasureListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeempMeasureDto"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "CostRangeDto": {
+        "type": "object",
+        "properties": {
+          "low": {
+            "type": "number"
+          },
+          "high": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "low",
+          "high"
+        ]
+      },
+      "SeempRecommendationDto": {
+        "type": "object",
+        "properties": {
+          "recommendation": {
+            "type": "string",
+            "example": "Hull coating maintenance on the hull surface"
+          },
+          "cost": {
+            "type": "string",
+            "example": "$30,540",
+            "description": "Cost per year (legacy text; \"$low - $high\" for ranges)"
+          },
+          "ciiRatingAfter": {
+            "type": "number",
+            "example": 0.92524288,
+            "description": "Rating after the measure, 8 decimals"
+          },
+          "ciiGradeAfter": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ]
+          },
+          "ciiRatingBefore": {
+            "type": "number",
+            "nullable": true,
+            "description": "Rating of the year before the target year"
+          },
+          "ciiGradeBefore": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "example": "hull_coating"
+          },
+          "costUsdPerYear": {
+            "type": "number",
+            "description": "Cost per year, USD (sort key)"
+          },
+          "costRangeUsdPerYear": {
+            "$ref": "#/components/schemas/CostRangeDto"
+          },
+          "ciiAttainedAfter": {
+            "type": "number",
+            "description": "Attained CII after the measure"
+          },
+          "yearsUntilInferior": {
+            "type": "number",
+            "description": "Years until grade D/E used to spread the investment"
+          },
+          "methodIds": {
+            "description": "Methodology catalog ids behind the figure",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "recommendation",
+          "cost",
+          "ciiRatingAfter",
+          "ciiGradeAfter",
+          "ciiRatingBefore",
+          "ciiGradeBefore",
+          "code",
+          "costUsdPerYear",
+          "costRangeUsdPerYear",
+          "ciiAttainedAfter",
+          "yearsUntilInferior",
+          "methodIds"
+        ]
+      },
+      "SeempRecommendationsDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "baselineYear": {
+            "type": "number",
+            "description": "Year of the baseline CII figures"
+          },
+          "baselineSource": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ]
+          },
+          "targetYear": {
+            "type": "number",
+            "description": "Year the measures are rated in"
+          },
+          "ciiRequired": {
+            "type": "number",
+            "description": "Required CII of the target year"
+          },
+          "ciiAttained": {
+            "type": "number",
+            "description": "Baseline attained CII"
+          },
+          "ciiRatingBefore": {
+            "type": "number",
+            "nullable": true
+          },
+          "ciiGradeBefore": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "recommendations": {
+            "description": "Measures with grade A–C after, cheapest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeempRecommendationDto"
+            }
+          },
+          "methodIds": {
+            "description": "Methodology catalog ids behind the figure",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "mmsi",
+          "vesselId",
+          "baselineYear",
+          "baselineSource",
+          "targetYear",
+          "ciiRequired",
+          "ciiAttained",
+          "ciiRatingBefore",
+          "ciiGradeBefore",
+          "recommendations",
+          "methodIds"
+        ]
+      },
+      "SimulateDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "minimum": 2000,
+            "maximum": 2200,
+            "description": "Baseline year (default: previous year, else the latest year with data)"
+          },
+          "targetYear": {
+            "type": "number",
+            "minimum": 2000,
+            "maximum": 2200,
+            "description": "Year the measures are rated in (default: current year)"
+          },
+          "measureCodes": {
+            "example": [
+              "hull_coating",
+              "solar"
+            ],
+            "minItems": 1,
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "measureCodes"
+        ]
+      },
+      "RatedCiiDto": {
+        "type": "object",
+        "properties": {
+          "attained": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ]
+          }
+        },
+        "required": [
+          "attained",
+          "rating",
+          "grade"
+        ]
+      },
+      "FuelAfterDto": {
+        "type": "object",
+        "properties": {
+          "meTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "aeTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "conversionFactor": {
+            "type": "number",
+            "description": "C_F after a fuel switch, t CO2 / t fuel"
+          }
+        },
+        "required": [
+          "meTon",
+          "aeTon",
+          "conversionFactor"
+        ]
+      },
+      "SeempSimulationDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "baselineYear": {
+            "type": "number",
+            "description": "Year of the baseline CII figures"
+          },
+          "baselineSource": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ]
+          },
+          "targetYear": {
+            "type": "number",
+            "description": "Year the measures are rated in"
+          },
+          "ciiRequired": {
+            "type": "number",
+            "description": "Required CII of the target year"
+          },
+          "ciiAttained": {
+            "type": "number",
+            "description": "Baseline attained CII"
+          },
+          "ciiRatingBefore": {
+            "type": "number",
+            "nullable": true
+          },
+          "ciiGradeBefore": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "measureCodes": {
+            "description": "Measures applied, in legacy order",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "before": {
+            "$ref": "#/components/schemas/RatedCiiDto"
+          },
+          "after": {
+            "$ref": "#/components/schemas/RatedCiiDto"
+          },
+          "reductionPercent": {
+            "type": "number",
+            "description": "1 − after / before, percent"
+          },
+          "fuelAfter": {
+            "$ref": "#/components/schemas/FuelAfterDto"
+          },
+          "yearsUntilInferior": {
+            "type": "number"
+          },
+          "costUsdPerYear": {
+            "type": "number",
+            "description": "Total cost per year of the measures, USD"
+          },
+          "costRangeUsdPerYear": {
+            "$ref": "#/components/schemas/CostRangeDto"
+          },
+          "cost": {
+            "type": "string",
+            "example": "$154,040"
+          },
+          "methodIds": {
+            "description": "Methodology catalog ids behind the figure",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "mmsi",
+          "vesselId",
+          "baselineYear",
+          "baselineSource",
+          "targetYear",
+          "ciiRequired",
+          "ciiAttained",
+          "ciiRatingBefore",
+          "ciiGradeBefore",
+          "measureCodes",
+          "before",
+          "after",
+          "reductionPercent",
+          "fuelAfter",
+          "yearsUntilInferior",
+          "costUsdPerYear",
+          "costRangeUsdPerYear",
+          "cost",
+          "methodIds"
+        ]
+      },
+      "SeempScenarioDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "measureCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "baselineYear": {
+            "type": "number"
+          },
+          "targetYear": {
+            "type": "number"
+          },
+          "result": {
+            "description": "Simulation result at creation time",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SeempSimulationDto"
+              }
+            ]
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "mmsi",
+          "vesselId",
+          "name",
+          "measureCodes",
+          "baselineYear",
+          "targetYear",
+          "result",
+          "createdBy",
+          "createdAt"
+        ]
+      },
+      "PageMetaDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of items across all pages"
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "total"
+        ]
+      },
+      "CreateScenarioDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number",
+            "minimum": 2000,
+            "maximum": 2200,
+            "description": "Baseline year (default: previous year, else the latest year with data)"
+          },
+          "targetYear": {
+            "type": "number",
+            "minimum": 2000,
+            "maximum": 2200,
+            "description": "Year the measures are rated in (default: current year)"
+          },
+          "measureCodes": {
+            "example": [
+              "hull_coating",
+              "solar"
+            ],
+            "minItems": 1,
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mmsi": {
+            "type": "number",
+            "example": 525005223
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "example": "Hull coating + solar 2026"
+          }
+        },
+        "required": [
+          "measureCodes",
+          "mmsi",
+          "name"
+        ]
+      },
+      "DcsFuelLineDto": {
+        "type": "object",
+        "properties": {
+          "fuelCode": {
+            "type": "string",
+            "example": "MDO"
+          },
+          "fuelName": {
+            "type": "string",
+            "example": "Diesel/Gas Oil"
+          },
+          "conversionFactor": {
+            "type": "number",
+            "description": "C_F, t CO2 / t fuel"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "totalTon": {
+            "type": "number",
+            "description": "t"
+          },
+          "co2Ton": {
+            "type": "number",
+            "description": "t"
+          }
+        },
+        "required": [
+          "fuelCode",
+          "fuelName",
+          "conversionFactor",
+          "fuelMeTon",
+          "fuelAeTon",
+          "totalTon",
+          "co2Ton"
+        ]
+      },
+      "DcsSummaryDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number"
+          },
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "imo": {
+            "type": "string",
+            "nullable": true
+          },
+          "vesselName": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ]
+          },
+          "fuel": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcsFuelLineDto"
+            }
+          },
+          "distanceNm": {
+            "type": "number",
+            "description": "nm"
+          },
+          "hoursUnderWay": {
+            "type": "number",
+            "nullable": true,
+            "description": "Hours of segments at ≥ 1 kn (null for manual records)"
+          },
+          "co2Ton": {
+            "type": "number",
+            "description": "t"
+          },
+          "methodIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "year",
+          "mmsi",
+          "vesselId",
+          "imo",
+          "vesselName",
+          "source",
+          "fuel",
+          "distanceNm",
+          "hoursUnderWay",
+          "co2Ton",
+          "methodIds"
+        ]
+      },
+      "LocalizedTextDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Bahasa Indonesia"
+          },
+          "en": {
+            "type": "string",
+            "description": "English"
+          }
+        },
+        "required": [
+          "id",
+          "en"
+        ]
+      },
+      "MethodReferenceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "imo-mepc-352-78"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "url"
+        ]
+      },
+      "MethodVariableDto": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "example": "V_{kn}"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedTextDto"
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true,
+            "example": "kn"
+          }
+        },
+        "required": [
+          "symbol",
+          "name",
+          "unit"
+        ]
+      },
+      "MethodConstantDto": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "example": "q_{min}"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedTextDto"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "example": 0.5
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "referenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "needsCitation": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "symbol",
+          "name",
+          "value",
+          "unit",
+          "referenceIds",
+          "needsCitation"
+        ]
+      },
+      "MethodSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cii.attained"
+          },
+          "catalogued": {
+            "type": "boolean",
+            "description": "Whether the catalog shipped with @darmawanweb/ais-its-contracts describes the method"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "ais",
+              "emission",
+              "seemp",
+              "telemetry",
+              "geo",
+              "safety",
+              "surveillance"
+            ],
+            "nullable": true
+          },
+          "name": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedTextDto"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "implemented",
+              "planned",
+              "deprecated"
+            ],
+            "nullable": true
+          },
+          "needsCitation": {
+            "type": "boolean",
+            "description": "Values come from the thesis without a verified external source"
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodReferenceDto"
+            }
+          },
+          "summary": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedTextDto"
+              }
+            ]
+          },
+          "formulaLatex": {
+            "type": "string",
+            "nullable": true,
+            "description": "Equation in LaTeX (KaTeX)"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodVariableDto"
+            }
+          },
+          "constants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodConstantDto"
+            }
+          },
+          "referenceIds": {
+            "example": [
+              "imo-mepc-352-78"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "catalogued",
+          "domain",
+          "name",
+          "status",
+          "needsCitation",
+          "references",
+          "summary",
+          "formulaLatex",
+          "variables",
+          "constants",
+          "referenceIds"
+        ]
+      },
+      "VesselTypeParametersDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "example": "ropax"
+          },
+          "name": {
+            "type": "string",
+            "example": "Ro-ro Passenger Ship"
+          },
+          "capacityUnit": {
+            "type": "string",
+            "enum": [
+              "DWT",
+              "GT"
+            ]
+          },
+          "a": {
+            "type": "number",
+            "description": "Reference line parameter a (MEPC.353(78))",
+            "example": 7540
+          },
+          "c": {
+            "type": "number",
+            "description": "Reference line parameter c (MEPC.353(78))",
+            "example": 0.587
+          },
+          "capacityFixed": {
+            "type": "number",
+            "nullable": true,
+            "description": "Regulation-fixed capacity of the size band"
+          },
+          "d": {
+            "description": "Rating vector (MEPC.354(78))",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DdVectorDto"
+              }
+            ]
+          },
+          "references": {
+            "description": "Sources of the reference lines and rating vectors",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodReferenceDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "capacityUnit",
+          "a",
+          "c",
+          "capacityFixed",
+          "d",
+          "references"
+        ]
+      },
+      "EmissionMethodologyDto": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "example": "emission"
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MethodSummaryDto"
+            }
+          },
+          "reductionFactors": {
+            "description": "Active reduction factors Z with their sources",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReductionFactorDto"
+            }
+          },
+          "vesselTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VesselTypeParametersDto"
+            }
+          },
+          "attribution": {
+            "type": "string",
+            "example": "Weather data by Open-Meteo.com (CC BY 4.0)"
+          }
+        },
+        "required": [
+          "service",
+          "methods",
+          "reductionFactors",
+          "vesselTypes",
+          "attribution"
+        ]
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Problem type URI"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "description": "Request path",
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$",
+            "description": "Stable UPPER_SNAKE_CASE error code"
+          },
+          "traceId": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "Dot separated path, e.g. \"positions.0.lat\""
+                },
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "description": "Machine readable reason",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "field",
+                "message"
+              ],
+              "additionalProperties": false,
+              "description": "Field-level validation error"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ],
+        "additionalProperties": {},
+        "description": "RFC 9457 problem details"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer": []
+    }
+  ]
+}

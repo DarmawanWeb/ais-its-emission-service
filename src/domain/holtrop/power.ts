@@ -42,7 +42,10 @@ export function effectivePower(speedMs: number, rtPlusSm: number): number {
  * @method resistance.power.propulsive_efficiency
  * @see docs/METHODOLOGY.md#resistance.power.propulsive_efficiency
  */
-export function deliveredPower(effectivePowerKw: number, hull: Pick<HullForm, 'cb'>): number {
+export function deliveredPower(
+  effectivePowerKw: number,
+  hull: Pick<HullForm, 'cb'>,
+): number {
   const w = wakeFraction(hull);
   const t = w * 0.9;
   const nh = (1 - t) / (1 - w);

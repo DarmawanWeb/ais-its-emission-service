@@ -17,7 +17,11 @@ import { MethodologyService } from './methodology.service.js';
     {
       provide: MethodologyService,
       useFactory: (config: BaseConfig): MethodologyService =>
-        new MethodologyService(config.SERVICE_NAME, IMPLEMENTED_METHOD_IDS, CONTRACTS_METHOD_CATALOG),
+        new MethodologyService(
+          config.SERVICE_NAME,
+          IMPLEMENTED_METHOD_IDS,
+          CONTRACTS_METHOD_CATALOG,
+        ),
       inject: [APP_CONFIG],
     },
     EmissionMethodologyService,

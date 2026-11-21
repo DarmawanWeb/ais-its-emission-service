@@ -15,7 +15,10 @@ export function wettedSurface(hull: HullForm): number {
   const { lwl, t, b, cm, cb, cwp, bulbousBow } = hull;
   const bDivT = b / t;
   return (
-    lwl * (2 * t + b) * Math.pow(cm, 0.5) * (0.453 + 0.4425 * cb - 0.2862 * cm - 0.003467 * bDivT + 0.3696 * cwp) +
+    lwl *
+      (2 * t + b) *
+      Math.pow(cm, 0.5) *
+      (0.453 + 0.4425 * cb - 0.2862 * cm - 0.003467 * bDivT + 0.3696 * cwp) +
     2.38 * ((bulbousBow ? 1 : 0) / cb)
   );
 }

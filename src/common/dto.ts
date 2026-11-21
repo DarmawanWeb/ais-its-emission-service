@@ -25,5 +25,5 @@ export class DdVectorDto {
 
 /** ISO-8601 of a date, `null` stays `null`. */
 export function isoOrNull(date: Date | null | undefined): string | null {
-  return date == null ? null : date.toISOString();
+  return date === null || date === undefined ? null : date.toISOString();
 }

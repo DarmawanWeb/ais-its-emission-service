@@ -1,10 +1,18 @@
 import type { FuelEstimationMethod } from '@darmawanweb/ais-its-contracts/domain';
 
 import { co2FromFuel } from './cii.js';
-import { calculateFirstFormulaFuel, type FirstFuelFormula } from './fuel/first-formula.js';
+import {
+  calculateFirstFormulaFuel,
+  type FirstFuelFormula,
+} from './fuel/first-formula.js';
 import { selectFuelMethod } from './fuel/method.js';
 import { calculateSecondFormulaFuel } from './fuel/second-formula.js';
-import { type FuelReading, isTelemetryActive, segmentFuelFromReadings, type TimeWindow } from './fuel/telemetry.js';
+import {
+  type FuelReading,
+  isTelemetryActive,
+  segmentFuelFromReadings,
+  type TimeWindow,
+} from './fuel/telemetry.js';
 import type { FuelConsumption } from './fuel/types.js';
 import { type HoltropChainResult, holtropChain } from './holtrop/chain.js';
 import type { HullForm } from './holtrop/types.js';
@@ -77,9 +85,15 @@ export interface SegmentFuelResult {
  *
  * @method fuel.method_selection
  */
-export function chooseFuelMethod(input: SegmentFuelInput): FuelEstimationMethod | null {
+export function chooseFuelMethod(
+  input: SegmentFuelInput,
+): FuelEstimationMethod | null {
   return selectFuelMethod({
-    telemetryActive: isTelemetryActive(input.readings, input.window, input.telemetryActiveWindowMinutes),
+    telemetryActive: isTelemetryActive(
+      input.readings,
+      input.window,
+      input.telemetryActiveWindowMinutes,
+    ),
     hasFirstFormula: input.profile.firstFormula !== null,
     hasMainEngine: input.profile.mainEngineSfoc !== null,
   });
@@ -100,8 +114,10 @@ function finish(
   extra: Pick<SegmentFuelResult, 'holtrop' | 'telemetryReadings'>,
 ): SegmentFuelResult {
   const values = [fuel.meTon, fuel.aeTon, fuel.totalTon];
-  if (values.some((value) => !Number.isFinite(value))) return excludedSegment(...flags, 'fuel_not_finite');
-  if (values.some((value) => value < 0)) return excludedSegment(...flags, 'fuel_negative');
+  if (values.some((value) => !Number.isFinite(value)))
+    return excludedSegment(...flags, 'fuel_not_finite');
+  if (values.some((value) => value < 0))
+    return excludedSegment(...flags, 'fuel_negative');
   return {
     method,
     fuelMeTon: fuel.meTon,
@@ -141,7 +157,9 @@ export function computeSegmentFuel(
       return excludedSegment('no_fuel_model');
     case 'telemetry': {
       const fuel = segmentFuelFromReadings(input.readings, input.window);
-      return finish('telemetry', fuel, profile.conversionFactor, [], { telemetryReadings: fuel.readings });
+      return finish('telemetry', fuel, profile.conversionFactor, [], {
+        telemetryReadings: fuel.readings,
+      });
     }
     case 'first_formula': {
       const formula = profile.firstFormula;
@@ -154,11 +172,14 @@ export function computeSegmentFuel(
         durationMinutes: kinematics.durationMinutes,
       });
       const flags: SegmentFlag[] =
-        formula.mainEngine.valid && formula.auxiliaryEngine.valid ? [] : ['formula_error'];
+        formula.mainEngine.valid && formula.auxiliaryEngine.valid
+          ? []
+          : ['formula_error'];
       return finish('first_formula', fuel, profile.conversionFactor, flags, {});
     }
     case 'holtrop': {
-      if (profile.mainEngineSfoc === null || wind === null) return excludedSegment('no_fuel_model');
+      if (profile.mainEngineSfoc === null || wind === null)
+        return excludedSegment('no_fuel_model');
       const chain = holtropChain(kinematics, wind, profile.hull);
       const fuel = calculateSecondFormulaFuel({
         bhpMcrKw: chain.bhpMcrKw,
@@ -168,8 +189,12 @@ export function computeSegmentFuel(
         densityKgPerL: profile.densityKgPerL,
         navstatus: input.navstatus,
       });
-      const flags: SegmentFlag[] = weatherUnavailable ? ['weather_unavailable'] : [];
-      return finish('holtrop', fuel, profile.conversionFactor, flags, { holtrop: chain });
+      const flags: SegmentFlag[] = weatherUnavailable
+        ? ['weather_unavailable']
+        : [];
+      return finish('holtrop', fuel, profile.conversionFactor, flags, {
+        holtrop: chain,
+      });
     }
   }
 }

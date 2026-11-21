@@ -1,6 +1,23 @@
-import { CurrentPrincipal, type Principal, RequirePermissions } from '@darmawanweb/ais-its-nest/auth';
-import { Controller, Get, Header, Param, Query, Req, Res } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiProduces, ApiTags } from '@nestjs/swagger';
+import {
+  CurrentPrincipal,
+  type Principal,
+  RequirePermissions,
+} from '@darmawanweb/ais-its-nest/auth';
+import {
+  Controller,
+  Get,
+  Header,
+  Param,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiProduces,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
 import { ParseMmsiPipe } from '../../common/pipes.js';
@@ -20,7 +37,10 @@ export class DcsController {
   @Get(':mmsi/dcs')
   @RequirePermissions('cii:read')
   @Header('vary', 'accept')
-  @ApiOperation({ summary: 'Annual fuel by type, distance, hours under way and CO2 (Accept: text/csv for CSV; default: current year)' })
+  @ApiOperation({
+    summary:
+      'Annual fuel by type, distance, hours under way and CO2 (Accept: text/csv for CSV; default: current year)',
+  })
   @ApiProduces('application/json', 'text/csv')
   @ApiOkResponse({ type: DcsSummaryDto })
   async summary(
@@ -35,10 +55,17 @@ export class DcsController {
     if (wantsCsv(request.headers.accept)) {
       void reply
         .header('content-type', 'text/csv; charset=utf-8')
-        .header('content-disposition', `attachment; filename="dcs-${mmsi}-${year}.csv"`);
+        .header(
+          'content-disposition',
+          `attachment; filename="dcs-${mmsi}-${year}.csv"`,
+        );
       return dcsCsv(summary);
     }
-    const methodIds = mergeMethodIds(METHOD_IDS.dcs, METHOD_IDS.segment, summary.source === 'manual' ? METHOD_IDS.manual : []);
+    const methodIds = mergeMethodIds(
+      METHOD_IDS.dcs,
+      METHOD_IDS.segment,
+      summary.source === 'manual' ? METHOD_IDS.manual : [],
+    );
     return new DcsSummaryDto(profile.vesselId, summary, methodIds);
   }
 }
@@ -46,8 +73,12 @@ export class DcsController {
 /** `true` when the client prefers CSV (`Accept: text/csv`) over JSON. */
 export function wantsCsv(accept: string | undefined): boolean {
   if (accept === undefined) return false;
-  const types = accept.split(',').map((part) => part.split(';')[0]?.trim().toLowerCase());
+  const types = accept
+    .split(',')
+    .map((part) => part.split(';')[0]?.trim().toLowerCase());
   const csv = types.indexOf('text/csv');
-  const json = types.findIndex((type) => type === 'application/json' || type === 'application/*');
+  const json = types.findIndex(
+    (type) => type === 'application/json' || type === 'application/*',
+  );
   return csv !== -1 && (json === -1 || csv < json);
 }

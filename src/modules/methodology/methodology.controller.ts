@@ -12,7 +12,8 @@ export class MethodologyController {
   /** No permission decorator: any signed-in user (the global guard denies anonymous calls). */
   @Get()
   @ApiOperation({
-    summary: 'Methods implemented by this service with formulas, variables and sources; active reduction factors; vessel type parameters',
+    summary:
+      'Methods implemented by this service with formulas, variables and sources; active reduction factors; vessel type parameters',
   })
   @ApiOkResponse({ type: EmissionMethodologyDto })
   async describe(): Promise<EmissionMethodologyDto> {

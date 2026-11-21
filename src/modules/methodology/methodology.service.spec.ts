@@ -41,7 +41,7 @@ function describeIds(ids: string[]): MethodologyDto {
 
 describe('MethodologyService', () => {
   it('resolves catalogued methods with their references', () => {
-    expect(describeIds(['cii.attained'])).toEqual({
+    expect(JSON.parse(JSON.stringify(describeIds(['cii.attained'])))).toEqual({
       service: 'demo',
       methods: [
         {
@@ -58,6 +58,11 @@ describe('MethodologyService', () => {
               url: 'https://www.imo.org/',
             },
           ],
+          summary: { id: 'Ringkasan', en: 'Summary' },
+          formulaLatex: null,
+          variables: [],
+          constants: [],
+          referenceIds: ['imo-mepc-352-78'],
         },
       ],
     });

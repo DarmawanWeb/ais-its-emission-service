@@ -51,10 +51,22 @@ const CSV_COLUMNS = [
   'total_co2_t',
 ] as const;
 
-/** RFC 4180 field: quoted when it contains a comma, quote or line break. */
+/** Leading characters that make spreadsheet applications evaluate a cell as a formula. */
+const FORMULA_PREFIX = /^[=+\-@\t\r]/;
+
+/**
+ * RFC 4180 field: quoted when it contains a comma, quote or line break. Text
+ * (never numbers) starting like a spreadsheet formula gets a leading `'`
+ * (CSV injection, OWASP).
+ */
 function csvField(value: string | number | null): string {
   if (value === null) return '';
-  const text = String(value);
+  const text =
+    typeof value === 'number'
+      ? String(value)
+      : FORMULA_PREFIX.test(value)
+        ? `'${value}`
+        : value;
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 

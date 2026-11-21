@@ -45,17 +45,28 @@ export class OpenMeteoClient {
     url.searchParams.set('start_hour', cell.hour);
     url.searchParams.set('end_hour', cell.hour);
     const response = await fetch(url, {
-      headers: { accept: 'application/json', 'user-agent': 'ais-its-emission-service' },
+      headers: {
+        accept: 'application/json',
+        'user-agent': 'ais-its-emission-service',
+      },
       redirect: 'error',
       signal: AbortSignal.timeout(this.config.WEATHER_TIMEOUT_MS),
     });
-    if (!response.ok) throw new WeatherRequestError(`Open-Meteo answered ${response.status}`);
+    if (!response.ok)
+      throw new WeatherRequestError(`Open-Meteo answered ${response.status}`);
     const body = HourlyWindSchema.safeParse(await response.json());
-    if (!body.success) throw new WeatherRequestError('Open-Meteo answer without hourly wind');
+    if (!body.success)
+      throw new WeatherRequestError('Open-Meteo answer without hourly wind');
     const index = body.data.hourly.time.findIndex((time) => time === cell.hour);
     const speedKn = body.data.hourly.wind_speed_10m[index];
     const directionDeg = body.data.hourly.wind_direction_10m[index];
-    if (index === -1 || speedKn == null || directionDeg == null) {
+    if (
+      index === -1 ||
+      speedKn === undefined ||
+      speedKn === null ||
+      directionDeg === undefined ||
+      directionDeg === null
+    ) {
       throw new WeatherRequestError(`Open-Meteo has no wind for ${cell.hour}`);
     }
     return { speedKn, directionDeg };

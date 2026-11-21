@@ -73,7 +73,10 @@ function toRadians(degrees: number): number {
  * @see https://www.movable-type.co.uk/scripts/latlong.html (haversine)
  */
 export function calculateSpeed(current: Fix, previous: Fix): SegmentKinematics {
-  const currentRad = { lat: toRadians(current.lat), lon: toRadians(current.lon) };
+  const currentRad = {
+    lat: toRadians(current.lat),
+    lon: toRadians(current.lon),
+  };
   const previousRad = {
     lat: toRadians(previous.lat),
     lon: toRadians(previous.lon),

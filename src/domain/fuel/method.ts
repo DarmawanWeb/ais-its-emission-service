@@ -19,7 +19,9 @@ export interface FuelMethodInputs {
  * @method fuel.method_selection
  * @see docs/METHODOLOGY.md#fuel.method_selection
  */
-export function selectFuelMethod(inputs: FuelMethodInputs): FuelEstimationMethod | null {
+export function selectFuelMethod(
+  inputs: FuelMethodInputs,
+): FuelEstimationMethod | null {
   if (inputs.telemetryActive) return 'telemetry';
   if (inputs.hasFirstFormula) return 'first_formula';
   if (inputs.hasMainEngine) return 'holtrop';

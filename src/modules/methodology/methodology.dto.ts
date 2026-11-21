@@ -77,7 +77,10 @@ export class MethodConstantDto {
   @ApiProperty({ type: LocalizedTextDto })
   readonly name: LocalizedTextDto;
 
-  @ApiProperty({ oneOf: [{ type: 'number' }, { type: 'string' }], example: 0.5 })
+  @ApiProperty({
+    oneOf: [{ type: 'number' }, { type: 'string' }],
+    example: 0.5,
+  })
   readonly value: number | string;
 
   @ApiProperty({ type: String, nullable: true })
@@ -131,7 +134,11 @@ export class MethodSummaryDto {
   @ApiProperty({ type: LocalizedTextDto, nullable: true })
   readonly summary: LocalizedTextDto | null;
 
-  @ApiProperty({ type: String, nullable: true, description: 'Equation in LaTeX (KaTeX)' })
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Equation in LaTeX (KaTeX)',
+  })
   readonly formulaLatex: string | null;
 
   @ApiProperty({ type: [MethodVariableDto] })
@@ -153,10 +160,15 @@ export class MethodSummaryDto {
     this.references = references.map(
       (reference) => new MethodReferenceDto(reference),
     );
-    this.summary = method === undefined ? null : new LocalizedTextDto(method.summary);
+    this.summary =
+      method === undefined ? null : new LocalizedTextDto(method.summary);
     this.formulaLatex = method?.formulaLatex ?? null;
-    this.variables = (method?.variables ?? []).map((variable) => new MethodVariableDto(variable));
-    this.constants = (method?.constants ?? []).map((constant) => new MethodConstantDto(constant));
+    this.variables = (method?.variables ?? []).map(
+      (variable) => new MethodVariableDto(variable),
+    );
+    this.constants = (method?.constants ?? []).map(
+      (constant) => new MethodConstantDto(constant),
+    );
     this.referenceIds = [...(method?.referenceIds ?? [])];
   }
 }
@@ -191,19 +203,35 @@ export class VesselTypeParametersDto {
   @ApiProperty({ enum: ['DWT', 'GT'] })
   readonly capacityUnit: string;
 
-  @ApiProperty({ description: 'Reference line parameter a (MEPC.353(78))', example: 7540 })
+  @ApiProperty({
+    description: 'Reference line parameter a (MEPC.353(78))',
+    example: 7540,
+  })
   readonly a: number;
 
-  @ApiProperty({ description: 'Reference line parameter c (MEPC.353(78))', example: 0.587 })
+  @ApiProperty({
+    description: 'Reference line parameter c (MEPC.353(78))',
+    example: 0.587,
+  })
   readonly c: number;
 
-  @ApiProperty({ type: Number, nullable: true, description: 'Regulation-fixed capacity of the size band' })
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Regulation-fixed capacity of the size band',
+  })
   readonly capacityFixed: number | null;
 
-  @ApiProperty({ type: DdVectorDto, description: 'Rating vector (MEPC.354(78))' })
+  @ApiProperty({
+    type: DdVectorDto,
+    description: 'Rating vector (MEPC.354(78))',
+  })
   readonly d: DdVectorDto;
 
-  @ApiProperty({ type: [MethodReferenceDto], description: 'Sources of the reference lines and rating vectors' })
+  @ApiProperty({
+    type: [MethodReferenceDto],
+    description: 'Sources of the reference lines and rating vectors',
+  })
   readonly references: MethodReferenceDto[];
 
   constructor({ type, references }: VesselTypeSource) {
@@ -215,13 +243,18 @@ export class VesselTypeParametersDto {
     this.c = type.c;
     this.capacityFixed = type.capacityFixed ?? null;
     this.d = new DdVectorDto(type.d);
-    this.references = references.map((reference) => new MethodReferenceDto(reference));
+    this.references = references.map(
+      (reference) => new MethodReferenceDto(reference),
+    );
   }
 }
 
 /** `GET /emission/methodology` (spec §17). */
 export class EmissionMethodologyDto extends MethodologyDto {
-  @ApiProperty({ type: [ReductionFactorDto], description: 'Active reduction factors Z with their sources' })
+  @ApiProperty({
+    type: [ReductionFactorDto],
+    description: 'Active reduction factors Z with their sources',
+  })
   readonly reductionFactors: ReductionFactorDto[];
 
   @ApiProperty({ type: [VesselTypeParametersDto] })
@@ -232,8 +265,12 @@ export class EmissionMethodologyDto extends MethodologyDto {
 
   constructor(description: EmissionMethodology) {
     super(description);
-    this.reductionFactors = description.reductionFactors.map((factor) => new ReductionFactorDto(factor));
-    this.vesselTypes = description.vesselTypes.map((type) => new VesselTypeParametersDto(type));
+    this.reductionFactors = description.reductionFactors.map(
+      (factor) => new ReductionFactorDto(factor),
+    );
+    this.vesselTypes = description.vesselTypes.map(
+      (type) => new VesselTypeParametersDto(type),
+    );
     this.attribution = 'Weather data by Open-Meteo.com (CC BY 4.0)';
   }
 }

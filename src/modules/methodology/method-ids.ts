@@ -6,11 +6,21 @@ import type { FuelEstimationMethod } from '@darmawanweb/ais-its-contracts/domain
  */
 export const METHOD_IDS = {
   /** Every segment: distance, speed and the gap rule; CO2 from fuel. */
-  segment: ['geo.haversine_distance', 'geo.speed_from_positions', 'emission.segment_window', 'emission.co2_conversion'],
+  segment: [
+    'geo.haversine_distance',
+    'geo.speed_from_positions',
+    'emission.segment_window',
+    'emission.co2_conversion',
+  ],
   /** Fuel by estimation method. */
   fuel: {
     telemetry: ['fuel.method_selection', 'telemetry.fuel_reading_usage'],
-    first_formula: ['fuel.method_selection', 'fuel.first_formula', 'fuel.navstatus_multipliers', 'fuel.density_conversion'],
+    first_formula: [
+      'fuel.method_selection',
+      'fuel.first_formula',
+      'fuel.navstatus_multipliers',
+      'fuel.density_conversion',
+    ],
     holtrop: [
       'fuel.method_selection',
       'weather.open_meteo_current',
@@ -76,6 +86,8 @@ export function segmentMethodIds(counts: MethodCounts): string[] {
 }
 
 /** Deduplicated concatenation of method id lists (declaration order kept). */
-export function mergeMethodIds(...lists: readonly (readonly string[])[]): string[] {
+export function mergeMethodIds(
+  ...lists: readonly (readonly string[])[]
+): string[] {
   return [...new Set(lists.flat())];
 }

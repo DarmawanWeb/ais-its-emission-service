@@ -21,7 +21,9 @@ export class CiiPublicationRepository {
 
   /** Marks every vessel with segments as dirty (e.g. after a reduction factor change). */
   async markAllDirty(): Promise<number> {
-    const result = await this.pool.query('UPDATE cii_publication SET dirty_since = coalesce(dirty_since, now())');
+    const result = await this.pool.query(
+      'UPDATE cii_publication SET dirty_since = coalesce(dirty_since, now())',
+    );
     return result.rowCount ?? 0;
   }
 
@@ -48,11 +50,20 @@ export class CiiPublicationRepository {
   }
 
   /** Records the published year, or marks the vessel dirty again after a failed publication. */
-  async settle(mmsi: number, outcome: { readonly year: number } | 'failed'): Promise<void> {
+  async settle(
+    mmsi: number,
+    outcome: { readonly year: number } | 'failed',
+  ): Promise<void> {
     if (outcome === 'failed') {
-      await this.pool.query('UPDATE cii_publication SET dirty_since = coalesce(dirty_since, now()) WHERE mmsi = $1', [mmsi]);
+      await this.pool.query(
+        'UPDATE cii_publication SET dirty_since = coalesce(dirty_since, now()) WHERE mmsi = $1',
+        [mmsi],
+      );
       return;
     }
-    await this.pool.query('UPDATE cii_publication SET last_year = $2 WHERE mmsi = $1', [mmsi, outcome.year]);
+    await this.pool.query(
+      'UPDATE cii_publication SET last_year = $2 WHERE mmsi = $1',
+      [mmsi, outcome.year],
+    );
   }
 }

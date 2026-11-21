@@ -19,12 +19,24 @@ export class IncompatibleMeasuresError extends Error {
 export interface SimulationResult {
   readonly measures: readonly SeempMeasure[];
   /** Baseline attained CII and its rating against the current year's required CII. */
-  readonly before: { readonly attained: number; readonly rating: number; readonly grade: CiiGrade };
-  readonly after: { readonly attained: number; readonly rating: number; readonly grade: CiiGrade };
+  readonly before: {
+    readonly attained: number;
+    readonly rating: number;
+    readonly grade: CiiGrade;
+  };
+  readonly after: {
+    readonly attained: number;
+    readonly rating: number;
+    readonly grade: CiiGrade;
+  };
   /** `1 − after / before`, percent. */
   readonly reductionPercent: number;
   /** Annual fuel after the fuel-side measures (types 2–3), t; C_F after. */
-  readonly fuelAfter: { readonly meTon: number; readonly aeTon: number; readonly conversionFactor: number };
+  readonly fuelAfter: {
+    readonly meTon: number;
+    readonly aeTon: number;
+    readonly conversionFactor: number;
+  };
   readonly yearsUntilInferior: number;
   /** Total cost per year of the selected measures, USD. */
   readonly costUsdPerYear: number;
@@ -59,13 +71,20 @@ export interface SimulationResult {
  * @method seemp.cost_amortization
  * @throws IncompatibleMeasuresError for more than one fuel switch.
  */
-export function simulateMeasures(selected: readonly SeempMeasure[], context: SeempContext): SimulationResult {
-  const measures = [...new Map(selected.map((measure) => [measure.code, measure])).values()].sort(
-    (a, b) => a.legacyOrder - b.legacyOrder,
+export function simulateMeasures(
+  selected: readonly SeempMeasure[],
+  context: SeempContext,
+): SimulationResult {
+  const measures = [
+    ...new Map(selected.map((measure) => [measure.code, measure])).values(),
+  ].sort((a, b) => a.legacyOrder - b.legacyOrder);
+  const fuelSwitches = measures.filter(
+    (measure) => measure.reduction.type === 'fuel_switch',
   );
-  const fuelSwitches = measures.filter((measure) => measure.reduction.type === 'fuel_switch');
   if (fuelSwitches.length > 1) {
-    throw new IncompatibleMeasuresError(fuelSwitches.map((measure) => measure.code));
+    throw new IncompatibleMeasuresError(
+      fuelSwitches.map((measure) => measure.code),
+    );
   }
   const { vessel, annual } = context;
   let conversionFactor = vessel.conversionFactor;
@@ -77,16 +96,28 @@ export function simulateMeasures(selected: readonly SeempMeasure[], context: See
       conversionFactor = model.conversionFactor;
       fuelSide = true;
     } else if (model.type === 'auxiliary') {
-      fuelAeTon = auxiliaryFuelAfter(fuelAeTon, model, vessel.annualVoyagePercentage);
+      fuelAeTon = auxiliaryFuelAfter(
+        fuelAeTon,
+        model,
+        vessel.annualVoyagePercentage,
+      );
       fuelSide = true;
     }
   }
   let attained = fuelSide
-    ? attainedCii(co2FromFuel(fuelAeTon + annual.fuelMeTon, conversionFactor), annual.distanceNm, vessel.capacity)
+    ? attainedCii(
+        co2FromFuel(fuelAeTon + annual.fuelMeTon, conversionFactor),
+        annual.distanceNm,
+        vessel.capacity,
+      )
     : context.ciiAttained;
   for (const measure of measures) {
     if (measure.reduction.type === 'operational') {
-      attained = reductionType1(attained, vessel.annualVoyagePercentage, measure.reduction.potentialPercent);
+      attained = reductionType1(
+        attained,
+        vessel.annualVoyagePercentage,
+        measure.reduction.potentialPercent,
+      );
     }
   }
   const before = rateAfter(context.ciiAttained, context.ciiRequired, vessel.d);
@@ -94,8 +125,16 @@ export function simulateMeasures(selected: readonly SeempMeasure[], context: See
   const cost = measureCost(measures, context, after.ciiRatingAfter);
   return {
     measures,
-    before: { attained: context.ciiAttained, rating: before.ciiRatingAfter, grade: before.ciiGradeAfter },
-    after: { attained, rating: after.ciiRatingAfter, grade: after.ciiGradeAfter },
+    before: {
+      attained: context.ciiAttained,
+      rating: before.ciiRatingAfter,
+      grade: before.ciiGradeAfter,
+    },
+    after: {
+      attained,
+      rating: after.ciiRatingAfter,
+      grade: after.ciiGradeAfter,
+    },
     reductionPercent: (1 - attained / context.ciiAttained) * 100,
     fuelAfter: { meTon: annual.fuelMeTon, aeTon: fuelAeTon, conversionFactor },
     yearsUntilInferior: cost.yearsUntilInferior,
@@ -104,7 +143,12 @@ export function simulateMeasures(selected: readonly SeempMeasure[], context: See
     costDisplay: cost.costDisplay,
     methodIds: [
       'seemp.simulation_combination',
-      ...new Set(measures.flatMap((measure) => [measure.methodId, reductionMethodId(measure.reduction)])),
+      ...new Set(
+        measures.flatMap((measure) => [
+          measure.methodId,
+          reductionMethodId(measure.reduction),
+        ]),
+      ),
       'seemp.cost_amortization',
       'cii.required',
       'cii.rating_grade',

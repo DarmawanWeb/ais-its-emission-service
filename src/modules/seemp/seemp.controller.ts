@@ -1,8 +1,35 @@
-import { CurrentPrincipal, type Principal, RequirePermissions } from '@darmawanweb/ais-its-nest/auth';
-import { ApiPageResponse, pageOffsetOf, paginate } from '@darmawanweb/ais-its-nest/http';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Query, Req } from '@nestjs/common';
-import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CurrentPrincipal,
+  type Principal,
+  RequirePermissions,
+} from '@darmawanweb/ais-its-nest/auth';
+import {
+  ApiPageResponse,
+  pageOffsetOf,
+  paginate,
+} from '@darmawanweb/ais-its-nest/http';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { FastifyRequest } from 'fastify';
+import { instanceToPlain } from 'class-transformer';
 
 import { ParseMmsiPipe } from '../../common/pipes.js';
 import {
@@ -26,7 +53,9 @@ export class SeempController {
 
   @Get('measures')
   @RequirePermissions('seemp:read')
-  @ApiOperation({ summary: 'Catalog of the SEEMP measures (legacy recommender)' })
+  @ApiOperation({
+    summary: 'Catalog of the SEEMP measures (legacy recommender)',
+  })
   @ApiOkResponse({ type: SeempMeasureListDto })
   async measures(): Promise<SeempMeasureListDto> {
     return new SeempMeasureListDto(await this.seemp.catalog());
@@ -34,14 +63,19 @@ export class SeempController {
 
   @Get('vessels/:mmsi/recommendations')
   @RequirePermissions('seemp:read')
-  @ApiOperation({ summary: 'SEEMP recommendations: measures with grade A–C after, cheapest first (legacy calculateSEEMPbyMMSI)' })
+  @ApiOperation({
+    summary:
+      'SEEMP recommendations: measures with grade A–C after, cheapest first (legacy calculateSEEMPbyMMSI)',
+  })
   @ApiOkResponse({ type: SeempRecommendationsDto })
   async recommendations(
     @Param('mmsi', ParseMmsiPipe) mmsi: number,
     @Query() query: SeempYearsQuery,
     @CurrentPrincipal() principal: Principal,
   ): Promise<SeempRecommendationsDto> {
-    return new SeempRecommendationsDto(await this.seemp.recommendations(mmsi, query, principal));
+    return new SeempRecommendationsDto(
+      await this.seemp.recommendations(mmsi, query, principal),
+    );
   }
 
   @Post('vessels/:mmsi/simulate')
@@ -54,16 +88,31 @@ export class SeempController {
     @Body() body: SimulateDto,
     @CurrentPrincipal() principal: Principal,
   ): Promise<SeempSimulationDto> {
-    return new SeempSimulationDto(await this.seemp.simulate(mmsi, body.measureCodes, body, principal));
+    return new SeempSimulationDto(
+      await this.seemp.simulate(mmsi, body.measureCodes, body, principal),
+    );
   }
 
   @Get('scenarios')
   @RequirePermissions('seemp:read')
-  @ApiOperation({ summary: 'Saved simulations of the organization, newest first' })
+  @ApiOperation({
+    summary: 'Saved simulations of the organization, newest first',
+  })
   @ApiPageResponse(SeempScenarioDto)
-  async listScenarios(@Query() query: ListScenariosQuery, @CurrentPrincipal() principal: Principal): Promise<SeempScenarioPageDto> {
-    const { rows, total } = await this.seemp.listScenarios(query.mmsi, { offset: pageOffsetOf(query), limit: query.pageSize }, principal);
-    const page = paginate(rows.map((row) => new SeempScenarioDto(row)), query, total);
+  async listScenarios(
+    @Query() query: ListScenariosQuery,
+    @CurrentPrincipal() principal: Principal,
+  ): Promise<SeempScenarioPageDto> {
+    const { rows, total } = await this.seemp.listScenarios(
+      query.mmsi,
+      { offset: pageOffsetOf(query), limit: query.pageSize },
+      principal,
+    );
+    const page = paginate(
+      rows.map((row) => new SeempScenarioDto(row)),
+      query,
+      total,
+    );
     return new SeempScenarioPageDto(page.data, page.meta);
   }
 
@@ -79,7 +128,7 @@ export class SeempController {
     const scenario = await this.seemp.createScenario(
       body,
       principal,
-      (simulation) => ({ ...new SeempSimulationDto(simulation) }),
+      (simulation) => instanceToPlain(new SeempSimulationDto(simulation)),
       request,
     );
     return new SeempScenarioDto(scenario);
@@ -89,7 +138,10 @@ export class SeempController {
   @RequirePermissions('seemp:read')
   @ApiOperation({ summary: 'A saved scenario' })
   @ApiOkResponse({ type: SeempScenarioDto })
-  async getScenario(@Param('id', new ParseUUIDPipe()) id: string, @CurrentPrincipal() principal: Principal): Promise<SeempScenarioDto> {
+  async getScenario(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentPrincipal() principal: Principal,
+  ): Promise<SeempScenarioDto> {
     return new SeempScenarioDto(await this.seemp.getScenario(id, principal));
   }
 

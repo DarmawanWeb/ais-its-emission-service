@@ -19,9 +19,13 @@ import type { RadianLocation } from '../segment.js';
  * @see docs/METHODOLOGY.md#geo.rhumb_line_course
  * @see https://www.movable-type.co.uk/scripts/latlong.html#rhumblines
  */
-export function calculateShipCourse(first: RadianLocation, second: RadianLocation): number {
+export function calculateShipCourse(
+  first: RadianLocation,
+  second: RadianLocation,
+): number {
   const dLat = Math.log(
-    Math.tan(second.lat / 2 + Math.PI / 4) / Math.tan(first.lat / 2 + Math.PI / 4),
+    Math.tan(second.lat / 2 + Math.PI / 4) /
+      Math.tan(first.lat / 2 + Math.PI / 4),
   );
   const dLong = Math.abs(first.lon - second.lon);
   const bearing = Math.atan2(dLong, dLat);

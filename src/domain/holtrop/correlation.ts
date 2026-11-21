@@ -25,10 +25,16 @@ export function c4(hull: Pick<HullForm, 't' | 'lwl'>): number {
  * @method resistance.holtrop.correlation_allowance
  * @see docs/METHODOLOGY.md#resistance.holtrop.correlation_allowance
  */
-export function correlationAllowance(hull: Pick<HullForm, 't' | 'lwl' | 'cb'>): number {
+export function correlationAllowance(
+  hull: Pick<HullForm, 't' | 'lwl' | 'cb'>,
+): number {
   const { lwl, cb } = hull;
   const C4 = c4(hull);
-  return 0.006 * Math.pow(lwl + 100, -0.16) - 0.00205 + 0.003 * (Math.pow(lwl / 7.5, 0.5) * Math.pow(cb, 4) * 1 * (0.04 - C4));
+  return (
+    0.006 * Math.pow(lwl + 100, -0.16) -
+    0.00205 +
+    0.003 * (Math.pow(lwl / 7.5, 0.5) * Math.pow(cb, 4) * 1 * (0.04 - C4))
+  );
 }
 
 /**

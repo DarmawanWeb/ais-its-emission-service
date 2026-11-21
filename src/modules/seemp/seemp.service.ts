@@ -21,16 +21,32 @@ import {
   requiredCii,
 } from '../../domain/cii.js';
 import { MissingReductionFactorError } from '../../domain/seemp/cost.js';
-import { type MeasureEvaluation, recommendMeasures } from '../../domain/seemp/recommendations.js';
-import { IncompatibleMeasuresError, type SimulationResult, simulateMeasures } from '../../domain/seemp/simulation.js';
+import {
+  type MeasureEvaluation,
+  recommendMeasures,
+} from '../../domain/seemp/recommendations.js';
+import {
+  IncompatibleMeasuresError,
+  type SimulationResult,
+  simulateMeasures,
+} from '../../domain/seemp/simulation.js';
 import type { SeempContext } from '../../domain/seemp/types.js';
 import { CiiService, currentYear } from '../cii/cii.service.js';
 import type { YearFigures } from '../cii/cii-figures.js';
 import { ReductionFactorsService } from '../cii/reduction-factors.service.js';
 import { VesselAccessService } from '../profiles/vessel-access.service.js';
-import { seempVesselOf, type VesselProfile } from '../profiles/vessel-profile.js';
-import { type StoredSeempMeasure, SeempMeasuresRepository } from './seemp-measures.repository.js';
-import { type SeempScenario, SeempScenariosRepository } from './seemp-scenarios.repository.js';
+import {
+  seempVesselOf,
+  type VesselProfile,
+} from '../profiles/vessel-profile.js';
+import {
+  type StoredSeempMeasure,
+  SeempMeasuresRepository,
+} from './seemp-measures.repository.js';
+import {
+  type SeempScenario,
+  SeempScenariosRepository,
+} from './seemp-scenarios.repository.js';
 
 /** Inputs shared by the recommendations and the simulation of a vessel. */
 export interface SeempSetting {
@@ -80,28 +96,50 @@ export class SeempService {
   }
 
   /** `GET /seemp/vessels/:mmsi/recommendations` (legacy `calculateSEEMPbyMMSI`). */
-  async recommendations(mmsi: number, years: SeempYears, principal: Principal): Promise<SeempRecommendations> {
+  async recommendations(
+    mmsi: number,
+    years: SeempYears,
+    principal: Principal,
+  ): Promise<SeempRecommendations> {
     const profile = await this.access.accessible(mmsi, principal);
     const setting = await this.setting(profile, years);
     const catalog = await this.measures.list();
-    return { ...setting, recommendations: translate(() => recommendMeasures(catalog, setting.context)) };
+    return {
+      ...setting,
+      recommendations: translate(() =>
+        recommendMeasures(catalog, setting.context),
+      ),
+    };
   }
 
   /** `POST /seemp/vessels/:mmsi/simulate`. */
-  async simulate(mmsi: number, codes: readonly string[], years: SeempYears, principal: Principal): Promise<SeempSimulation> {
+  async simulate(
+    mmsi: number,
+    codes: readonly string[],
+    years: SeempYears,
+    principal: Principal,
+  ): Promise<SeempSimulation> {
     const profile = await this.access.accessible(mmsi, principal);
     return this.simulateFor(profile, codes, years);
   }
 
   /** Saves a simulation as a scenario of the vessel's organization. */
   async createScenario(
-    input: { readonly mmsi: number; readonly name: string; readonly measureCodes: readonly string[] } & SeempYears,
+    input: {
+      readonly mmsi: number;
+      readonly name: string;
+      readonly measureCodes: readonly string[];
+    } & SeempYears,
     principal: Principal,
     toResult: (simulation: SeempSimulation) => Record<string, unknown>,
     request?: FastifyRequest,
   ): Promise<SeempScenario> {
     const profile = await this.access.accessible(input.mmsi, principal);
-    const simulation = await this.simulateFor(profile, input.measureCodes, input);
+    const simulation = await this.simulateFor(
+      profile,
+      input.measureCodes,
+      input,
+    );
     const scenario = await this.scenarios.insert({
       id: newId(),
       orgId: profile.orgId,
@@ -115,7 +153,13 @@ export class SeempService {
       createdBy: principal.id,
     });
     await this.audit.record(
-      { action: 'seemp_scenario.create', targetType: 'seemp_scenario', targetId: scenario.id, orgId: scenario.orgId, meta: { mmsi: scenario.mmsi } },
+      {
+        action: 'seemp_scenario.create',
+        targetType: 'seemp_scenario',
+        targetId: scenario.id,
+        orgId: scenario.orgId,
+        meta: { mmsi: scenario.mmsi },
+      },
       principal,
       request,
     );
@@ -136,17 +180,31 @@ export class SeempService {
     return scenario;
   }
 
-  async deleteScenario(id: string, principal: Principal, request?: FastifyRequest): Promise<void> {
+  async deleteScenario(
+    id: string,
+    principal: Principal,
+    request?: FastifyRequest,
+  ): Promise<void> {
     const scenario = await this.scenarios.delete(id, orgScopeOf(principal));
     if (scenario === undefined) throw new SeempScenarioNotFoundError(id);
     await this.audit.record(
-      { action: 'seemp_scenario.delete', targetType: 'seemp_scenario', targetId: id, orgId: scenario.orgId, meta: { mmsi: scenario.mmsi } },
+      {
+        action: 'seemp_scenario.delete',
+        targetType: 'seemp_scenario',
+        targetId: id,
+        orgId: scenario.orgId,
+        meta: { mmsi: scenario.mmsi },
+      },
       principal,
       request,
     );
   }
 
-  private async simulateFor(profile: VesselProfile, codes: readonly string[], years: SeempYears): Promise<SeempSimulation> {
+  private async simulateFor(
+    profile: VesselProfile,
+    codes: readonly string[],
+    years: SeempYears,
+  ): Promise<SeempSimulation> {
     const catalog = await this.measures.list();
     const byCode = new Map(catalog.map((measure) => [measure.code, measure]));
     const unknown = codes.filter((code) => !byCode.has(code));
@@ -156,31 +214,58 @@ export class SeempService {
       return measure === undefined ? [] : [measure];
     });
     const setting = await this.setting(profile, years);
-    return { ...setting, result: translate(() => simulateMeasures(selected, setting.context)) };
+    return {
+      ...setting,
+      result: translate(() => simulateMeasures(selected, setting.context)),
+    };
   }
 
   /**
    * The SEEMP context of a vessel: required CII of the target year, baseline
    * attained CII, fuel and distance of the baseline year, the Z table.
    */
-  private async setting(profile: VesselProfile, years: SeempYears, now = new Date()): Promise<SeempSetting> {
+  private async setting(
+    profile: VesselProfile,
+    years: SeempYears,
+    now = new Date(),
+  ): Promise<SeempSetting> {
     const factors = await this.reductionFactors.list();
     const targetYear = years.targetYear ?? currentYear(now);
     const z = reductionFactorOf(factors, targetYear);
     if (z === undefined) throw new ReductionFactorMissingError(targetYear);
-    const baseline = await this.baseline(profile, years.year, targetYear, factors);
+    const baseline = await this.baseline(
+      profile,
+      years.year,
+      targetYear,
+      factors,
+    );
     const vessel = seempVesselOf(profile.snapshot);
-    const previous = await this.cii.yearFigures(profile, targetYear - 1, factors);
+    const previous = await this.cii.yearFigures(
+      profile,
+      targetYear - 1,
+      factors,
+    );
     return {
       profile,
       baseline,
       before:
-        previous?.rating == null || previous.grade === null ? null : { rating: previous.rating, grade: previous.grade },
+        previous === undefined ||
+        previous.rating === null ||
+        previous.grade === null
+          ? null
+          : { rating: previous.rating, grade: previous.grade },
       context: {
         vessel,
-        ciiRequired: requiredCii(z, referenceCii(vessel.referenceLine, vessel.capacity)),
+        ciiRequired: requiredCii(
+          z,
+          referenceCii(vessel.referenceLine, vessel.capacity),
+        ),
         ciiAttained: baseline.attained,
-        annual: { fuelMeTon: baseline.fuelMeTon, fuelAeTon: baseline.fuelAeTon, distanceNm: baseline.distanceNm },
+        annual: {
+          fuelMeTon: baseline.fuelMeTon,
+          fuelAeTon: baseline.fuelAeTon,
+          distanceNm: baseline.distanceNm,
+        },
         currentYear: targetYear,
         highestYear: highestReductionFactorYear(factors),
         zOf: (year) => reductionFactorOf(factors, year),
@@ -197,14 +282,24 @@ export class SeempService {
   ): Promise<YearFigures> {
     if (requested !== undefined) {
       const figures = await this.cii.yearFigures(profile, requested, factors);
-      if (figures === undefined) throw new CiiNotAvailableError(profile.mmsi, requested);
+      if (figures === undefined)
+        throw new CiiNotAvailableError(profile.mmsi, requested);
       return figures;
     }
-    const previous = await this.cii.yearFigures(profile, targetYear - 1, factors);
+    const previous = await this.cii.yearFigures(
+      profile,
+      targetYear - 1,
+      factors,
+    );
     if (previous !== undefined) return previous;
-    const years = (await this.cii.yearsWithData(profile)).filter((year) => year <= targetYear);
+    const years = (await this.cii.yearsWithData(profile)).filter(
+      (year) => year <= targetYear,
+    );
     const latest = years.at(-1);
-    const figures = latest === undefined ? undefined : await this.cii.yearFigures(profile, latest, factors);
+    const figures =
+      latest === undefined
+        ? undefined
+        : await this.cii.yearFigures(profile, latest, factors);
     if (figures === undefined) throw new CiiNotAvailableError(profile.mmsi);
     return figures;
   }
@@ -215,8 +310,10 @@ function translate<T>(run: () => T): T {
   try {
     return run();
   } catch (error) {
-    if (error instanceof MissingReductionFactorError) throw new ReductionFactorMissingError(error.year, error);
-    if (error instanceof IncompatibleMeasuresError) throw new IncompatibleSeempMeasuresError(error.codes, error);
+    if (error instanceof MissingReductionFactorError)
+      throw new ReductionFactorMissingError(error.year, error);
+    if (error instanceof IncompatibleMeasuresError)
+      throw new IncompatibleSeempMeasuresError(error.codes, error);
     throw error;
   }
 }

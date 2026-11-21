@@ -25,7 +25,11 @@ export class DcsService {
     private readonly manual: AnnualManualRepository,
   ) {}
 
-  async summary(mmsi: number, year: number, principal: Principal): Promise<{ profile: VesselProfile; summary: DcsSummary }> {
+  async summary(
+    mmsi: number,
+    year: number,
+    principal: Principal,
+  ): Promise<{ profile: VesselProfile; summary: DcsSummary }> {
     const profile = await this.access.accessible(mmsi, principal);
     const { snapshot } = profile;
     const totals = await this.segments.fuelTotals(
@@ -43,7 +47,10 @@ export class DcsService {
           source: 'segments',
           fuel: totals.map((row) => ({
             fuelCode: row.fuelCode,
-            fuelName: row.fuelCode === snapshot.fuel.code ? snapshot.fuel.name : row.fuelCode,
+            fuelName:
+              row.fuelCode === snapshot.fuel.code
+                ? snapshot.fuel.name
+                : row.fuelCode,
             conversionFactor: row.conversionFactor,
             fuelMeTon: row.fuelMeTon,
             fuelAeTon: row.fuelAeTon,
@@ -51,7 +58,10 @@ export class DcsService {
             co2Ton: row.co2Ton,
           })),
           distanceNm: totals.reduce((sum, row) => sum + row.distanceNm, 0),
-          hoursUnderWay: totals.reduce((sum, row) => sum + row.hoursUnderWay, 0),
+          hoursUnderWay: totals.reduce(
+            (sum, row) => sum + row.hoursUnderWay,
+            0,
+          ),
           co2Ton: totals.reduce((sum, row) => sum + row.co2Ton, 0),
         },
       };
@@ -59,7 +69,8 @@ export class DcsService {
     const record = await this.manual.find(mmsi, year);
     if (record === undefined) throw new CiiNotAvailableError(mmsi, year);
     const totalTon = record.fuelMeTon + record.fuelAeTon;
-    const co2Ton = record.co2Ton ?? co2FromFuel(totalTon, snapshot.fuel.conversionFactor);
+    const co2Ton =
+      record.co2Ton ?? co2FromFuel(totalTon, snapshot.fuel.conversionFactor);
     return {
       profile,
       summary: {

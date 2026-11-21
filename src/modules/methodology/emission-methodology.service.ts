@@ -3,7 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { ReductionFactorsService } from '../cii/reduction-factors.service.js';
 import { VesselProfilesRepository } from '../profiles/vessel-profiles.repository.js';
 import { VESSEL_TYPE_SOURCE_METHOD_IDS } from './implemented-methods.js';
-import { type EmissionMethodology, MethodologyService } from './methodology.service.js';
+import {
+  type EmissionMethodology,
+  MethodologyService,
+} from './methodology.service.js';
 
 /**
  * Composes `GET /emission/methodology` (spec §17): the implemented methods
@@ -20,8 +23,13 @@ export class EmissionMethodologyService {
   ) {}
 
   async describe(): Promise<EmissionMethodology> {
-    const [reductionFactors, types] = await Promise.all([this.reductionFactors.list(), this.profiles.vesselTypes()]);
-    const references = this.methodology.referencesOf(VESSEL_TYPE_SOURCE_METHOD_IDS);
+    const [reductionFactors, types] = await Promise.all([
+      this.reductionFactors.list(),
+      this.profiles.vesselTypes(),
+    ]);
+    const references = this.methodology.referencesOf(
+      VESSEL_TYPE_SOURCE_METHOD_IDS,
+    );
     return {
       ...this.methodology.describe(),
       reductionFactors,

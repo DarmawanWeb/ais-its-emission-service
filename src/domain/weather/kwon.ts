@@ -17,7 +17,10 @@ import type { WindCourse } from './types.js';
  * @param speedMs AIS segment speed, m/s.
  * @see docs/METHODOLOGY.md#weather.kwon_speed_coefficient
  */
-export function speedCoefficient(hull: Pick<HullForm, 'cb' | 'lwl'>, speedMs: number): number {
+export function speedCoefficient(
+  hull: Pick<HullForm, 'cb' | 'lwl'>,
+  speedMs: number,
+): number {
   const fn = froudeNumber(speedMs, hull.lwl);
   const cb = hull.cb;
   if (cb >= 0.55 && cb < 0.6) return 1.7 - 1.4 * fn - 7.4 * Math.pow(fn, 2);
@@ -47,7 +50,8 @@ export function directionCoefficient(windCourse: WindCourse): number {
   if (angle >= 0 && angle <= 30) return 2 / 2;
   if (angle > 30 && angle <= 60) return (1.7 - 0.03 * Math.pow(bn - 4, 2)) / 2;
   if (angle > 60 && angle <= 150) return (0.9 - 0.06 * Math.pow(bn - 6, 2)) / 2;
-  if (angle > 150 && angle <= 180) return (0.4 - 0.03 * Math.pow(bn - 8, 2)) / 2;
+  if (angle > 150 && angle <= 180)
+    return (0.4 - 0.03 * Math.pow(bn - 8, 2)) / 2;
   return 0;
 }
 
@@ -61,10 +65,14 @@ export function directionCoefficient(windCourse: WindCourse): number {
  * @method weather.kwon_form_coefficient
  * @see docs/METHODOLOGY.md#weather.kwon_form_coefficient
  */
-export function formCoefficient(windCourse: WindCourse, hull: HullForm): number {
+export function formCoefficient(
+  windCourse: WindCourse,
+  hull: HullForm,
+): number {
   const displacement = displacementTonnes(hull);
   return (
-    (0.7 * windCourse.beaufortNumber + Math.pow(windCourse.beaufortNumber, 6.5)) /
+    (0.7 * windCourse.beaufortNumber +
+      Math.pow(windCourse.beaufortNumber, 6.5)) /
     (2.2 * Math.pow(displacement, 2 / 3))
   );
 }
@@ -84,7 +92,11 @@ export function speedReductionPercent(
   speedMs: number,
   hull: HullForm,
 ): number {
-  return speedCoefficient(hull, speedMs) * formCoefficient(windCourse, hull) * directionCoefficient(windCourse);
+  return (
+    speedCoefficient(hull, speedMs) *
+    formCoefficient(windCourse, hull) *
+    directionCoefficient(windCourse)
+  );
 }
 
 /**
@@ -98,7 +110,10 @@ export function speedReductionPercent(
  * @param speedKn AIS segment speed, kn.
  * @param reductionPercent weather speed loss, percent.
  */
-export function calmWaterSpeed(speedKn: number, reductionPercent: number): Speed {
+export function calmWaterSpeed(
+  speedKn: number,
+  reductionPercent: number,
+): Speed {
   const newSpeedKn = speedKn / (1 - 0.01 * reductionPercent);
   return { speedKn: newSpeedKn, speedMs: knotsToMs(newSpeedKn) };
 }

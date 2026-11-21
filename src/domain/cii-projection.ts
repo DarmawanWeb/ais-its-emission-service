@@ -22,7 +22,10 @@ export function elapsedYearFraction(year: number, asOf: Date): number {
  *
  * @method cii.year_end_projection
  */
-export function projectTotals(totals: ScalableTotals, fraction: number): ScalableTotals {
+export function projectTotals(
+  totals: ScalableTotals,
+  fraction: number,
+): ScalableTotals {
   return {
     distanceNm: totals.distanceNm / fraction,
     fuelMeTon: totals.fuelMeTon / fraction,
@@ -47,8 +50,13 @@ export interface CumulativePoint {
  * @method cii.year_end_projection
  * @param year calendar year of the points.
  */
-export function projectCumulativeAttained(points: readonly CumulativePoint[], year: number): number | null {
-  const valid = points.filter((point) => Number.isFinite(point.cumulativeAttained));
+export function projectCumulativeAttained(
+  points: readonly CumulativePoint[],
+  year: number,
+): number | null {
+  const valid = points.filter((point) =>
+    Number.isFinite(point.cumulativeAttained),
+  );
   const last = valid.at(-1);
   if (last === undefined) return null;
   if (valid.length < 2) return last.cumulativeAttained;

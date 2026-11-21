@@ -1,4 +1,9 @@
-import { type Database, InjectDb, InjectPool, type Pool } from '@darmawanweb/ais-its-nest/db';
+import {
+  type Database,
+  InjectDb,
+  InjectPool,
+  type Pool,
+} from '@darmawanweb/ais-its-nest/db';
 import { Injectable } from '@nestjs/common';
 import { and, desc, eq, gte, lt, lte, ne, not, sql } from 'drizzle-orm';
 
@@ -85,17 +90,32 @@ export class SegmentsRepository {
       });
   }
 
-  /** Deletes the segments of a vessel starting in `[from, to)`; returns how many. */
-  async deleteRange(mmsi: number, from: Date, to: Date): Promise<number> {
-    const rows = await this.db
-      .delete(segments)
-      .where(and(eq(segments.mmsi, mmsi), gte(segments.timeStart, from), lt(segments.timeStart, to)))
-      .returning({ timeStart: segments.timeStart });
-    return rows.length;
+  /**
+   * Deletes the segments of a vessel starting in `[from, to)` except those
+   * starting at one of `keep` (the segments a recomputation rebuilt); returns
+   * how many were deleted.
+   */
+  async deleteRangeExcept(
+    mmsi: number,
+    from: Date,
+    to: Date,
+    keep: readonly Date[],
+  ): Promise<number> {
+    const result = await this.pool.query(
+      `DELETE FROM segments
+        WHERE mmsi = $1 AND time_start >= $2 AND time_start < $3
+          AND NOT (time_start = ANY($4::timestamptz[]))`,
+      [mmsi, from, to, keep.map((time) => time.toISOString())],
+    );
+    return result.rowCount ?? 0;
   }
 
   /** Segments of a vessel whose window intersects `[from, to]`, gaps excluded. */
-  async findOverlapping(mmsi: number, from: Date, to: Date): Promise<SegmentRow[]> {
+  async findOverlapping(
+    mmsi: number,
+    from: Date,
+    to: Date,
+  ): Promise<SegmentRow[]> {
     return this.db
       .select()
       .from(segments)
@@ -123,11 +143,22 @@ export class SegmentsRepository {
         flags: [...update.flags],
         computedAt: sql`now()`,
       })
-      .where(and(eq(segments.mmsi, update.mmsi), eq(segments.timeStart, update.timeStart)));
+      .where(
+        and(
+          eq(segments.mmsi, update.mmsi),
+          eq(segments.timeStart, update.timeStart),
+        ),
+      );
   }
 
   /** One page of a vessel's segments in `[from, to)`, newest first, older than `before`. */
-  async page(mmsi: number, from: Date, to: Date, before: Date | undefined, limit: number): Promise<SegmentRow[]> {
+  async page(
+    mmsi: number,
+    from: Date,
+    to: Date,
+    before: Date | undefined,
+    limit: number,
+  ): Promise<SegmentRow[]> {
     return this.db
       .select()
       .from(segments)
@@ -135,7 +166,12 @@ export class SegmentsRepository {
         and(
           eq(segments.mmsi, mmsi),
           gte(segments.timeStart, from),
-          lt(segments.timeStart, before === undefined ? to : new Date(Math.min(before.getTime(), to.getTime()))),
+          lt(
+            segments.timeStart,
+            before === undefined
+              ? to
+              : new Date(Math.min(before.getTime(), to.getTime())),
+          ),
         ),
       )
       .orderBy(desc(segments.timeStart))
@@ -145,20 +181,33 @@ export class SegmentsRepository {
   /** The most recent counted segment of a vessel, if any. */
   async latestCounted(mmsi: number): Promise<LatestSegment | undefined> {
     const [row] = await this.db
-      .select({ timeStart: segments.timeStart, timeEnd: segments.timeEnd, method: segments.method })
+      .select({
+        timeStart: segments.timeStart,
+        timeEnd: segments.timeEnd,
+        method: segments.method,
+      })
       .from(segments)
       .where(and(eq(segments.mmsi, mmsi), ne(segments.method, 'none')))
       .orderBy(desc(segments.timeStart))
       .limit(1);
     if (row === undefined || row.method === 'none') return undefined;
-    return { timeStart: row.timeStart, timeEnd: row.timeEnd, method: row.method };
+    return {
+      timeStart: row.timeStart,
+      timeEnd: row.timeEnd,
+      method: row.method,
+    };
   }
 
   /**
    * Totals of the counted segments of a vessel starting in `[from, to)` per
    * fuel, with the hours under way (segments at ≥ `underWayMinSpeedKn`).
    */
-  async fuelTotals(mmsi: number, from: Date, to: Date, underWayMinSpeedKn: number): Promise<FuelTotalsRow[]> {
+  async fuelTotals(
+    mmsi: number,
+    from: Date,
+    to: Date,
+    underWayMinSpeedKn: number,
+  ): Promise<FuelTotalsRow[]> {
     const result = await this.pool.query<FuelTotalsRow>(
       `SELECT fuel_code AS "fuelCode",
               max(conversion_factor)::double precision AS "conversionFactor",

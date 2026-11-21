@@ -14,16 +14,35 @@ import type { Wind, WindCourse } from './types.js';
  * @param windCourse wind direction, degrees.
  * @see docs/METHODOLOGY.md#weather.encounter_angle
  */
-export function calculateEncounterAngle(shipCourse: number, windCourse: number): number {
-  if (shipCourse <= windCourse && windCourse > shipCourse && windCourse - shipCourse <= 180) {
+export function calculateEncounterAngle(
+  shipCourse: number,
+  windCourse: number,
+): number {
+  if (
+    shipCourse <= windCourse &&
+    windCourse > shipCourse &&
+    windCourse - shipCourse <= 180
+  ) {
     return windCourse - shipCourse;
-  } else if (shipCourse <= windCourse && windCourse > shipCourse && windCourse - shipCourse > 180) {
+  } else if (
+    shipCourse <= windCourse &&
+    windCourse > shipCourse &&
+    windCourse - shipCourse > 180
+  ) {
     return 360 - windCourse + shipCourse;
   } else if (shipCourse <= 180 && windCourse < shipCourse) {
     return shipCourse - windCourse;
-  } else if (shipCourse > 180 && windCourse < shipCourse && shipCourse - windCourse <= 180) {
+  } else if (
+    shipCourse > 180 &&
+    windCourse < shipCourse &&
+    shipCourse - windCourse <= 180
+  ) {
     return shipCourse - windCourse;
-  } else if (shipCourse > 180 && windCourse < shipCourse && shipCourse - windCourse > 180) {
+  } else if (
+    shipCourse > 180 &&
+    windCourse < shipCourse &&
+    shipCourse - windCourse > 180
+  ) {
     return 360 - shipCourse + windCourse;
   } else if (shipCourse > 180 && windCourse > shipCourse) {
     return windCourse - shipCourse;
@@ -40,7 +59,10 @@ export function calculateEncounterAngle(shipCourse: number, windCourse: number):
  * @method weather.beaufort_number
  * @method weather.encounter_angle
  */
-export function calculateWindCourse(shipCourse: number, wind: Wind): WindCourse {
+export function calculateWindCourse(
+  shipCourse: number,
+  wind: Wind,
+): WindCourse {
   return {
     beaufortNumber: beaufortNumber(wind.speedKn),
     encounterAngleDeg: calculateEncounterAngle(shipCourse, wind.directionDeg),

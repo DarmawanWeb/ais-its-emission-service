@@ -61,7 +61,8 @@ export class MethodologyService {
   referencesOf(methodIds: readonly string[]): Reference[] {
     const byId = new Map<string, Reference>();
     for (const id of methodIds) {
-      for (const reference of this.catalog.references(id)) byId.set(reference.id, reference);
+      for (const reference of this.catalog.references(id))
+        byId.set(reference.id, reference);
     }
     return [...byId.values()];
   }

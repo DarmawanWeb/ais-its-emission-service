@@ -54,7 +54,9 @@ export function hullFormOf(snapshot: VesselSnapshotV1): HullForm {
  * Rating inputs: capacity `type.capacityFixed ?? dimensions.capacity` (spec
  * §13.5), reference line a/c and d-vector of the ship type.
  */
-export function ciiRatingProfileOf(snapshot: VesselSnapshotV1): CiiRatingProfile {
+export function ciiRatingProfileOf(
+  snapshot: VesselSnapshotV1,
+): CiiRatingProfile {
   return {
     capacity: ciiCapacity(snapshot),
     referenceLine: { a: snapshot.type.a, c: snapshot.type.c },
@@ -79,7 +81,9 @@ export function seempVesselOf(snapshot: VesselSnapshotV1): SeempVessel {
 }
 
 /** Segment fuel inputs of a snapshot (formulas compiled once). */
-export function segmentFuelProfileOf(snapshot: VesselSnapshotV1): SegmentFuelProfile {
+export function segmentFuelProfileOf(
+  snapshot: VesselSnapshotV1,
+): SegmentFuelProfile {
   const formula = snapshot.firstFuelFormula;
   return {
     fuelCode: snapshot.fuel.code,
@@ -92,7 +96,9 @@ export function segmentFuelProfileOf(snapshot: VesselSnapshotV1): SegmentFuelPro
         ? null
         : {
             mainEngine: prepareFuelFlowFormula(formula.mainEngineFormula),
-            auxiliaryEngine: prepareFuelFlowFormula(formula.auxiliaryEngineFormula),
+            auxiliaryEngine: prepareFuelFlowFormula(
+              formula.auxiliaryEngineFormula,
+            ),
           },
   };
 }

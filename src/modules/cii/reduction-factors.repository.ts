@@ -1,4 +1,10 @@
-import { type Database, InjectDb, InjectPool, type Pool, withTransaction } from '@darmawanweb/ais-its-nest/db';
+import {
+  type Database,
+  InjectDb,
+  InjectPool,
+  type Pool,
+  withTransaction,
+} from '@darmawanweb/ais-its-nest/db';
 import { Injectable } from '@nestjs/common';
 import { asc } from 'drizzle-orm';
 
@@ -18,7 +24,11 @@ export class ReductionFactorsRepository {
   /** Every reduction factor, by year. */
   async list(): Promise<ReductionFactor[]> {
     return this.db
-      .select({ year: reductionFactors.year, zPercent: reductionFactors.zPercent, source: reductionFactors.source })
+      .select({
+        year: reductionFactors.year,
+        zPercent: reductionFactors.zPercent,
+        source: reductionFactors.source,
+      })
       .from(reductionFactors)
       .orderBy(asc(reductionFactors.year));
   }

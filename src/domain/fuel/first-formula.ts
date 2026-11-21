@@ -14,14 +14,19 @@ export const MIN_FUEL_FLOW_L_PER_MIN = 0.5;
 /** A fuel flow formula, compiled when valid. */
 export type FuelFlowFormula =
   | { readonly valid: true; readonly formula: CompiledFormula }
-  | { readonly valid: false; readonly source: string; readonly error: FormulaSyntaxError };
+  | {
+      readonly valid: false;
+      readonly source: string;
+      readonly error: FormulaSyntaxError;
+    };
 
 /** Compiles a formula string; an invalid one is kept with its error. */
 export function prepareFuelFlowFormula(source: string): FuelFlowFormula {
   try {
     return { valid: true, formula: compileFormula(source) };
   } catch (error) {
-    if (error instanceof FormulaSyntaxError) return { valid: false, source, error };
+    if (error instanceof FormulaSyntaxError)
+      return { valid: false, source, error };
     throw error;
   }
 }
@@ -34,9 +39,15 @@ export function prepareFuelFlowFormula(source: string): FuelFlowFormula {
  * @method fuel.first_formula
  * @param speedKnot segment speed, kn.
  */
-export function evaluateFuelFlow(formula: FuelFlowFormula, speedKnot: number): number {
+export function evaluateFuelFlow(
+  formula: FuelFlowFormula,
+  speedKnot: number,
+): number {
   if (!formula.valid) return MIN_FUEL_FLOW_L_PER_MIN;
-  return Math.max(formula.formula.evaluate({ speedKnot }), MIN_FUEL_FLOW_L_PER_MIN);
+  return Math.max(
+    formula.formula.evaluate({ speedKnot }),
+    MIN_FUEL_FLOW_L_PER_MIN,
+  );
 }
 
 /** The vessel's first fuel formula (fleet `fuel_formulas`). */
@@ -71,14 +82,33 @@ export interface FirstFormulaInput {
  * @method fuel.density_conversion
  * @see docs/METHODOLOGY.md#fuel.first_formula
  */
-export function calculateFirstFormulaFuel(input: FirstFormulaInput): FuelConsumption {
-  const fuelEstimateMe = evaluateFuelFlow(input.formula.mainEngine, input.speedKnot);
-  const fuelEstimateAe = evaluateFuelFlow(input.formula.auxiliaryEngine, input.speedKnot);
-  const fuel = getFuelByNavStatus(input.navstatus, fuelEstimateMe, fuelEstimateAe);
-  const totalFuelEstimate = (fuel.totalMe + fuel.totalAe) * input.durationMinutes;
+export function calculateFirstFormulaFuel(
+  input: FirstFormulaInput,
+): FuelConsumption {
+  const fuelEstimateMe = evaluateFuelFlow(
+    input.formula.mainEngine,
+    input.speedKnot,
+  );
+  const fuelEstimateAe = evaluateFuelFlow(
+    input.formula.auxiliaryEngine,
+    input.speedKnot,
+  );
+  const fuel = getFuelByNavStatus(
+    input.navstatus,
+    fuelEstimateMe,
+    fuelEstimateAe,
+  );
+  const totalFuelEstimate =
+    (fuel.totalMe + fuel.totalAe) * input.durationMinutes;
   return {
-    meTon: litresToTonnes(fuel.totalMe * input.durationMinutes, input.densityKgPerL),
-    aeTon: litresToTonnes(fuel.totalAe * input.durationMinutes, input.densityKgPerL),
+    meTon: litresToTonnes(
+      fuel.totalMe * input.durationMinutes,
+      input.densityKgPerL,
+    ),
+    aeTon: litresToTonnes(
+      fuel.totalAe * input.durationMinutes,
+      input.densityKgPerL,
+    ),
     totalTon: litresToTonnes(totalFuelEstimate, input.densityKgPerL),
   };
 }

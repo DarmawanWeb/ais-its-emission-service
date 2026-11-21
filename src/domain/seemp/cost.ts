@@ -22,9 +22,18 @@ export class MissingReductionFactorError extends Error {
  * @method seemp.cost_by_power
  * @see docs/METHODOLOGY.md#seemp.cost_by_power
  */
-export function costByPower(vessel: SeempVessel, costPerKw: number, useMe = true, useAe = true): number {
-  const totalPowerAe = useAe ? vessel.auxEnginePowerKw * vessel.auxEngineQuantity : 0;
-  const totalPowerMe = useMe ? vessel.mainEnginePowerKw * vessel.mainEngineQuantity : 0;
+export function costByPower(
+  vessel: SeempVessel,
+  costPerKw: number,
+  useMe = true,
+  useAe = true,
+): number {
+  const totalPowerAe = useAe
+    ? vessel.auxEnginePowerKw * vessel.auxEngineQuantity
+    : 0;
+  const totalPowerMe = useMe
+    ? vessel.mainEnginePowerKw * vessel.mainEngineQuantity
+    : 0;
   return (totalPowerAe + totalPowerMe) * costPerKw;
 }
 
@@ -54,10 +63,16 @@ export interface Investment {
  *
  * @method seemp.cost_by_power
  */
-export function investmentCost(model: SeempCostModel, vessel: SeempVessel): Investment {
+export function investmentCost(
+  model: SeempCostModel,
+  vessel: SeempVessel,
+): Investment {
   switch (model.type) {
     case 'loa_bands': {
-      const band = model.bands.find((candidate) => candidate.maxLoaM === null || vessel.loaM <= candidate.maxLoaM);
+      const band = model.bands.find(
+        (candidate) =>
+          candidate.maxLoaM === null || vessel.loaM <= candidate.maxLoaM,
+      );
       const usd = band?.usd ?? 0;
       return { lowUsd: usd, highUsd: usd };
     }
@@ -68,7 +83,13 @@ export function investmentCost(model: SeempCostModel, vessel: SeempVessel): Inve
       return { lowUsd: usd, highUsd: usd };
     }
     case 'installed_power': {
-      const usd = costByPower(vessel, model.usdPerKw, model.mainEngine, model.auxEngines) + model.fixedUsd;
+      const usd =
+        costByPower(
+          vessel,
+          model.usdPerKw,
+          model.mainEngine,
+          model.auxEngines,
+        ) + model.fixedUsd;
       return { lowUsd: usd, highUsd: usd };
     }
   }
@@ -87,7 +108,10 @@ export function investmentCost(model: SeempCostModel, vessel: SeempVessel): Inve
  * @throws MissingReductionFactorError when a year of the range has no Z.
  * @see docs/METHODOLOGY.md#seemp.cost_amortization
  */
-export function yearsUntilInferior(ciiRating: number, context: Omit<SeempContext, 'ciiRequired' | 'ciiAttained' | 'annual'>): number {
+export function yearsUntilInferior(
+  ciiRating: number,
+  context: Omit<SeempContext, 'ciiRequired' | 'ciiAttained' | 'annual'>,
+): number {
   const { vessel, currentYear, highestYear } = context;
   const reference = referenceCii(vessel.referenceLine, vessel.capacity);
   const requiredOf = (year: number): number => {

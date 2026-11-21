@@ -1,9 +1,16 @@
+import { EVENT_TYPES } from '@darmawanweb/ais-its-contracts/events';
 import { MetricsService } from '@darmawanweb/ais-its-nest/metrics';
-import { type ConsumerEnvelope, EventHandler } from '@darmawanweb/ais-its-nest/nats';
+import {
+  type ConsumerEnvelope,
+  EventHandler,
+} from '@darmawanweb/ais-its-nest/nats';
 import { Injectable } from '@nestjs/common';
 import type { Counter } from 'prom-client';
 
-import { type PositionOutcome, SegmentBuilderService } from '../modules/segments/segment-builder.service.js';
+import {
+  type PositionOutcome,
+  SegmentBuilderService,
+} from '../modules/segments/segment-builder.service.js';
 
 /**
  * AIS positions (durable consumer `emission-positions`, the whole AIS feed):
@@ -27,8 +34,16 @@ export class PositionsConsumer {
   }
 
   @EventHandler({ consumer: 'emission-positions', concurrency: 8 })
-  async onPosition(event: ConsumerEnvelope<'emission-positions'>): Promise<void> {
-    const outcome: PositionOutcome = await this.builder.handlePosition(event.data);
+  async onPosition(
+    event: ConsumerEnvelope<'emission-positions'>,
+  ): Promise<void> {
+    // WORKAROUND (platform issue): contracts `positionFeed()` widens the consumer
+    // definition, so the envelope type is the union of every event; the runtime
+    // only delivers `ais.position.recorded.v1` here (the kit skips other types).
+    if (event.type !== EVENT_TYPES.AIS_POSITION_RECORDED) return;
+    const outcome: PositionOutcome = await this.builder.handlePosition(
+      event.data,
+    );
     this.outcomes.inc({ outcome });
   }
 }

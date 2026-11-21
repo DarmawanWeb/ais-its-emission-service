@@ -15,8 +15,15 @@ import {
   type SegmentFuelResult,
 } from '../../domain/segment-fuel.js';
 import type { Wind } from '../../domain/weather/types.js';
-import { type DirectoryEntry, ProfileDirectory } from '../profiles/profile-directory.js';
-import { WeatherService, type WindObservation } from '../weather/weather.service.js';
+import {
+  type DirectoryEntry,
+  ProfileDirectory,
+} from '../profiles/profile-directory.js';
+import {
+  WeatherService,
+  type WindObservation,
+} from '../weather/weather.service.js';
+import { AggregateRefresher } from './aggregate-refresher.service.js';
 import { CiiPublicationRepository } from './cii-publication.repository.js';
 import { FuelReadingsRepository } from './fuel-readings.repository.js';
 import { type NewSegment, SegmentsRepository } from './segments.repository.js';
@@ -48,6 +55,7 @@ export class SegmentBuilderService {
     private readonly readings: FuelReadingsRepository,
     private readonly segments: SegmentsRepository,
     private readonly publication: CiiPublicationRepository,
+    private readonly refresher: AggregateRefresher,
     private readonly weather: WeatherService,
     metrics: MetricsService,
   ) {
@@ -59,14 +67,30 @@ export class SegmentBuilderService {
   }
 
   /** Builds and stores the segment of a position event. */
-  async handlePosition(position: AisPositionRecordedV1, mode: BuildMode = 'live'): Promise<PositionOutcome> {
+  async handlePosition(
+    position: AisPositionRecordedV1,
+    mode: BuildMode = 'live',
+  ): Promise<PositionOutcome> {
+    await this.directory.whenLoaded();
     const entry = this.directory.get(position.mmsi);
     if (entry === undefined) return 'unknown_vessel';
     const previous = position.previous;
     if (previous === null) return 'no_previous';
-    const current = { lat: position.lat, lon: position.lon, time: new Date(position.time) };
-    const previousFix = { lat: previous.lat, lon: previous.lon, time: new Date(previous.time) };
-    const verdict = classifySegmentWindow(current, previousFix, this.config.SEGMENT_MAX_GAP_MIN);
+    const current = {
+      lat: position.lat,
+      lon: position.lon,
+      time: new Date(position.time),
+    };
+    const previousFix = {
+      lat: previous.lat,
+      lon: previous.lon,
+      time: new Date(previous.time),
+    };
+    const verdict = classifySegmentWindow(
+      current,
+      previousFix,
+      this.config.SEGMENT_MAX_GAP_MIN,
+    );
     if (verdict.kind === 'no_previous') return 'no_previous';
     if (verdict.kind === 'not_after_previous') return 'not_after_previous';
 
@@ -92,20 +116,40 @@ export class SegmentBuilderService {
       const method = chooseFuelMethod(input);
       let wind: Wind | null = null;
       if (method === 'holtrop' && entry.fuel.mainEngineSfoc !== null) {
-        observation = await this.weather.windAt(previous.lat, previous.lon, previousFix.time);
+        observation = await this.weather.windAt(
+          previous.lat,
+          previous.lon,
+          previousFix.time,
+        );
         wind = observation.wind;
       }
-      result = computeSegmentFuel(input, method, wind, observation?.source === 'calm_fallback');
+      result = computeSegmentFuel(
+        input,
+        method,
+        wind,
+        observation?.source === 'calm_fallback',
+      );
     }
 
-    const segment = toSegment(position.mmsi, entry, previousFix.time, current.time, previous.navstatus, kinematics, result, observation);
+    const segment = toSegment(
+      position.mmsi,
+      entry,
+      previousFix.time,
+      current.time,
+      previous.navstatus,
+      kinematics,
+      result,
+      observation,
+    );
     if (mode === 'replace') {
       await this.segments.upsert(segment);
     } else if (!(await this.segments.insert(segment))) {
       return 'duplicate';
     }
     this.segmentsTotal.inc({ method: result.method });
-    if (result.method !== 'none') await this.publication.markDirty(position.mmsi);
+    this.refresher.markChanged(segment.timeStart);
+    if (result.method !== 'none')
+      await this.publication.markDirty(position.mmsi);
     return 'stored';
   }
 }
@@ -139,7 +183,10 @@ function toSegment(
   };
 }
 
-function weatherOf(result: SegmentFuelResult, observation: WindObservation | undefined): SegmentWeather | null {
+function weatherOf(
+  result: SegmentFuelResult,
+  observation: WindObservation | undefined,
+): SegmentWeather | null {
   if (observation === undefined || result.holtrop === undefined) return null;
   return {
     windSpeedKn: observation.wind.speedKn,

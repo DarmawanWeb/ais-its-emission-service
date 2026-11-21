@@ -22,8 +22,12 @@ export function lcb(hull: Pick<HullForm, 'lwl' | 'lpp'>): number {
  *
  * @method resistance.holtrop.lcb_length_of_run
  */
-export function lengthOfRun(hull: Pick<HullForm, 'lwl' | 'lpp' | 'cp'>): number {
-  return hull.lpp * (1 - hull.cp + 0.06 * hull.cp * (lcb(hull) / (4 * hull.cp - 1)));
+export function lengthOfRun(
+  hull: Pick<HullForm, 'lwl' | 'lpp' | 'cp'>,
+): number {
+  return (
+    hull.lpp * (1 - hull.cp + 0.06 * hull.cp * (lcb(hull) / (4 * hull.cp - 1)))
+  );
 }
 
 /**

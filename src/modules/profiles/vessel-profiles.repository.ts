@@ -1,5 +1,11 @@
 import type { VesselSnapshotV1 } from '@darmawanweb/ais-its-contracts/events';
-import { type Database, InjectDb, InjectPool, type Pool, withTransaction } from '@darmawanweb/ais-its-nest/db';
+import {
+  type Database,
+  InjectDb,
+  InjectPool,
+  type Pool,
+  withTransaction,
+} from '@darmawanweb/ais-its-nest/db';
 import { Injectable } from '@nestjs/common';
 import { and, eq, inArray, type SQL, sql } from 'drizzle-orm';
 
@@ -34,7 +40,10 @@ export class VesselProfilesRepository {
    */
   async upsert(snapshot: VesselSnapshotV1): Promise<UpsertOutcome> {
     return withTransaction(this.pool, async (client) => {
-      await client.query('DELETE FROM vessel_profiles WHERE mmsi = $1 AND vessel_id <> $2', [snapshot.mmsi, snapshot.id]);
+      await client.query(
+        'DELETE FROM vessel_profiles WHERE mmsi = $1 AND vessel_id <> $2',
+        [snapshot.mmsi, snapshot.id],
+      );
       const result = await client.query<{ inserted: boolean }>(
         `INSERT INTO vessel_profiles (vessel_id, mmsi, org_id, snapshot, snapshot_updated_at)
          VALUES ($1, $2, $3, $4, $5)
@@ -43,7 +52,13 @@ export class VesselProfilesRepository {
            snapshot_updated_at = EXCLUDED.snapshot_updated_at, updated_at = now()
          WHERE vessel_profiles.snapshot_updated_at <= EXCLUDED.snapshot_updated_at
          RETURNING (xmax = 0) AS inserted`,
-        [snapshot.id, snapshot.mmsi, snapshot.orgId, JSON.stringify(snapshot), new Date(snapshot.updatedAt)],
+        [
+          snapshot.id,
+          snapshot.mmsi,
+          snapshot.orgId,
+          JSON.stringify(snapshot),
+          new Date(snapshot.updatedAt),
+        ],
       );
       const row = result.rows[0];
       if (row === undefined) return 'stale';
@@ -61,13 +76,22 @@ export class VesselProfilesRepository {
   }
 
   async findByMmsi(mmsi: number): Promise<VesselProfile | undefined> {
-    const [row] = await this.db.select().from(vesselProfiles).where(eq(vesselProfiles.mmsi, mmsi)).limit(1);
+    const [row] = await this.db
+      .select()
+      .from(vesselProfiles)
+      .where(eq(vesselProfiles.mmsi, mmsi))
+      .limit(1);
     return row === undefined ? undefined : toProfile(row);
   }
 
-  async findByVesselIds(vesselIds: readonly string[]): Promise<VesselProfile[]> {
+  async findByVesselIds(
+    vesselIds: readonly string[],
+  ): Promise<VesselProfile[]> {
     if (vesselIds.length === 0) return [];
-    const rows = await this.db.select().from(vesselProfiles).where(inArray(vesselProfiles.vesselId, [...vesselIds]));
+    const rows = await this.db
+      .select()
+      .from(vesselProfiles)
+      .where(inArray(vesselProfiles.vesselId, [...vesselIds]));
     return rows.map(toProfile);
   }
 

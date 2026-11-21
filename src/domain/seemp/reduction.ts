@@ -1,4 +1,8 @@
-import { assignCiiGrade, type CiiGrade, type DdVector } from '@darmawanweb/ais-its-contracts/domain';
+import {
+  assignCiiGrade,
+  type CiiGrade,
+  type DdVector,
+} from '@darmawanweb/ais-its-contracts/domain';
 
 import { attainedCii, co2FromFuel } from '../cii.js';
 import type { SeempReductionModel } from './measures.js';
@@ -15,7 +19,11 @@ export interface RatedAfter {
 }
 
 /** `rating = attained_after / required` and its grade (legacy `assignGradeBasedOnDdVector`). */
-export function rateAfter(attainedAfter: number, ciiRequired: number, d: DdVector): RatedAfter {
+export function rateAfter(
+  attainedAfter: number,
+  ciiRequired: number,
+  d: DdVector,
+): RatedAfter {
   const ciiRatingAfter = attainedAfter / ciiRequired;
   return { ciiRatingAfter, ciiGradeAfter: assignCiiGrade(ciiRatingAfter, d) };
 }
@@ -33,8 +41,15 @@ export function rateAfter(attainedAfter: number, ciiRequired: number, d: DdVecto
  * @param potentialPercent reduction potential of the measure, %.
  * @see docs/METHODOLOGY.md#seemp.reduction_type1_operational_share
  */
-export function reductionType1(ciiAttained: number, voyagePerYear: number, potentialPercent: number): number {
-  return ciiAttained - (((ciiAttained * potentialPercent) / 100) * voyagePerYear) / 100;
+export function reductionType1(
+  ciiAttained: number,
+  voyagePerYear: number,
+  potentialPercent: number,
+): number {
+  return (
+    ciiAttained -
+    (((ciiAttained * potentialPercent) / 100) * voyagePerYear) / 100
+  );
 }
 
 /**
@@ -48,7 +63,11 @@ export function reductionType1(ciiAttained: number, voyagePerYear: number, poten
  * @param conversionFactor C_F of the new fuel, t CO2 / t fuel.
  * @see docs/METHODOLOGY.md#seemp.reduction_type2_fuel_switch
  */
-export function reductionType2(annual: AnnualFuelBaseline, capacity: number, conversionFactor: number): number {
+export function reductionType2(
+  annual: AnnualFuelBaseline,
+  capacity: number,
+  conversionFactor: number,
+): number {
   return attainedCii(
     co2FromFuel(annual.fuelMeTon + annual.fuelAeTon, conversionFactor),
     annual.distanceNm,
@@ -95,6 +114,12 @@ export function reductionType3(
   model: Extract<SeempReductionModel, { type: 'auxiliary' }>,
   vesselVoyagePercent: number,
 ): number {
-  const totalFuel = auxiliaryFuelAfter(annual.fuelAeTon, model, vesselVoyagePercent) + annual.fuelMeTon;
-  return attainedCii(co2FromFuel(totalFuel, conversionFactor), annual.distanceNm, capacity);
+  const totalFuel =
+    auxiliaryFuelAfter(annual.fuelAeTon, model, vesselVoyagePercent) +
+    annual.fuelMeTon;
+  return attainedCii(
+    co2FromFuel(totalFuel, conversionFactor),
+    annual.distanceNm,
+    capacity,
+  );
 }

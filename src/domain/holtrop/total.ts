@@ -37,9 +37,13 @@ export interface ResistanceComponents {
  * @method resistance.total_and_sea_margin
  * @see docs/METHODOLOGY.md#resistance.total_and_sea_margin
  */
-export function totalResistance(hull: HullForm, components: ResistanceComponents): TotalResistance {
+export function totalResistance(
+  hull: HullForm,
+  components: ResistanceComponents,
+): TotalResistance {
   const rw = waveResistance(hull, components.newFn);
   const ra = correlationResistance(hull, components.speedMs);
-  const rt = (components.rf * onePlusK1(hull) + components.raap + rw + ra) / 1000;
+  const rt =
+    (components.rf * onePlusK1(hull) + components.raap + rw + ra) / 1000;
   return { rt, rtPlusSm: rt * SEA_MARGIN };
 }

@@ -6,7 +6,8 @@ import type { DcsFuelLine, DcsSummary } from '../../domain/dcs.js';
 export class DcsFuelLineDto {
   @ApiProperty({ example: 'MDO' }) readonly fuelCode: string;
   @ApiProperty({ example: 'Diesel/Gas Oil' }) readonly fuelName: string;
-  @ApiProperty({ description: 'C_F, t CO2 / t fuel' }) readonly conversionFactor: number;
+  @ApiProperty({ description: 'C_F, t CO2 / t fuel' })
+  readonly conversionFactor: number;
   @ApiProperty({ description: 't' }) readonly fuelMeTon: number;
   @ApiProperty({ description: 't' }) readonly fuelAeTon: number;
   @ApiProperty({ description: 't' }) readonly totalTon: number;
@@ -30,10 +31,15 @@ export class DcsSummaryDto {
   @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
   @ApiProperty({ type: String, nullable: true }) readonly imo: string | null;
   @ApiProperty() readonly vesselName: string;
-  @ApiProperty({ enum: ['segments', 'manual'] }) readonly source: 'segments' | 'manual';
+  @ApiProperty({ enum: ['segments', 'manual'] }) readonly source:
+    'segments' | 'manual';
   @ApiProperty({ type: [DcsFuelLineDto] }) readonly fuel: DcsFuelLineDto[];
   @ApiProperty({ description: 'nm' }) readonly distanceNm: number;
-  @ApiProperty({ type: Number, nullable: true, description: 'Hours of segments at ≥ 1 kn (null for manual records)' })
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Hours of segments at ≥ 1 kn (null for manual records)',
+  })
   readonly hoursUnderWay: number | null;
   @ApiProperty({ description: 't' }) readonly co2Ton: number;
   @ApiProperty({ type: [String] }) readonly methodIds: string[];

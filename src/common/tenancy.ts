@@ -13,9 +13,13 @@ export function assertPlatformAdmin(principal: Principal): void {
 }
 
 /** Organizations a principal may read records of: all (platform admins) or the active one. */
-export type OrgScope = { readonly kind: 'all' } | { readonly kind: 'org'; readonly orgId: string | null };
+export type OrgScope =
+  | { readonly kind: 'all' }
+  | { readonly kind: 'org'; readonly orgId: string | null };
 
 /** The {@link OrgScope} of a principal (spec §8.5 tenancy). */
 export function orgScopeOf(principal: Principal): OrgScope {
-  return isPlatformAdmin(principal) ? { kind: 'all' } : { kind: 'org', orgId: principal.orgId };
+  return isPlatformAdmin(principal)
+    ? { kind: 'all' }
+    : { kind: 'org', orgId: principal.orgId };
 }

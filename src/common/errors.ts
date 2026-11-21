@@ -9,7 +9,10 @@ import {
 /** `404 VESSEL_NOT_FOUND`: the MMSI is not in the FLEET projection. */
 export class VesselNotFoundError extends NotFoundError {
   constructor(mmsi: number) {
-    super(`No vessel with MMSI ${mmsi}`, { code: 'VESSEL_NOT_FOUND', extra: { mmsi } });
+    super(`No vessel with MMSI ${mmsi}`, {
+      code: 'VESSEL_NOT_FOUND',
+      extra: { mmsi },
+    });
   }
 }
 
@@ -17,8 +20,13 @@ export class VesselNotFoundError extends NotFoundError {
 export class CiiNotAvailableError extends NotFoundError {
   constructor(mmsi: number, year?: number) {
     super(
-      year === undefined ? `No CII data for vessel ${mmsi}` : `No CII data for vessel ${mmsi} in ${year}`,
-      { code: 'CII_NOT_AVAILABLE', extra: { mmsi, ...(year === undefined ? {} : { year }) } },
+      year === undefined
+        ? `No CII data for vessel ${mmsi}`
+        : `No CII data for vessel ${mmsi} in ${year}`,
+      {
+        code: 'CII_NOT_AVAILABLE',
+        extra: { mmsi, ...(year === undefined ? {} : { year }) },
+      },
     );
   }
 }
@@ -74,7 +82,10 @@ export class IncompatibleSeempMeasuresError extends DomainError {
 /** `404 SEEMP_SCENARIO_NOT_FOUND`. */
 export class SeempScenarioNotFoundError extends NotFoundError {
   constructor(id: string) {
-    super(`No SEEMP scenario with id ${id}`, { code: 'SEEMP_SCENARIO_NOT_FOUND', extra: { id } });
+    super(`No SEEMP scenario with id ${id}`, {
+      code: 'SEEMP_SCENARIO_NOT_FOUND',
+      extra: { id },
+    });
   }
 }
 
@@ -98,13 +109,18 @@ export class RecomputeInProgressError extends ConflictError {
 /** `404 RECOMPUTE_JOB_NOT_FOUND`. */
 export class RecomputeJobNotFoundError extends NotFoundError {
   constructor(id: string) {
-    super(`No recomputation job with id ${id}`, { code: 'RECOMPUTE_JOB_NOT_FOUND', extra: { id } });
+    super(`No recomputation job with id ${id}`, {
+      code: 'RECOMPUTE_JOB_NOT_FOUND',
+      extra: { id },
+    });
   }
 }
 
 /** `403 SUPER_ADMIN_REQUIRED`. */
 export class SuperAdminRequiredError extends ForbiddenError {
   constructor() {
-    super('Only platform administrators may do this', { code: 'SUPER_ADMIN_REQUIRED' });
+    super('Only platform administrators may do this', {
+      code: 'SUPER_ADMIN_REQUIRED',
+    });
   }
 }

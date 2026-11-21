@@ -1,4 +1,9 @@
-import { Injectable, Logger, type OnApplicationBootstrap, type OnApplicationShutdown } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  type OnApplicationBootstrap,
+  type OnApplicationShutdown,
+} from '@nestjs/common';
 
 import { VesselProfilesRepository } from './vessel-profiles.repository.js';
 import type { SegmentFuelProfile } from '../../domain/segment-fuel.js';
@@ -23,19 +28,25 @@ export const PROFILE_DIRECTORY_SYNC_MS = 30_000;
  * per snapshot version.
  */
 @Injectable()
-export class ProfileDirectory implements OnApplicationBootstrap, OnApplicationShutdown {
+export class ProfileDirectory
+  implements OnApplicationBootstrap, OnApplicationShutdown
+{
   private readonly logger = new Logger(ProfileDirectory.name);
   private readonly byMmsi = new Map<number, DirectoryEntry>();
   private timer: NodeJS.Timeout | undefined;
   private syncing: Promise<void> | undefined;
+  private loaded: Promise<void> | undefined;
 
   constructor(private readonly repository: VesselProfilesRepository) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    await this.sync();
+    await this.whenLoaded();
     this.timer = setInterval(() => {
       void this.sync().catch((error: unknown) => {
-        this.logger.warn({ err: error }, 'vessel profile directory sync failed');
+        this.logger.warn(
+          { err: error },
+          'vessel profile directory sync failed',
+        );
       });
     }, PROFILE_DIRECTORY_SYNC_MS);
     this.timer.unref();
@@ -45,7 +56,19 @@ export class ProfileDirectory implements OnApplicationBootstrap, OnApplicationSh
     if (this.timer !== undefined) clearInterval(this.timer);
   }
 
-  /** The profile of a fleet vessel, `undefined` for any other MMSI. */
+  /**
+   * Resolves once the profiles were loaded from the database (the first
+   * sync): consumers may start before this provider's bootstrap hook ran.
+   */
+  whenLoaded(): Promise<void> {
+    this.loaded ??= this.sync().catch((error: unknown) => {
+      this.loaded = undefined;
+      throw error;
+    });
+    return this.loaded;
+  }
+
+  /** The profile of a fleet vessel, `undefined` for any other MMSI (call {@link whenLoaded} first). */
   get(mmsi: number): DirectoryEntry | undefined {
     return this.byMmsi.get(mmsi);
   }
@@ -58,11 +81,19 @@ export class ProfileDirectory implements OnApplicationBootstrap, OnApplicationSh
   /** Applies a profile stored by the local FLEET consumer. */
   apply(profile: VesselProfile): void {
     for (const [mmsi, entry] of this.byMmsi) {
-      if (entry.profile.vesselId === profile.vesselId && mmsi !== profile.mmsi) this.byMmsi.delete(mmsi);
+      if (entry.profile.vesselId === profile.vesselId && mmsi !== profile.mmsi)
+        this.byMmsi.delete(mmsi);
     }
     const current = this.byMmsi.get(profile.mmsi);
-    if (current !== undefined && current.profile.snapshotUpdatedAt > profile.snapshotUpdatedAt) return;
-    this.byMmsi.set(profile.mmsi, { profile, fuel: segmentFuelProfileOf(profile.snapshot) });
+    if (
+      current !== undefined &&
+      current.profile.snapshotUpdatedAt > profile.snapshotUpdatedAt
+    )
+      return;
+    this.byMmsi.set(profile.mmsi, {
+      profile,
+      fuel: segmentFuelProfileOf(profile.snapshot),
+    });
   }
 
   /** Forgets a deleted vessel. */
@@ -86,15 +117,21 @@ export class ProfileDirectory implements OnApplicationBootstrap, OnApplicationSh
       const entry = this.byMmsi.get(version.mmsi);
       return (
         entry?.profile.vesselId !== version.vesselId ||
-        entry.profile.snapshotUpdatedAt.getTime() !== version.snapshotUpdatedAt.getTime()
+        entry.profile.snapshotUpdatedAt.getTime() !==
+          version.snapshotUpdatedAt.getTime()
       );
     });
     const known = new Set(versions.map((version) => version.mmsi));
     for (const mmsi of this.byMmsi.keys()) {
       if (!known.has(mmsi)) this.byMmsi.delete(mmsi);
     }
-    for (const profile of await this.repository.findByVesselIds(changed.map((version) => version.vesselId))) {
-      this.byMmsi.set(profile.mmsi, { profile, fuel: segmentFuelProfileOf(profile.snapshot) });
+    for (const profile of await this.repository.findByVesselIds(
+      changed.map((version) => version.vesselId),
+    )) {
+      this.byMmsi.set(profile.mmsi, {
+        profile,
+        fuel: segmentFuelProfileOf(profile.snapshot),
+      });
     }
   }
 }

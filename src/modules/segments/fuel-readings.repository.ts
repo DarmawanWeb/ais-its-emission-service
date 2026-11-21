@@ -23,7 +23,8 @@ export class FuelReadingsRepository {
       .values({
         time: new Date(reading.time),
         mmsi: reading.mmsi,
-        periodStart: reading.periodStart === null ? null : new Date(reading.periodStart),
+        periodStart:
+          reading.periodStart === null ? null : new Date(reading.periodStart),
         fuelMeTon: reading.fuelMeTon,
         fuelAeTon: reading.fuelAeTon,
         deviceId: reading.deviceId,
@@ -39,7 +40,12 @@ export class FuelReadingsRepository {
    * within `toleranceMs` of the window, or a period that overlaps it (periods
    * up to {@link MAX_READING_PERIOD_MS}).
    */
-  async findAround(mmsi: number, start: Date, end: Date, toleranceMs: number): Promise<FuelReading[]> {
+  async findAround(
+    mmsi: number,
+    start: Date,
+    end: Date,
+    toleranceMs: number,
+  ): Promise<FuelReading[]> {
     const from = new Date(start.getTime() - toleranceMs);
     const to = new Date(end.getTime() + toleranceMs + MAX_READING_PERIOD_MS);
     const until = new Date(end.getTime() + toleranceMs);
@@ -56,7 +62,10 @@ export class FuelReadingsRepository {
           eq(fuelReadings.mmsi, mmsi),
           gte(fuelReadings.time, from),
           lte(fuelReadings.time, to),
-          lte(sql`coalesce(${fuelReadings.periodStart}, ${fuelReadings.time})`, until),
+          lte(
+            sql`coalesce(${fuelReadings.periodStart}, ${fuelReadings.time})`,
+            until,
+          ),
         ),
       )
       .orderBy(asc(fuelReadings.time));

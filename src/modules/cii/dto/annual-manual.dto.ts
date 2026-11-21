@@ -1,6 +1,16 @@
-import { CII_GRADES, type CiiGrade } from '@darmawanweb/ais-its-contracts/domain';
+import {
+  CII_GRADES,
+  type CiiGrade,
+} from '@darmawanweb/ais-its-contracts/domain';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 import type { AnnualManualRecord } from '../annual-manual.repository.js';
 
@@ -8,7 +18,10 @@ const finite = { allowNaN: false, allowInfinity: false } as const;
 
 /** `PUT /cii/vessels/:mmsi/annual-manual/:year` body (legacy AnnualCII record). */
 export class PutAnnualManualDto {
-  @ApiProperty({ example: 60.40916223, description: 'Attained CII, g CO2 / (capacity · nm)' })
+  @ApiProperty({
+    example: 60.40916223,
+    description: 'Attained CII, g CO2 / (capacity · nm)',
+  })
   @IsNumber(finite)
   @Min(0)
   readonly attained!: number;
@@ -18,29 +31,44 @@ export class PutAnnualManualDto {
   @Min(0)
   readonly distanceNm!: number;
 
-  @ApiProperty({ example: 366.831416415746, description: 'Main engine fuel, t' })
+  @ApiProperty({
+    example: 366.831416415746,
+    description: 'Main engine fuel, t',
+  })
   @IsNumber(finite)
   @Min(0)
   readonly fuelMeTon!: number;
 
-  @ApiProperty({ example: 737.33114699565, description: 'Auxiliary engine fuel, t' })
+  @ApiProperty({
+    example: 737.33114699565,
+    description: 'Auxiliary engine fuel, t',
+  })
   @IsNumber(finite)
   @Min(0)
   readonly fuelAeTon!: number;
 
-  @ApiPropertyOptional({ example: 65.3817582530913, description: 'Required CII as imported; computed from Z when omitted' })
+  @ApiPropertyOptional({
+    example: 65.3817582530913,
+    description: 'Required CII as imported; computed from Z when omitted',
+  })
   @IsOptional()
   @IsNumber(finite)
   @Min(0.000001)
   readonly required?: number;
 
-  @ApiPropertyOptional({ example: 0.923945208, description: 'Rating as imported; attained / required when omitted' })
+  @ApiPropertyOptional({
+    example: 0.923945208,
+    description: 'Rating as imported; attained / required when omitted',
+  })
   @IsOptional()
   @IsNumber(finite)
   @Min(0)
   readonly rating?: number;
 
-  @ApiPropertyOptional({ enum: CII_GRADES, description: 'Grade as imported; from the d-vector when omitted' })
+  @ApiPropertyOptional({
+    enum: CII_GRADES,
+    description: 'Grade as imported; from the d-vector when omitted',
+  })
   @IsOptional()
   @IsIn(CII_GRADES)
   readonly grade?: CiiGrade;
@@ -63,15 +91,18 @@ export class AnnualManualDto {
   @ApiProperty() readonly mmsi: number;
   @ApiProperty() readonly year: number;
   @ApiProperty() readonly attained: number;
-  @ApiProperty({ type: Number, nullable: true }) readonly required: number | null;
+  @ApiProperty({ type: Number, nullable: true }) readonly required:
+    number | null;
   @ApiProperty({ type: Number, nullable: true }) readonly rating: number | null;
-  @ApiProperty({ enum: CII_GRADES, nullable: true }) readonly grade: CiiGrade | null;
+  @ApiProperty({ enum: CII_GRADES, nullable: true })
+  readonly grade: CiiGrade | null;
   @ApiProperty() readonly distanceNm: number;
   @ApiProperty() readonly fuelMeTon: number;
   @ApiProperty() readonly fuelAeTon: number;
   @ApiProperty({ type: Number, nullable: true }) readonly co2Ton: number | null;
   @ApiProperty({ type: String, nullable: true }) readonly note: string | null;
-  @ApiProperty({ type: String, format: 'uuid', nullable: true }) readonly updatedBy: string | null;
+  @ApiProperty({ type: String, format: 'uuid', nullable: true })
+  readonly updatedBy: string | null;
   @ApiProperty({ format: 'date-time' }) readonly updatedAt: string;
 
   constructor(record: AnnualManualRecord) {

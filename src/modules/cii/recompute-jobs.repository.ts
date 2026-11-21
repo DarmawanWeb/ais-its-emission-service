@@ -21,20 +21,33 @@ export class RecomputeJobsRepository {
   constructor(@InjectDb() private readonly db: Database<typeof schema>) {}
 
   /** Creates a running job (one per vessel, `recompute_jobs_running_idx`). */
-  async start(job: Pick<RecomputeJob, 'id' | 'mmsi' | 'fromTime' | 'toTime' | 'requestedBy'>): Promise<RecomputeJob> {
+  async start(
+    job: Pick<
+      RecomputeJob,
+      'id' | 'mmsi' | 'fromTime' | 'toTime' | 'requestedBy'
+    >,
+  ): Promise<RecomputeJob> {
     try {
-      const [row] = await this.db.insert(recomputeJobs).values({ ...job, status: 'running' }).returning();
-      if (row === undefined) throw new Error('INSERT … RETURNING returned no row');
+      const [row] = await this.db
+        .insert(recomputeJobs)
+        .values({ ...job, status: 'running' })
+        .returning();
+      if (row === undefined)
+        throw new Error('INSERT … RETURNING returned no row');
       return row;
     } catch (error) {
-      if (isUniqueViolation(error, 'recompute_jobs_running_idx')) throw new RecomputeAlreadyRunning();
+      if (isUniqueViolation(error, 'recompute_jobs_running_idx'))
+        throw new RecomputeAlreadyRunning();
       throw error;
     }
   }
 
   async finish(
     id: string,
-    outcome: Pick<RecomputeJob, 'status' | 'replayed' | 'segments' | 'deleted' | 'error'>,
+    outcome: Pick<
+      RecomputeJob,
+      'status' | 'replayed' | 'segments' | 'deleted' | 'error'
+    >,
   ): Promise<void> {
     await this.db
       .update(recomputeJobs)
@@ -43,7 +56,11 @@ export class RecomputeJobsRepository {
   }
 
   async find(id: string): Promise<RecomputeJob | undefined> {
-    const [row] = await this.db.select().from(recomputeJobs).where(eq(recomputeJobs.id, id)).limit(1);
+    const [row] = await this.db
+      .select()
+      .from(recomputeJobs)
+      .where(eq(recomputeJobs.id, id))
+      .limit(1);
     return row;
   }
 
@@ -51,8 +68,17 @@ export class RecomputeJobsRepository {
   async failStale(olderThan: Date): Promise<number> {
     const rows = await this.db
       .update(recomputeJobs)
-      .set({ status: 'failed', error: 'interrupted (service restarted)', finishedAt: sql`now()` })
-      .where(and(eq(recomputeJobs.status, 'running'), lt(recomputeJobs.createdAt, olderThan)))
+      .set({
+        status: 'failed',
+        error: 'interrupted (service restarted)',
+        finishedAt: sql`now()`,
+      })
+      .where(
+        and(
+          eq(recomputeJobs.status, 'running'),
+          lt(recomputeJobs.createdAt, olderThan),
+        ),
+      )
       .returning({ id: recomputeJobs.id });
     return rows.length;
   }

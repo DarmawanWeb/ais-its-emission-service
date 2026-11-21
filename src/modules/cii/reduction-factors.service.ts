@@ -27,7 +27,11 @@ export class ReductionFactorsService {
   }
 
   /** Inserts or replaces the given years (others kept) and returns the full table. */
-  async upsert(factors: readonly ReductionFactor[], principal: Principal, request?: FastifyRequest): Promise<ReductionFactor[]> {
+  async upsert(
+    factors: readonly ReductionFactor[],
+    principal: Principal,
+    request?: FastifyRequest,
+  ): Promise<ReductionFactor[]> {
     await this.repository.upsertMany(factors);
     await this.publication.markAllDirty();
     await this.audit.record(

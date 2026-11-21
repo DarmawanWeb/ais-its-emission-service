@@ -48,10 +48,20 @@ export interface SecondFormulaInput {
  * @see docs/METHODOLOGY.md#fuel.second_formula_me
  * @see docs/METHODOLOGY.md#fuel.second_formula_ae
  */
-export function calculateSecondFormulaFuel(input: SecondFormulaInput): FuelConsumption {
-  const fuelEstimateMe = (input.bhpMcrKw * input.sfocGPerKwh * input.newTimeHours) / 1000000;
-  const fuelEstimateAe = litresToTonnes(auxiliaryFlowLMin(input.newSpeedKnot), input.densityKgPerL);
-  const fuel = getFuelByNavStatus(input.navstatus, fuelEstimateMe, fuelEstimateAe);
+export function calculateSecondFormulaFuel(
+  input: SecondFormulaInput,
+): FuelConsumption {
+  const fuelEstimateMe =
+    (input.bhpMcrKw * input.sfocGPerKwh * input.newTimeHours) / 1000000;
+  const fuelEstimateAe = litresToTonnes(
+    auxiliaryFlowLMin(input.newSpeedKnot),
+    input.densityKgPerL,
+  );
+  const fuel = getFuelByNavStatus(
+    input.navstatus,
+    fuelEstimateMe,
+    fuelEstimateAe,
+  );
   return {
     meTon: fuel.totalMe,
     aeTon: fuel.totalAe,

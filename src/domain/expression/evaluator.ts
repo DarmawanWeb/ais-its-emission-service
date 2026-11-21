@@ -103,8 +103,16 @@ type Node =
     };
 
 type Token =
-  | { readonly kind: 'number'; readonly value: number; readonly position: number }
-  | { readonly kind: 'identifier'; readonly name: string; readonly position: number }
+  | {
+      readonly kind: 'number';
+      readonly value: number;
+      readonly position: number;
+    }
+  | {
+      readonly kind: 'identifier';
+      readonly name: string;
+      readonly position: number;
+    }
   | {
       readonly kind: 'operator';
       readonly operator: '+' | '-' | '*' | '/' | '**' | '^' | '(' | ')' | ',';
@@ -189,21 +197,29 @@ class Parser {
   private take<const T extends string>(...operators: T[]): T | undefined {
     const token = this.peek();
     if (token.kind !== 'operator') return undefined;
-    const operator = operators.find((candidate) => candidate === token.operator);
+    const operator = operators.find(
+      (candidate) => candidate === token.operator,
+    );
     if (operator !== undefined) this.index += 1;
     return operator;
   }
 
   private expect(operator: ')'): void {
     if (this.take(operator) === undefined) {
-      throw new FormulaSyntaxError(`Expected "${operator}"`, this.peek().position);
+      throw new FormulaSyntaxError(
+        `Expected "${operator}"`,
+        this.peek().position,
+      );
     }
   }
 
   private nested<T>(parse: () => T): T {
     this.depth += 1;
     if (this.depth > MAX_DEPTH) {
-      throw new FormulaSyntaxError('Formula nested too deeply', this.peek().position);
+      throw new FormulaSyntaxError(
+        'Formula nested too deeply',
+        this.peek().position,
+      );
     }
     try {
       return parse();
@@ -214,7 +230,11 @@ class Parser {
 
   private additive(): Node {
     let left = this.multiplicative();
-    for (let operator = this.take('+', '-'); operator !== undefined; operator = this.take('+', '-')) {
+    for (
+      let operator = this.take('+', '-');
+      operator !== undefined;
+      operator = this.take('+', '-')
+    ) {
       left = { kind: 'binary', operator, left, right: this.multiplicative() };
     }
     return left;
@@ -222,7 +242,11 @@ class Parser {
 
   private multiplicative(): Node {
     let left = this.unary();
-    for (let operator = this.take('*', '/'); operator !== undefined; operator = this.take('*', '/')) {
+    for (
+      let operator = this.take('*', '/');
+      operator !== undefined;
+      operator = this.take('*', '/')
+    ) {
       left = { kind: 'binary', operator, left, right: this.unary() };
     }
     return left;
@@ -259,9 +283,15 @@ class Parser {
           this.expect(')');
           return inner;
         }
-        throw new FormulaSyntaxError(`Unexpected "${token.operator}"`, token.position);
+        throw new FormulaSyntaxError(
+          `Unexpected "${token.operator}"`,
+          token.position,
+        );
       case 'end':
-        throw new FormulaSyntaxError('Unexpected end of formula', token.position);
+        throw new FormulaSyntaxError(
+          'Unexpected end of formula',
+          token.position,
+        );
     }
   }
 
@@ -278,7 +308,10 @@ class Parser {
     this.expect(')');
     const [min, max] = FUNCTIONS[fn].arity;
     if (args.length < min || args.length > max) {
-      throw new FormulaSyntaxError(`Wrong number of arguments for ${fn}`, position);
+      throw new FormulaSyntaxError(
+        `Wrong number of arguments for ${fn}`,
+        position,
+      );
     }
     return { kind: 'call', name: fn, args };
   }

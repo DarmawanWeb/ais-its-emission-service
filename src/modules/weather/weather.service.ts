@@ -9,9 +9,16 @@ import type { Config } from '../../config.js';
 import { CALM_WIND, type Wind } from '../../domain/weather/types.js';
 import { CircuitBreaker } from './circuit-breaker.js';
 import { OpenMeteoClient } from './open-meteo.client.js';
-import { weatherCacheKey, type WeatherCellHour, weatherCellHour } from './weather-cell.js';
+import {
+  weatherCacheKey,
+  type WeatherCellHour,
+  weatherCellHour,
+} from './weather-cell.js';
 
-const CachedWindSchema = z.object({ speedKn: z.number(), directionDeg: z.number() });
+const CachedWindSchema = z.object({
+  speedKn: z.number(),
+  directionDeg: z.number(),
+});
 
 /** The wind used for a segment and where it came from. */
 export interface WindObservation {
@@ -42,8 +49,14 @@ export class WeatherService {
     private readonly client: OpenMeteoClient,
     metrics: MetricsService,
   ) {
-    this.breaker = new CircuitBreaker(config.WEATHER_BREAKER_THRESHOLD, config.WEATHER_BREAKER_COOLDOWN_MS);
-    this.cacheHits = metrics.counter({ name: 'weather_cache_hits_total', help: 'Weather lookups answered from the Valkey cache' });
+    this.breaker = new CircuitBreaker(
+      config.WEATHER_BREAKER_THRESHOLD,
+      config.WEATHER_BREAKER_COOLDOWN_MS,
+    );
+    this.cacheHits = metrics.counter({
+      name: 'weather_cache_hits_total',
+      help: 'Weather lookups answered from the Valkey cache',
+    });
     this.requests = metrics.counter({
       name: 'weather_requests_total',
       help: 'Open-Meteo requests by outcome (ok, error, breaker_open, disabled)',
@@ -76,7 +89,10 @@ export class WeatherService {
     } catch (error) {
       this.breaker.failure();
       this.requests.inc({ outcome: 'error' });
-      this.logger.warn({ err: error, cell, breaker: this.breaker.state }, 'weather unavailable, using calm weather');
+      this.logger.warn(
+        { err: error, cell, breaker: this.breaker.state },
+        'weather unavailable, using calm weather',
+      );
       return { wind: CALM_WIND, source: 'calm_fallback', cell };
     }
   }
@@ -95,7 +111,12 @@ export class WeatherService {
 
   private async writeCache(cell: WeatherCellHour, wind: Wind): Promise<void> {
     try {
-      await this.redis.set(weatherCacheKey(cell), JSON.stringify(wind), 'EX', this.config.WEATHER_CACHE_TTL_S);
+      await this.redis.set(
+        weatherCacheKey(cell),
+        JSON.stringify(wind),
+        'EX',
+        this.config.WEATHER_CACHE_TTL_S,
+      );
     } catch (error) {
       this.logger.warn({ err: error }, 'weather cache write failed');
     }

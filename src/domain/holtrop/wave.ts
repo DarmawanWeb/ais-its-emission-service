@@ -61,7 +61,12 @@ export function c7(hull: Pick<HullForm, 'b' | 'lwl' | 't'>): number {
  */
 export function c1(hull: HullForm, c7Value: number = c7(hull)): number {
   const ie = halfAngleOfEntrance(hull);
-  return 2223105 * Math.pow(c7Value, 3.78613) * Math.pow(hull.t / hull.b, 1.07961) * Math.pow(90 - ie, -1.37565);
+  return (
+    2223105 *
+    Math.pow(c7Value, 3.78613) *
+    Math.pow(hull.t / hull.b, 1.07961) *
+    Math.pow(90 - ie, -1.37565)
+  );
 }
 
 /** Bulb and transom terms of the wave resistance. */
@@ -81,7 +86,9 @@ export interface BulbTransomTerms {
  * @method resistance.holtrop.wave_bulb_transom
  * @see docs/METHODOLOGY.md#resistance.holtrop.wave_bulb_transom
  */
-export function bulbTransomTerms(hull: Pick<HullForm, 'c3' | 'b' | 'cb' | 'cm'>): BulbTransomTerms {
+export function bulbTransomTerms(
+  hull: Pick<HullForm, 'c3' | 'b' | 'cb' | 'cm'>,
+): BulbTransomTerms {
   const { b, cb, cm } = hull;
   return {
     c2: Math.exp(-1.89 * Math.sqrt(hull.c3)),
@@ -111,7 +118,8 @@ export function c15(hull: HullForm): number {
   const lDivCubeRootVDisp = hull.lwl / Math.cbrt(VDisplacement);
   if (l3DivVDisp <= 512) return -1.69385;
   if (l3DivVDisp >= 1727) return l3DivVDisp;
-  if (l3DivVDisp > 512 && l3DivVDisp < 1727) return -1.69385 + (lDivCubeRootVDisp - 8) / 2.36;
+  if (l3DivVDisp > 512 && l3DivVDisp < 1727)
+    return -1.69385 + (lDivCubeRootVDisp - 8) / 2.36;
   return 0;
 }
 
@@ -125,7 +133,10 @@ export function c15(hull: HullForm): number {
  */
 export function c16(hull: Pick<HullForm, 'cp'>): number {
   const { cp } = hull;
-  if (cp < 0.8) return 8.07981 * cp - 13.8673 * Math.pow(cp, 2) + 6.984388 * Math.pow(cp, 3);
+  if (cp < 0.8)
+    return (
+      8.07981 * cp - 13.8673 * Math.pow(cp, 2) + 6.984388 * Math.pow(cp, 3)
+    );
   if (cp > 0.8) return 1.73014 - 0.7067 * cp;
   return 0;
 }
@@ -141,7 +152,12 @@ export function m1(hull: HullForm): number {
   const { lwl, t, cb, b } = hull;
   const C16 = c16(hull);
   const Vdispl = cb * t * b * lengthDisplacement(hull);
-  return 0.0140407 * (lwl / t) - 1.75254 * (Math.pow(Vdispl, 1 / 3) / lwl) - 4.79323 * (b / lwl) - C16;
+  return (
+    0.0140407 * (lwl / t) -
+    1.75254 * (Math.pow(Vdispl, 1 / 3) / lwl) -
+    4.79323 * (b / lwl) -
+    C16
+  );
 }
 
 /**
@@ -153,7 +169,9 @@ export function m1(hull: HullForm): number {
  * @param newFn Froude number at the calm-water-equivalent speed.
  */
 export function m2(hull: HullForm, newFn: number): number {
-  return c15(hull) * Math.pow(hull.cp, 2) * Math.exp(-0.1 * Math.pow(newFn, -2));
+  return (
+    c15(hull) * Math.pow(hull.cp, 2) * Math.exp(-0.1 * Math.pow(newFn, -2))
+  );
 }
 
 /**
@@ -203,6 +221,8 @@ export function waveResistance(hull: HullForm, newFn: number): number {
     (lwl * b * t * cb) *
     WAVE_WATER_DENSITY *
     GRAVITY *
-    Math.exp(M1 * Math.pow(newFn, -0.9) + M2 * Math.cos(lamda * Math.pow(newFn, -2)))
+    Math.exp(
+      M1 * Math.pow(newFn, -0.9) + M2 * Math.cos(lamda * Math.pow(newFn, -2)),
+    )
   );
 }

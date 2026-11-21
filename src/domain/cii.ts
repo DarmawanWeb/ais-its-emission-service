@@ -33,7 +33,11 @@ export function co2FromFuel(fuelTon: number, conversionFactor: number): number {
  * @param capacity CII capacity (DWT or GT, see `ciiCapacity`).
  * @see docs/METHODOLOGY.md#cii.attained_accumulation
  */
-export function attainedCii(co2Ton: number, distanceNm: number, capacity: number): number {
+export function attainedCii(
+  co2Ton: number,
+  distanceNm: number,
+  capacity: number,
+): number {
   return (co2Ton / (distanceNm * capacity)) * 10 ** 6;
 }
 
@@ -75,7 +79,10 @@ export const DEFAULT_HIGHEST_REDUCTION_YEAR = 2030;
  * @method cii.reduction_factor_z
  * @see docs/METHODOLOGY.md#cii.reduction_factor_z
  */
-export function reductionFactorOf(factors: readonly ReductionFactor[], year: number): number | undefined {
+export function reductionFactorOf(
+  factors: readonly ReductionFactor[],
+  year: number,
+): number | undefined {
   return factors.find((factor) => factor.year === year)?.zPercent;
 }
 
@@ -85,9 +92,13 @@ export function reductionFactorOf(factors: readonly ReductionFactor[], year: num
  *
  * @method cii.reduction_factor_z
  */
-export function highestReductionFactorYear(factors: readonly ReductionFactor[]): number {
+export function highestReductionFactorYear(
+  factors: readonly ReductionFactor[],
+): number {
   const highest = Math.max(...factors.map((factor) => factor.year));
-  return Number.isFinite(highest) && highest !== 0 ? highest : DEFAULT_HIGHEST_REDUCTION_YEAR;
+  return Number.isFinite(highest) && highest !== 0
+    ? highest
+    : DEFAULT_HIGHEST_REDUCTION_YEAR;
 }
 
 /**
@@ -112,7 +123,11 @@ export function requiredCii(zPercent: number, reference: number): number {
  * @method cii.rating_grade
  * @see docs/METHODOLOGY.md#cii.rating_grade
  */
-export function rateAttained(attained: number, required: number, d: DdVector): { rating: number; grade: CiiGrade } {
+export function rateAttained(
+  attained: number,
+  required: number,
+  d: DdVector,
+): { rating: number; grade: CiiGrade } {
   const rating = attained / required;
   return { rating, grade: assignCiiGrade(rating, d) };
 }
@@ -124,7 +139,11 @@ export function rateAttained(attained: number, required: number, d: DdVector): {
  * @method cii.rating_grade
  * @method cii.dd_vector_boundaries
  */
-export function gradeAgainstRequired(d: DdVector, attained: number, required: number): CiiGrade {
+export function gradeAgainstRequired(
+  d: DdVector,
+  attained: number,
+  required: number,
+): CiiGrade {
   const { d1, d2, d3, d4 } = ciiGradeBoundaries(required, d);
   if (attained < d1) return 'A';
   else if (attained >= d1 && attained < d2) return 'B';
@@ -173,9 +192,20 @@ export function rateCii(
   profile: CiiRatingProfile,
   zPercent: number,
 ): CiiFigures {
-  const attained = attainedCii(totals.co2Ton, totals.distanceNm, profile.capacity);
+  const attained = attainedCii(
+    totals.co2Ton,
+    totals.distanceNm,
+    profile.capacity,
+  );
   const reference = referenceCii(profile.referenceLine, profile.capacity);
   const required = requiredCii(zPercent, reference);
   const { rating, grade } = rateAttained(attained, required, profile.d);
-  return { attained, reference, required, rating, grade, boundaries: ciiGradeBoundaries(required, profile.d) };
+  return {
+    attained,
+    reference,
+    required,
+    rating,
+    grade,
+    boundaries: ciiGradeBoundaries(required, profile.d),
+  };
 }

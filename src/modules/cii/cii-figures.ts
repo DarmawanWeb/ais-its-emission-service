@@ -1,4 +1,9 @@
-import { assignCiiGrade, type CiiGrade, ciiGradeBoundaries, type DdVector } from '@darmawanweb/ais-its-contracts/domain';
+import {
+  assignCiiGrade,
+  type CiiGrade,
+  ciiGradeBoundaries,
+  type DdVector,
+} from '@darmawanweb/ais-its-contracts/domain';
 
 import {
   type CiiRatingProfile,
@@ -6,7 +11,12 @@ import {
   referenceCii,
   requiredCii,
 } from '../../domain/cii.js';
-import { type MethodCounts, mergeMethodIds, METHOD_IDS, segmentMethodIds } from '../methodology/method-ids.js';
+import {
+  type MethodCounts,
+  mergeMethodIds,
+  METHOD_IDS,
+  segmentMethodIds,
+} from '../methodology/method-ids.js';
 import type { AnnualManualRecord } from './annual-manual.repository.js';
 import type { PeriodTotals } from './cii.repository.js';
 
@@ -43,7 +53,12 @@ export function methodCountsOf(totals: PeriodTotals): MethodCounts {
 }
 
 /** Figures of a vessel-year from the aggregated segments and the year's Z. */
-export function figuresFromTotals(year: number, totals: PeriodTotals, profile: CiiRatingProfile, zPercent: number): YearFigures {
+export function figuresFromTotals(
+  year: number,
+  totals: PeriodTotals,
+  profile: CiiRatingProfile,
+  zPercent: number,
+): YearFigures {
   const figures = rateCii(totals, profile, zPercent);
   const methods = methodCountsOf(totals);
   return {
@@ -67,13 +82,31 @@ export function figuresFromTotals(year: number, totals: PeriodTotals, profile: C
 }
 
 /**
- * Figures of a manual / imported record: stored values win (legacy imported
- * records keep their numbers); a missing required CII is computed from Z.
+ * Figures of a manual / imported record (`cii_annual_manual`, the fallback of
+ * a year without segments): stored values win (legacy imported records keep
+ * their numbers); a missing required CII is computed from Z, a missing
+ * rating as attained / required and a missing grade from the d-vector.
+ *
+ * @method cii.annual_manual
+ * @method cii.required
+ * @method cii.rating_grade
+ * @see docs/METHODOLOGY.md#cii.annual_manual
  */
-export function figuresFromManual(record: AnnualManualRecord, profile: CiiRatingProfile, zPercent: number | undefined): YearFigures {
+export function figuresFromManual(
+  record: AnnualManualRecord,
+  profile: CiiRatingProfile,
+  zPercent: number | undefined,
+): YearFigures {
   const required =
-    record.required ?? (zPercent === undefined ? null : requiredCii(zPercent, referenceCii(profile.referenceLine, profile.capacity)));
-  const rating = record.rating ?? (required === null ? null : record.attained / required);
+    record.required ??
+    (zPercent === undefined
+      ? null
+      : requiredCii(
+          zPercent,
+          referenceCii(profile.referenceLine, profile.capacity),
+        ));
+  const rating =
+    record.rating ?? (required === null ? null : record.attained / required);
   return {
     year: record.year,
     source: 'manual',
@@ -88,8 +121,11 @@ export function figuresFromManual(record: AnnualManualRecord, profile: CiiRating
     attained: record.attained,
     required,
     rating,
-    grade: record.grade ?? (rating === null ? null : assignCiiGrade(rating, profile.d)),
-    boundaries: required === null ? null : ciiGradeBoundaries(required, profile.d),
+    grade:
+      record.grade ??
+      (rating === null ? null : assignCiiGrade(rating, profile.d)),
+    boundaries:
+      required === null ? null : ciiGradeBoundaries(required, profile.d),
     methodIds: mergeMethodIds(METHOD_IDS.manual, METHOD_IDS.rating),
   };
 }

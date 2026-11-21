@@ -33,10 +33,17 @@ export type SeempCostModel =
   /** By length overall: the first band whose `maxLoaM` (inclusive; `null` = no limit) is not exceeded. */
   | {
       readonly type: 'loa_bands';
-      readonly bands: readonly { readonly maxLoaM: number | null; readonly usd: number }[];
+      readonly bands: readonly {
+        readonly maxLoaM: number | null;
+        readonly usd: number;
+      }[];
     }
   /** A low–high range; the recommendation cost is the mean of both per-year costs. */
-  | { readonly type: 'range'; readonly lowUsd: number; readonly highUsd: number }
+  | {
+      readonly type: 'range';
+      readonly lowUsd: number;
+      readonly highUsd: number;
+    }
   /** Per m² of wetted surface (Holtrop–Mennen S). */
   | { readonly type: 'wetted_surface'; readonly usdPerM2: number }
   /** Per kW of installed power (`calculateCostbyPower`) plus a fixed amount. */
@@ -123,7 +130,13 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     legacyOrder: 4,
     methodId: 'seemp.measure.power_system_machinery',
     reduction: { type: 'operational', potentialPercent: 10 },
-    cost: { type: 'installed_power', usdPerKw: 500, mainEngine: true, auxEngines: false, fixedUsd: 0 },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 500,
+      mainEngine: true,
+      auxEngines: false,
+      fixedUsd: 0,
+    },
   },
   {
     code: 'propulsion_efficiency_devices',
@@ -141,7 +154,13 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     legacyOrder: 6,
     methodId: 'seemp.measure.waste_heat_recovery',
     reduction: { type: 'operational', potentialPercent: 10 },
-    cost: { type: 'installed_power', usdPerKw: 100, mainEngine: true, auxEngines: true, fixedUsd: 0 },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 100,
+      mainEngine: true,
+      auxEngines: true,
+      fixedUsd: 0,
+    },
   },
   {
     code: 'lng',
@@ -150,7 +169,13 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     legacyOrder: 7,
     methodId: 'seemp.measure.lng',
     reduction: { type: 'fuel_switch', conversionFactor: 2.75 },
-    cost: { type: 'installed_power', usdPerKw: 1580, mainEngine: true, auxEngines: true, fixedUsd: 0 },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 1580,
+      mainEngine: true,
+      auxEngines: true,
+      fixedUsd: 0,
+    },
   },
   {
     code: 'biofuel',
@@ -159,7 +184,13 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     legacyOrder: 8,
     methodId: 'seemp.measure.biofuel',
     reduction: { type: 'fuel_switch', conversionFactor: 2.45 },
-    cost: { type: 'installed_power', usdPerKw: 20, mainEngine: true, auxEngines: true, fixedUsd: 0 },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 20,
+      mainEngine: true,
+      auxEngines: true,
+      fixedUsd: 0,
+    },
   },
   {
     code: 'solar',
@@ -167,8 +198,19 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     category: 'energy',
     legacyOrder: 9,
     methodId: 'seemp.measure.solar',
-    reduction: { type: 'auxiliary', potentialShare: 0.12, coldIroning: false, voyagePercent: 42 },
-    cost: { type: 'installed_power', usdPerKw: 3000, mainEngine: false, auxEngines: true, fixedUsd: 0 },
+    reduction: {
+      type: 'auxiliary',
+      potentialShare: 0.12,
+      coldIroning: false,
+      voyagePercent: 42,
+    },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 3000,
+      mainEngine: false,
+      auxEngines: true,
+      fixedUsd: 0,
+    },
   },
   {
     code: 'wind',
@@ -176,8 +218,19 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     category: 'energy',
     legacyOrder: 10,
     methodId: 'seemp.measure.wind',
-    reduction: { type: 'auxiliary', potentialShare: 0.15, coldIroning: false, voyagePercent: 0 },
-    cost: { type: 'installed_power', usdPerKw: 4000, mainEngine: false, auxEngines: true, fixedUsd: 0 },
+    reduction: {
+      type: 'auxiliary',
+      potentialShare: 0.15,
+      coldIroning: false,
+      voyagePercent: 0,
+    },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 4000,
+      mainEngine: false,
+      auxEngines: true,
+      fixedUsd: 0,
+    },
   },
   {
     code: 'cold_ironing',
@@ -185,8 +238,19 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     category: 'energy',
     legacyOrder: 11,
     methodId: 'seemp.measure.cold_ironing',
-    reduction: { type: 'auxiliary', potentialShare: 0.1, coldIroning: true, voyagePercent: null },
-    cost: { type: 'installed_power', usdPerKw: 0.5, mainEngine: false, auxEngines: true, fixedUsd: 800150 },
+    reduction: {
+      type: 'auxiliary',
+      potentialShare: 0.1,
+      coldIroning: true,
+      voyagePercent: null,
+    },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 0.5,
+      mainEngine: false,
+      auxEngines: true,
+      fixedUsd: 800150,
+    },
   },
   {
     code: 'fuel_cells',
@@ -194,8 +258,19 @@ export const LEGACY_SEEMP_MEASURES: readonly SeempMeasure[] = Object.freeze([
     category: 'energy',
     legacyOrder: 12,
     methodId: 'seemp.measure.fuel_cells',
-    reduction: { type: 'auxiliary', potentialShare: 0.2, coldIroning: false, voyagePercent: 0 },
-    cost: { type: 'installed_power', usdPerKw: 1780, mainEngine: false, auxEngines: true, fixedUsd: 0 },
+    reduction: {
+      type: 'auxiliary',
+      potentialShare: 0.2,
+      coldIroning: false,
+      voyagePercent: 0,
+    },
+    cost: {
+      type: 'installed_power',
+      usdPerKw: 1780,
+      mainEngine: false,
+      auxEngines: true,
+      fixedUsd: 0,
+    },
   },
 ]);
 

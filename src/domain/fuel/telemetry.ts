@@ -39,12 +39,26 @@ export function readingShare(reading: FuelReading, window: TimeWindow): number {
   return overlap > 0 ? overlap / (end - start) : 0;
 }
 
+/** `true` for a reading without a measured period (no `periodStart`, or `periodStart ≥ time`). */
+export function isInstantaneous(reading: FuelReading): boolean {
+  return (
+    reading.periodStart === null ||
+    reading.periodStart.getTime() >= reading.time.getTime()
+  );
+}
+
 /**
- * Whether telemetry is active for a segment (v2 rule, spec §13.4 / §15.5 —
- * the legacy compared the last reading with "now" in units of 10 s): at least
- * one reading of the vessel overlaps the segment window, or has its time
- * within `activeWindowMinutes` (TELEMETRY_ACTIVE_WINDOW_MIN, default 10) of
- * the segment end.
+ * Whether telemetry is active for a segment window `(start, end]` (v2 rule,
+ * spec §13.4 / §15.5 — the legacy compared the last reading with "now" in
+ * units of 10 s and then used that reading whatever its time):
+ * - a **period** reading `[periodStart, time]` makes telemetry active only for
+ *   the segments its period overlaps (a segment outside every reported
+ *   period falls back to the fuel model);
+ * - an **instantaneous** reading (fuel since the device's previous report)
+ *   makes telemetry active for the segment containing its time and for every
+ *   segment ending within `activeWindowMinutes` (TELEMETRY_ACTIVE_WINDOW_MIN,
+ *   default 10) of it: those segments get 0 t and the report's whole amount
+ *   is counted once, in the segment containing it.
  *
  * @method fuel.method_selection
  * @method telemetry.fuel_reading_usage
@@ -59,7 +73,8 @@ export function isTelemetryActive(
   return readings.some(
     (reading) =>
       readingShare(reading, window) > 0 ||
-      Math.abs(reading.time.getTime() - windowEnd) <= tolerance,
+      (isInstantaneous(reading) &&
+        Math.abs(reading.time.getTime() - windowEnd) <= tolerance),
   );
 }
 

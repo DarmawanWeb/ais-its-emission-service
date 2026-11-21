@@ -21,7 +21,11 @@ function snap(value: number): number {
  * weather of every position of the cell during that hour is the same, which
  * makes segments reproducible (replays) and the cache effective.
  */
-export function weatherCellHour(lat: number, lon: number, time: Date): WeatherCellHour {
+export function weatherCellHour(
+  lat: number,
+  lon: number,
+  time: Date,
+): WeatherCellHour {
   const cellLon = snap(lon);
   return {
     lat: Math.min(Math.max(snap(lat), -90), 90),

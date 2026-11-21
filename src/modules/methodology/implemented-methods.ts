@@ -84,4 +84,7 @@ export const IMPLEMENTED_METHOD_IDS: readonly string[] = [
  * Catalog methods whose references are the sources of the CII reference
  * lines and rating vectors of the vessel types (MEPC.353(78), MEPC.354(78)).
  */
-export const VESSEL_TYPE_SOURCE_METHOD_IDS: readonly string[] = ['cii.reference_line', 'cii.rating_grade'];
+export const VESSEL_TYPE_SOURCE_METHOD_IDS: readonly string[] = [
+  'cii.reference_line',
+  'cii.rating_grade',
+];

@@ -10,8 +10,18 @@ abstract class IntegerParamPipe implements PipeTransform<string, number> {
 
   transform(value: string): number {
     const parsed = /^\d+$/.test(value) ? Number(value) : Number.NaN;
-    if (!Number.isSafeInteger(parsed) || parsed < this.min || parsed > this.max) {
-      throw new ValidationFailedError([{ field: this.field, message: `${this.field} must be ${this.description}`, code: 'isInt' }]);
+    if (
+      !Number.isSafeInteger(parsed) ||
+      parsed < this.min ||
+      parsed > this.max
+    ) {
+      throw new ValidationFailedError([
+        {
+          field: this.field,
+          message: `${this.field} must be ${this.description}`,
+          code: 'isInt',
+        },
+      ]);
     }
     return parsed;
   }

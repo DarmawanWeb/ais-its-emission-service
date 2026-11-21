@@ -3,10 +3,19 @@ import { calculateShipCourse } from '../weather/course.js';
 import { calculateWindCourse } from '../weather/encounter-angle.js';
 import { calmWaterSpeed, speedReductionPercent } from '../weather/kwon.js';
 import type { Wind, WindCourse } from '../weather/types.js';
-import { APPENDAGE_FORM_FACTOR, appendageArea, appendageResistance } from './appendage.js';
+import {
+  APPENDAGE_FORM_FACTOR,
+  appendageArea,
+  appendageResistance,
+} from './appendage.js';
 import { frictionCoefficient, frictionResistance } from './friction.js';
 import { froudeNumber, reynoldsNumber } from './numbers.js';
-import { deliveredPower, effectivePower, mcrPower, shaftPower } from './power.js';
+import {
+  deliveredPower,
+  effectivePower,
+  mcrPower,
+  shaftPower,
+} from './power.js';
 import { type TotalResistance, totalResistance } from './total.js';
 import type { HullForm, Speed } from './types.js';
 
@@ -108,8 +117,15 @@ export interface HoltropChainResult {
  * @method resistance.power.transmission_mcr
  * @see docs/METHODOLOGY.md#7-konsumsi-bahan-bakar-emission
  */
-export function holtropChain(kinematics: SegmentKinematics, wind: Wind, hull: HullForm): HoltropChainResult {
-  const shipCourseDeg = calculateShipCourse(kinematics.currentRad, kinematics.previousRad);
+export function holtropChain(
+  kinematics: SegmentKinematics,
+  wind: Wind,
+  hull: HullForm,
+): HoltropChainResult {
+  const shipCourseDeg = calculateShipCourse(
+    kinematics.currentRad,
+    kinematics.previousRad,
+  );
   const windCourse = calculateWindCourse(shipCourseDeg, wind);
   const reduction = speedReductionPercent(windCourse, kinematics.speedMs, hull);
   const friction = calculateFrictionResistance(kinematics, reduction, hull);
@@ -119,7 +135,10 @@ export function holtropChain(kinematics: SegmentKinematics, wind: Wind, hull: Hu
     newFn: friction.newFn,
     speedMs: friction.newSpeed.speedMs,
   });
-  const effectivePowerKw = effectivePower(friction.newSpeed.speedMs, total.rtPlusSm);
+  const effectivePowerKw = effectivePower(
+    friction.newSpeed.speedMs,
+    total.rtPlusSm,
+  );
   const deliveredPowerKw = deliveredPower(effectivePowerKw, hull);
   const shaftPowerKw = shaftPower(deliveredPowerKw);
   return {
