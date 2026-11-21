@@ -1,0 +1,1470 @@
+{
+  "description": "legacy utils/cii/second-formula/course-calculation.ts and coefisien-reduction-calculation.ts",
+  "beaufort": [
+    {
+      "input": 0,
+      "output": 0
+    },
+    {
+      "input": 0.6,
+      "output": 0
+    },
+    {
+      "input": 0.61,
+      "output": 1
+    },
+    {
+      "input": 2,
+      "output": 1
+    },
+    {
+      "input": 3,
+      "output": 1
+    },
+    {
+      "input": 5,
+      "output": 2
+    },
+    {
+      "input": 6.4,
+      "output": 2
+    },
+    {
+      "input": 8,
+      "output": 3
+    },
+    {
+      "input": 10.6,
+      "output": 3
+    },
+    {
+      "input": 12,
+      "output": 4
+    },
+    {
+      "input": 15.5,
+      "output": 4
+    },
+    {
+      "input": 18,
+      "output": 5
+    },
+    {
+      "input": 21,
+      "output": 5
+    },
+    {
+      "input": 24,
+      "output": 6
+    },
+    {
+      "input": 26.9,
+      "output": 6
+    },
+    {
+      "input": 30,
+      "output": 7
+    },
+    {
+      "input": 33.4,
+      "output": 7
+    },
+    {
+      "input": 40,
+      "output": 8
+    }
+  ],
+  "encounterAngle": [
+    {
+      "input": {
+        "shipCourse": 10,
+        "windCourse": 100
+      },
+      "output": 90
+    },
+    {
+      "input": {
+        "shipCourse": 10,
+        "windCourse": 300
+      },
+      "output": 70
+    },
+    {
+      "input": {
+        "shipCourse": 100,
+        "windCourse": 50
+      },
+      "output": 50
+    },
+    {
+      "input": {
+        "shipCourse": 300,
+        "windCourse": 200
+      },
+      "output": 100
+    },
+    {
+      "input": {
+        "shipCourse": 300,
+        "windCourse": 50
+      },
+      "output": 110
+    },
+    {
+      "input": {
+        "shipCourse": 300,
+        "windCourse": 350
+      },
+      "output": 50
+    },
+    {
+      "input": {
+        "shipCourse": 90,
+        "windCourse": 90
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "shipCourse": 200,
+        "windCourse": 200
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "shipCourse": 0,
+        "windCourse": 180
+      },
+      "output": 180
+    },
+    {
+      "input": {
+        "shipCourse": 180,
+        "windCourse": 0
+      },
+      "output": 180
+    },
+    {
+      "input": {
+        "shipCourse": 359,
+        "windCourse": 1
+      },
+      "output": 2
+    },
+    {
+      "input": {
+        "shipCourse": 1,
+        "windCourse": 359
+      },
+      "output": 2
+    },
+    {
+      "input": {
+        "shipCourse": 181,
+        "windCourse": 0.5
+      },
+      "output": 179.5
+    },
+    {
+      "input": {
+        "shipCourse": 250,
+        "windCourse": 70
+      },
+      "output": 180
+    },
+    {
+      "input": {
+        "shipCourse": 45,
+        "windCourse": 225.5
+      },
+      "output": 179.5
+    }
+  ],
+  "shipCourse": [
+    {
+      "name": "northeast-13kn",
+      "input": {
+        "firstPositionRad": {
+          "lat": 0.019547687622336492,
+          "lon": 1.815666020849701
+        },
+        "secondPositionRad": {
+          "lat": 0.019198621771937627,
+          "lon": 1.8151424220741028
+        }
+      },
+      "output": 236.30496934201653
+    },
+    {
+      "name": "capped-30kn",
+      "input": {
+        "firstPositionRad": {
+          "lat": 0.020943951023931952,
+          "lon": 1.8186330805780915
+        },
+        "secondPositionRad": {
+          "lat": 0.017453292519943295,
+          "lon": 1.8151424220741028
+        }
+      },
+      "output": 224.99470549953446
+    },
+    {
+      "name": "zero-time",
+      "input": {
+        "firstPositionRad": {
+          "lat": 0.01747074581246324,
+          "lon": 1.8151598753666227
+        },
+        "secondPositionRad": {
+          "lat": 0.017453292519943295,
+          "lon": 1.8151424220741028
+        }
+      },
+      "output": 224.9956320902687
+    },
+    {
+      "name": "tiny-move",
+      "input": {
+        "firstPositionRad": {
+          "lat": -0.12042789292053394,
+          "lon": 1.9669862415305348
+        },
+        "secondPositionRad": {
+          "lat": -0.12042771838760874,
+          "lon": 1.9669860669976094
+        }
+      },
+      "output": 315.20824032038644
+    },
+    {
+      "name": "southwest-8kn",
+      "input": {
+        "firstPositionRad": {
+          "lat": -0.12479104151759457,
+          "lon": 1.9696040608756007
+        },
+        "secondPositionRad": {
+          "lat": -0.12391837689159739,
+          "lon": 1.9704767255015982
+        }
+      },
+      "output": 44.777921195352405
+    },
+    {
+      "name": "northwest-11kn",
+      "input": {
+        "firstPositionRad": {
+          "lat": -0.12391837689159739,
+          "lon": 1.9704767255015982
+        },
+        "secondPositionRad": {
+          "lat": -0.12566370614359174,
+          "lon": 1.9722220547535925
+        }
+      },
+      "output": 135.22364683648567
+    },
+    {
+      "name": "southeast-5kn",
+      "input": {
+        "firstPositionRad": {
+          "lat": 0.02234021442552742,
+          "lon": 1.8121753623457124
+        },
+        "secondPositionRad": {
+          "lat": 0.022689280275926284,
+          "lon": 1.811651763570114
+        }
+      },
+      "output": 303.6967710204981
+    },
+    {
+      "name": "due-north",
+      "input": {
+        "firstPositionRad": {
+          "lat": 0.01832595714594046,
+          "lon": 1.8151424220741028
+        },
+        "secondPositionRad": {
+          "lat": 0.017453292519943295,
+          "lon": 1.8151424220741028
+        }
+      },
+      "output": 180
+    },
+    {
+      "name": "due-east",
+      "input": {
+        "firstPositionRad": {
+          "lat": 0.017453292519943295,
+          "lon": 1.8160150867001
+        },
+        "secondPositionRad": {
+          "lat": 0.017453292519943295,
+          "lon": 1.8151424220741028
+        }
+      },
+      "output": 270
+    },
+    {
+      "name": "six-hours-10kn",
+      "input": {
+        "firstPositionRad": {
+          "lat": -0.07330382858376185,
+          "lon": 1.8605209826259552
+        },
+        "secondPositionRad": {
+          "lat": -0.08726646259971647,
+          "lon": 1.8500490071139892
+        }
+      },
+      "output": 216.78098157914684
+    }
+  ],
+  "windCourse": [
+    {
+      "input": {
+        "shipCourse": 0,
+        "windspeed": 0,
+        "winddirection": 0
+      },
+      "output": {
+        "beafortNumber": 0,
+        "encounteredAngle": 0
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 0,
+        "windspeed": 12,
+        "winddirection": 30
+      },
+      "output": {
+        "beafortNumber": 4,
+        "encounteredAngle": 30
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 0,
+        "windspeed": 24,
+        "winddirection": 170
+      },
+      "output": {
+        "beafortNumber": 6,
+        "encounteredAngle": 170
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 0,
+        "windspeed": 40,
+        "winddirection": 280
+      },
+      "output": {
+        "beafortNumber": 8,
+        "encounteredAngle": 80
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 45,
+        "windspeed": 0,
+        "winddirection": 0
+      },
+      "output": {
+        "beafortNumber": 0,
+        "encounteredAngle": 45
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 45,
+        "windspeed": 12,
+        "winddirection": 30
+      },
+      "output": {
+        "beafortNumber": 4,
+        "encounteredAngle": 15
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 45,
+        "windspeed": 24,
+        "winddirection": 170
+      },
+      "output": {
+        "beafortNumber": 6,
+        "encounteredAngle": 125
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 45,
+        "windspeed": 40,
+        "winddirection": 280
+      },
+      "output": {
+        "beafortNumber": 8,
+        "encounteredAngle": 125
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 135,
+        "windspeed": 0,
+        "winddirection": 0
+      },
+      "output": {
+        "beafortNumber": 0,
+        "encounteredAngle": 135
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 135,
+        "windspeed": 12,
+        "winddirection": 30
+      },
+      "output": {
+        "beafortNumber": 4,
+        "encounteredAngle": 105
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 135,
+        "windspeed": 24,
+        "winddirection": 170
+      },
+      "output": {
+        "beafortNumber": 6,
+        "encounteredAngle": 35
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 135,
+        "windspeed": 40,
+        "winddirection": 280
+      },
+      "output": {
+        "beafortNumber": 8,
+        "encounteredAngle": 145
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 200,
+        "windspeed": 0,
+        "winddirection": 0
+      },
+      "output": {
+        "beafortNumber": 0,
+        "encounteredAngle": 160
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 200,
+        "windspeed": 12,
+        "winddirection": 30
+      },
+      "output": {
+        "beafortNumber": 4,
+        "encounteredAngle": 170
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 200,
+        "windspeed": 24,
+        "winddirection": 170
+      },
+      "output": {
+        "beafortNumber": 6,
+        "encounteredAngle": 30
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 200,
+        "windspeed": 40,
+        "winddirection": 280
+      },
+      "output": {
+        "beafortNumber": 8,
+        "encounteredAngle": 80
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 315,
+        "windspeed": 0,
+        "winddirection": 0
+      },
+      "output": {
+        "beafortNumber": 0,
+        "encounteredAngle": 45
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 315,
+        "windspeed": 12,
+        "winddirection": 30
+      },
+      "output": {
+        "beafortNumber": 4,
+        "encounteredAngle": 75
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 315,
+        "windspeed": 24,
+        "winddirection": 170
+      },
+      "output": {
+        "beafortNumber": 6,
+        "encounteredAngle": 145
+      }
+    },
+    {
+      "input": {
+        "shipCourse": 315,
+        "windspeed": 40,
+        "winddirection": 280
+      },
+      "output": {
+        "beafortNumber": 8,
+        "encounteredAngle": 35
+      }
+    }
+  ],
+  "directionCoefficient": [
+    {
+      "input": {
+        "encounteredAngle": 0,
+        "beafortNumber": 0
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 0,
+        "beafortNumber": 3
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 0,
+        "beafortNumber": 6
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 0,
+        "beafortNumber": 8
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 15,
+        "beafortNumber": 0
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 15,
+        "beafortNumber": 3
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 15,
+        "beafortNumber": 6
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 15,
+        "beafortNumber": 8
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 30,
+        "beafortNumber": 0
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 30,
+        "beafortNumber": 3
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 30,
+        "beafortNumber": 6
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 30,
+        "beafortNumber": 8
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "encounteredAngle": 31,
+        "beafortNumber": 0
+      },
+      "output": 0.61
+    },
+    {
+      "input": {
+        "encounteredAngle": 31,
+        "beafortNumber": 3
+      },
+      "output": 0.835
+    },
+    {
+      "input": {
+        "encounteredAngle": 31,
+        "beafortNumber": 6
+      },
+      "output": 0.79
+    },
+    {
+      "input": {
+        "encounteredAngle": 31,
+        "beafortNumber": 8
+      },
+      "output": 0.61
+    },
+    {
+      "input": {
+        "encounteredAngle": 45,
+        "beafortNumber": 0
+      },
+      "output": 0.61
+    },
+    {
+      "input": {
+        "encounteredAngle": 45,
+        "beafortNumber": 3
+      },
+      "output": 0.835
+    },
+    {
+      "input": {
+        "encounteredAngle": 45,
+        "beafortNumber": 6
+      },
+      "output": 0.79
+    },
+    {
+      "input": {
+        "encounteredAngle": 45,
+        "beafortNumber": 8
+      },
+      "output": 0.61
+    },
+    {
+      "input": {
+        "encounteredAngle": 60,
+        "beafortNumber": 0
+      },
+      "output": 0.61
+    },
+    {
+      "input": {
+        "encounteredAngle": 60,
+        "beafortNumber": 3
+      },
+      "output": 0.835
+    },
+    {
+      "input": {
+        "encounteredAngle": 60,
+        "beafortNumber": 6
+      },
+      "output": 0.79
+    },
+    {
+      "input": {
+        "encounteredAngle": 60,
+        "beafortNumber": 8
+      },
+      "output": 0.61
+    },
+    {
+      "input": {
+        "encounteredAngle": 61,
+        "beafortNumber": 0
+      },
+      "output": -0.6300000000000001
+    },
+    {
+      "input": {
+        "encounteredAngle": 61,
+        "beafortNumber": 3
+      },
+      "output": 0.18
+    },
+    {
+      "input": {
+        "encounteredAngle": 61,
+        "beafortNumber": 6
+      },
+      "output": 0.45
+    },
+    {
+      "input": {
+        "encounteredAngle": 61,
+        "beafortNumber": 8
+      },
+      "output": 0.33
+    },
+    {
+      "input": {
+        "encounteredAngle": 90,
+        "beafortNumber": 0
+      },
+      "output": -0.6300000000000001
+    },
+    {
+      "input": {
+        "encounteredAngle": 90,
+        "beafortNumber": 3
+      },
+      "output": 0.18
+    },
+    {
+      "input": {
+        "encounteredAngle": 90,
+        "beafortNumber": 6
+      },
+      "output": 0.45
+    },
+    {
+      "input": {
+        "encounteredAngle": 90,
+        "beafortNumber": 8
+      },
+      "output": 0.33
+    },
+    {
+      "input": {
+        "encounteredAngle": 150,
+        "beafortNumber": 0
+      },
+      "output": -0.6300000000000001
+    },
+    {
+      "input": {
+        "encounteredAngle": 150,
+        "beafortNumber": 3
+      },
+      "output": 0.18
+    },
+    {
+      "input": {
+        "encounteredAngle": 150,
+        "beafortNumber": 6
+      },
+      "output": 0.45
+    },
+    {
+      "input": {
+        "encounteredAngle": 150,
+        "beafortNumber": 8
+      },
+      "output": 0.33
+    },
+    {
+      "input": {
+        "encounteredAngle": 151,
+        "beafortNumber": 0
+      },
+      "output": -0.76
+    },
+    {
+      "input": {
+        "encounteredAngle": 151,
+        "beafortNumber": 3
+      },
+      "output": -0.175
+    },
+    {
+      "input": {
+        "encounteredAngle": 151,
+        "beafortNumber": 6
+      },
+      "output": 0.14
+    },
+    {
+      "input": {
+        "encounteredAngle": 151,
+        "beafortNumber": 8
+      },
+      "output": 0.2
+    },
+    {
+      "input": {
+        "encounteredAngle": 170,
+        "beafortNumber": 0
+      },
+      "output": -0.76
+    },
+    {
+      "input": {
+        "encounteredAngle": 170,
+        "beafortNumber": 3
+      },
+      "output": -0.175
+    },
+    {
+      "input": {
+        "encounteredAngle": 170,
+        "beafortNumber": 6
+      },
+      "output": 0.14
+    },
+    {
+      "input": {
+        "encounteredAngle": 170,
+        "beafortNumber": 8
+      },
+      "output": 0.2
+    },
+    {
+      "input": {
+        "encounteredAngle": 180,
+        "beafortNumber": 0
+      },
+      "output": -0.76
+    },
+    {
+      "input": {
+        "encounteredAngle": 180,
+        "beafortNumber": 3
+      },
+      "output": -0.175
+    },
+    {
+      "input": {
+        "encounteredAngle": 180,
+        "beafortNumber": 6
+      },
+      "output": 0.14
+    },
+    {
+      "input": {
+        "encounteredAngle": 180,
+        "beafortNumber": 8
+      },
+      "output": 0.2
+    },
+    {
+      "input": {
+        "encounteredAngle": 181,
+        "beafortNumber": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "encounteredAngle": 181,
+        "beafortNumber": 3
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "encounteredAngle": 181,
+        "beafortNumber": 6
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "encounteredAngle": 181,
+        "beafortNumber": 8
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "encounteredAngle": -1,
+        "beafortNumber": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "encounteredAngle": -1,
+        "beafortNumber": 3
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "encounteredAngle": -1,
+        "beafortNumber": 6
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "encounteredAngle": -1,
+        "beafortNumber": 8
+      },
+      "output": 0
+    }
+  ],
+  "speedCoefficient": [
+    {
+      "input": {
+        "cb": 0.5,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.5,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.5,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.5,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.55,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 1.6705290519187512
+    },
+    {
+      "input": {
+        "cb": 0.55,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 1.4420284085472175
+    },
+    {
+      "input": {
+        "cb": 0.55,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0.6899144580242358
+    },
+    {
+      "input": {
+        "cb": 0.55,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -1.5373596284308875
+    },
+    {
+      "input": {
+        "cb": 0.58,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 1.6705290519187512
+    },
+    {
+      "input": {
+        "cb": 0.58,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 1.4420284085472175
+    },
+    {
+      "input": {
+        "cb": 0.58,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0.6899144580242358
+    },
+    {
+      "input": {
+        "cb": 0.58,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -1.5373596284308875
+    },
+    {
+      "input": {
+        "cb": 0.6,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 2.1486578560408502
+    },
+    {
+      "input": {
+        "cb": 0.6,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 1.7855802093851931
+    },
+    {
+      "input": {
+        "cb": 0.6,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0.6852993525933967
+    },
+    {
+      "input": {
+        "cb": 0.6,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -2.4249051977118263
+    },
+    {
+      "input": {
+        "cb": 0.644818,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 2.1486578560408502
+    },
+    {
+      "input": {
+        "cb": 0.644818,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 1.7855802093851931
+    },
+    {
+      "input": {
+        "cb": 0.644818,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0.6852993525933967
+    },
+    {
+      "input": {
+        "cb": 0.644818,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -2.4249051977118263
+    },
+    {
+      "input": {
+        "cb": 0.65,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 2.525021005807901
+    },
+    {
+      "input": {
+        "cb": 0.65,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 2.0229243491180324
+    },
+    {
+      "input": {
+        "cb": 0.65,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0.5849032870128965
+    },
+    {
+      "input": {
+        "cb": 0.65,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -3.338218711914824
+    },
+    {
+      "input": {
+        "cb": 0.7,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 2.9941387771120467
+    },
+    {
+      "input": {
+        "cb": 0.7,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 2.3288584468926032
+    },
+    {
+      "input": {
+        "cb": 0.7,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0.5602621462229656
+    },
+    {
+      "input": {
+        "cb": 0.7,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -4.019088944249211
+    },
+    {
+      "input": {
+        "cb": 0.75,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 2.1938700421311603
+    },
+    {
+      "input": {
+        "cb": 0.75,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 1.0590464584396302
+    },
+    {
+      "input": {
+        "cb": 0.75,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": -1.4211659284639209
+    },
+    {
+      "input": {
+        "cb": 0.75,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -6.804938772137829
+    },
+    {
+      "input": {
+        "cb": 0.8,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 2.3440265387222703
+    },
+    {
+      "input": {
+        "cb": 0.8,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 0.8985777276341786
+    },
+    {
+      "input": {
+        "cb": 0.8,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": -2.398672452062053
+    },
+    {
+      "input": {
+        "cb": 0.8,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": -9.88106747461577
+    },
+    {
+      "input": {
+        "cb": 0.85,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 2.7527162020079814
+    },
+    {
+      "input": {
+        "cb": 0.85,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 1.3233357638084473
+    },
+    {
+      "input": {
+        "cb": 0.85,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0.04001289244363315
+    },
+    {
+      "input": {
+        "cb": 0.85,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": 1.5856040612956512
+    },
+    {
+      "input": {
+        "cb": 0.9,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.9,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.9,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.9,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.95,
+        "lwl": 69.72,
+        "vesselSpeedMs": 0.5
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.95,
+        "lwl": 69.72,
+        "vesselSpeedMs": 3
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.95,
+        "lwl": 69.72,
+        "vesselSpeedMs": 7.5
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "cb": 0.95,
+        "lwl": 69.72,
+        "vesselSpeedMs": 15
+      },
+      "output": 0
+    }
+  ],
+  "formCoefficient": [
+    {
+      "input": {
+        "ship": "A",
+        "beafortNumber": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "A",
+        "beafortNumber": 1
+      },
+      "output": 0.003648943062136502
+    },
+    {
+      "input": {
+        "ship": "A",
+        "beafortNumber": 4
+      },
+      "output": 17.58962270917424
+    },
+    {
+      "input": {
+        "ship": "A",
+        "beafortNumber": 8
+      },
+      "output": 1591.4989662926637
+    },
+    {
+      "input": {
+        "ship": "B",
+        "beafortNumber": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "B",
+        "beafortNumber": 1
+      },
+      "output": 0.0015166373916535342
+    },
+    {
+      "input": {
+        "ship": "B",
+        "beafortNumber": 4
+      },
+      "output": 7.310905939483753
+    },
+    {
+      "input": {
+        "ship": "B",
+        "beafortNumber": 8
+      },
+      "output": 661.4865729486428
+    },
+    {
+      "input": {
+        "ship": "C",
+        "beafortNumber": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "C",
+        "beafortNumber": 1
+      },
+      "output": 0.0005453348667213904
+    },
+    {
+      "input": {
+        "ship": "C",
+        "beafortNumber": 4
+      },
+      "output": 2.6287706857696764
+    },
+    {
+      "input": {
+        "ship": "C",
+        "beafortNumber": 8
+      },
+      "output": 237.84966273556321
+    },
+    {
+      "input": {
+        "ship": "D",
+        "beafortNumber": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "D",
+        "beafortNumber": 1
+      },
+      "output": 0.010805436675550534
+    },
+    {
+      "input": {
+        "ship": "D",
+        "beafortNumber": 4
+      },
+      "output": 52.087289687530294
+    },
+    {
+      "input": {
+        "ship": "D",
+        "beafortNumber": 8
+      },
+      "output": 4712.828072853114
+    },
+    {
+      "input": {
+        "ship": "E",
+        "beafortNumber": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "E",
+        "beafortNumber": 1
+      },
+      "output": 0.0051172342666140225
+    },
+    {
+      "input": {
+        "ship": "E",
+        "beafortNumber": 4
+      },
+      "output": 24.6674772753227
+    },
+    {
+      "input": {
+        "ship": "E",
+        "beafortNumber": 8
+      },
+      "output": 2231.8991847532848
+    }
+  ]
+}

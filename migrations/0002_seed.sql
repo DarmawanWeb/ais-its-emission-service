@@ -1,0 +1,66 @@
+-- 0002_seed — reference data of the emission service.
+
+-- Reduction factors Z (spec 13.5): 2023–2026 MEPC.338(76), 2027–2030 MEPC.400(83).
+INSERT INTO reduction_factors (year, z_percent, source) VALUES
+  (2023, 5, 'IMO Resolution MEPC.338(76) (2021), G3 reduction factors'),
+  (2024, 7, 'IMO Resolution MEPC.338(76) (2021), G3 reduction factors'),
+  (2025, 9, 'IMO Resolution MEPC.338(76) (2021), G3 reduction factors'),
+  (2026, 11, 'IMO Resolution MEPC.338(76) (2021), G3 reduction factors'),
+  (2027, 13.625, 'IMO Resolution MEPC.400(83) (2025), amended G3 reduction factors'),
+  (2028, 16.25, 'IMO Resolution MEPC.400(83) (2025), amended G3 reduction factors'),
+  (2029, 18.875, 'IMO Resolution MEPC.400(83) (2025), amended G3 reduction factors'),
+  (2030, 21.5, 'IMO Resolution MEPC.400(83) (2025), amended G3 reduction factors')
+ON CONFLICT (year) DO NOTHING;
+
+-- The 12 legacy SEEMP measures (names exactly as the MVP strings); mirrors
+-- src/domain/seemp/measures.ts (LEGACY_SEEMP_MEASURES).
+INSERT INTO seemp_measures (code, name, category, legacy_order, method_id, reduction, cost, source) VALUES
+  ('air_lubrication', 'Modified and install hull air cavity lubrication system on ship', 'technical', 1,
+   'seemp.measure.air_lubrication', '{"type":"operational","potentialPercent":8}',
+   '{"type":"loa_bands","bands":[{"maxLoaM":100,"usd":430000},{"maxLoaM":200,"usd":850000},{"maxLoaM":null,"usd":1280000}]}',
+   'MVP be-legacy/src/utils/seemp/first-formula.ts#calculateAirLubrication (thesis, needs citation)'),
+  ('resistance_reduction_devices', 'Modified and install resistance reduction devices on ship', 'technical', 2,
+   'seemp.measure.resistance_reduction_devices', '{"type":"operational","potentialPercent":9}',
+   '{"type":"range","lowUsd":300000,"highUsd":700000}',
+   'MVP be-legacy/src/utils/seemp/first-formula.ts#calculateResistanceReduceDevice (thesis, needs citation)'),
+  ('hull_coating', 'Hull coating maintenance on the hull surface', 'operational', 3,
+   'seemp.measure.hull_coating', '{"type":"operational","potentialPercent":10}',
+   '{"type":"wetted_surface","usdPerM2":100}',
+   'MVP be-legacy/src/utils/seemp/first-formula.ts#calculateHullCoating (thesis, needs citation)'),
+  ('power_system_machinery', 'Variable speed electric power generation', 'technical', 4,
+   'seemp.measure.power_system_machinery', '{"type":"operational","potentialPercent":10}',
+   '{"type":"installed_power","usdPerKw":500,"mainEngine":true,"auxEngines":false,"fixedUsd":0}',
+   'MVP be-legacy/src/utils/seemp/first-formula.ts#calculatePowerSystemMachinery (thesis, needs citation)'),
+  ('propulsion_efficiency_devices', 'Install propulsion exfficiency devices', 'technical', 5,
+   'seemp.measure.propulsion_efficiency_devices', '{"type":"operational","potentialPercent":13}',
+   '{"type":"range","lowUsd":100000,"highUsd":800000}',
+   'MVP be-legacy/src/utils/seemp/first-formula.ts#calculatePropEffDevice (thesis, needs citation)'),
+  ('waste_heat_recovery', 'Utilize waste heat recovery from machinery devices on ship', 'technical', 6,
+   'seemp.measure.waste_heat_recovery', '{"type":"operational","potentialPercent":10}',
+   '{"type":"installed_power","usdPerKw":100,"mainEngine":true,"auxEngines":true,"fixedUsd":0}',
+   'MVP be-legacy/src/utils/seemp/first-formula.ts#calculateWasteHeatRecovery (thesis, needs citation)'),
+  ('lng', 'Using LNG for main engine and auxiliary engine', 'fuel', 7,
+   'seemp.measure.lng', '{"type":"fuel_switch","conversionFactor":2.75}',
+   '{"type":"installed_power","usdPerKw":1580,"mainEngine":true,"auxEngines":true,"fixedUsd":0}',
+   'MVP be-legacy/src/utils/seemp/second-formula.ts#calculateLNGFuel (thesis, needs citation)'),
+  ('biofuel', 'Using biofuels for main engine and auxiliary engine', 'fuel', 8,
+   'seemp.measure.biofuel', '{"type":"fuel_switch","conversionFactor":2.45}',
+   '{"type":"installed_power","usdPerKw":20,"mainEngine":true,"auxEngines":true,"fixedUsd":0}',
+   'MVP be-legacy/src/utils/seemp/second-formula.ts#calculateBioFuel (thesis, needs citation)'),
+  ('solar', 'Using solar panel energy source for supply electricity demand on ship', 'energy', 9,
+   'seemp.measure.solar', '{"type":"auxiliary","potentialShare":0.12,"coldIroning":false,"voyagePercent":42}',
+   '{"type":"installed_power","usdPerKw":3000,"mainEngine":false,"auxEngines":true,"fixedUsd":0}',
+   'MVP be-legacy/src/utils/seemp/third-formula.ts#calculateSolarPower (thesis, needs citation)'),
+  ('wind', 'Using wind power energy source for supply electricity demand on ship', 'energy', 10,
+   'seemp.measure.wind', '{"type":"auxiliary","potentialShare":0.15,"coldIroning":false,"voyagePercent":0}',
+   '{"type":"installed_power","usdPerKw":4000,"mainEngine":false,"auxEngines":true,"fixedUsd":0}',
+   'MVP be-legacy/src/utils/seemp/third-formula.ts#calculateWindPower (thesis, needs citation)'),
+  ('cold_ironing', 'Using cold ironing energy source for supply electricity demand on ship', 'energy', 11,
+   'seemp.measure.cold_ironing', '{"type":"auxiliary","potentialShare":0.1,"coldIroning":true,"voyagePercent":null}',
+   '{"type":"installed_power","usdPerKw":0.5,"mainEngine":false,"auxEngines":true,"fixedUsd":800150}',
+   'MVP be-legacy/src/utils/seemp/third-formula.ts#calculateColdIroning (thesis, needs citation)'),
+  ('fuel_cells', 'Using fuel cells energy source for supply electricity demand on ship', 'energy', 12,
+   'seemp.measure.fuel_cells', '{"type":"auxiliary","potentialShare":0.2,"coldIroning":false,"voyagePercent":0}',
+   '{"type":"installed_power","usdPerKw":1780,"mainEngine":false,"auxEngines":true,"fixedUsd":0}',
+   'MVP be-legacy/src/utils/seemp/third-formula.ts#calculateFuelCells (thesis, needs citation)')
+ON CONFLICT (code) DO NOTHING;

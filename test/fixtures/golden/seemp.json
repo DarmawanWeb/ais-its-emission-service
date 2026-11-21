@@ -1,0 +1,2225 @@
+{
+  "description": "legacy services/seemp.service.ts + utils/seemp/* (repositories stubbed, now fixed)",
+  "now": "2026-06-15T12:00:00.000Z",
+  "zTable": [
+    {
+      "year": 2023,
+      "zValue": 5
+    },
+    {
+      "year": 2024,
+      "zValue": 7
+    },
+    {
+      "year": 2025,
+      "zValue": 9
+    },
+    {
+      "year": 2026,
+      "zValue": 11
+    },
+    {
+      "year": 2027,
+      "zValue": 13.625
+    },
+    {
+      "year": 2028,
+      "zValue": 16.25
+    },
+    {
+      "year": 2029,
+      "zValue": 18.875
+    },
+    {
+      "year": 2030,
+      "zValue": 21.5
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "postman-single-2025",
+      "input": {
+        "ship": "A",
+        "currentYear": 2026,
+        "highestZYear": 2030,
+        "ciiRequired": 62.56963961854975,
+        "annual": [
+          {
+            "year": 2025,
+            "cii": {
+              "ciiRequired": 65.3817582530913,
+              "ciiAttained": 60.40916223,
+              "ciiRating": 0.923945208,
+              "ciiGrade": "C",
+              "totalDistance": 20300.58816,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 366.831416415746,
+                "fuelConsumptionAeTon": 737.33114699565,
+                "totalFuelConsumptionTon": 1104.1625634113966
+              }
+            }
+          }
+        ],
+        "voyagePerYear": 41.6666666666667
+      },
+      "measures": {
+        "airLubrication": {
+          "ciiRatingAfter": 0.9332884741705901,
+          "ciiGradeAfter": "C",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        "resistanceReduction": {
+          "ciiRatingAfter": 0.929265679023303,
+          "ciiGradeAfter": "C",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        "hullCoating": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        "powerSystemMachinery": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        "propEffDevice": {
+          "ciiRatingAfter": 0.913174498434155,
+          "ciiGradeAfter": "C",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        "wasteHeatRecovery": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        "lngFuel": {
+          "ciiRatingAfter": 0.8309092159914957,
+          "ciiGradeAfter": "B",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        },
+        "bioFuel": {
+          "ciiRatingAfter": 0.740264574246969,
+          "ciiGradeAfter": "B",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        "solarPower": {
+          "ciiRatingAfter": 0.8910652162830123,
+          "ciiGradeAfter": "B",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        "windPower": {
+          "ciiRatingAfter": 0.8716592524929713,
+          "ciiGradeAfter": "B",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        "coldIroning": {
+          "ciiRatingAfter": 0.9147836164708402,
+          "ciiGradeAfter": "C",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        "fuelCells": {
+          "ciiRatingAfter": 0.8393159795095696,
+          "ciiGradeAfter": "B",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        }
+      },
+      "calculateSemp": [
+        {
+          "name": "Using biofuels for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.740264574246969,
+          "ciiGradeAfter": "B",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        {
+          "name": "Hull coating maintenance on the hull surface",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        {
+          "name": "Modified and install hull air cavity lubrication system on ship",
+          "ciiRatingAfter": 0.9332884741705901,
+          "ciiGradeAfter": "C",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        {
+          "name": "Install propulsion exfficiency devices",
+          "ciiRatingAfter": 0.913174498434155,
+          "ciiGradeAfter": "C",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        {
+          "name": "Utilize waste heat recovery from machinery devices on ship",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        {
+          "name": "Modified and install resistance reduction devices on ship",
+          "ciiRatingAfter": 0.929265679023303,
+          "ciiGradeAfter": "C",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        {
+          "name": "Using cold ironing energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.9147836164708402,
+          "ciiGradeAfter": "C",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        {
+          "name": "Using fuel cells energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8393159795095696,
+          "ciiGradeAfter": "B",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        },
+        {
+          "name": "Using solar panel energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8910652162830123,
+          "ciiGradeAfter": "B",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        {
+          "name": "Variable speed electric power generation",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        {
+          "name": "Using wind power energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8716592524929713,
+          "ciiGradeAfter": "B",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        {
+          "name": "Using LNG for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.8309092159914957,
+          "ciiGradeAfter": "B",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        }
+      ],
+      "calculateSEEMPbyMMSI": [
+        {
+          "recommendation": "Using biofuels for main engine and auxiliary engine",
+          "cost": "$23,760",
+          "ciiRatingAfter": 0.74026457,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Hull coating maintenance on the hull surface",
+          "cost": "$30,540",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Modified and install hull air cavity lubrication system on ship",
+          "cost": "$107,500",
+          "ciiRatingAfter": 0.93328847,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Install propulsion exfficiency devices",
+          "cost": "$25,000 - $200,000",
+          "ciiRatingAfter": 0.9131745,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Utilize waste heat recovery from machinery devices on ship",
+          "cost": "$118,800",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Modified and install resistance reduction devices on ship",
+          "cost": "$75,000 - $175,000",
+          "ciiRatingAfter": 0.92926568,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using cold ironing energy source for supply electricity demand on ship",
+          "cost": "$200,107",
+          "ciiRatingAfter": 0.91478362,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using fuel cells energy source for supply electricity demand on ship",
+          "cost": "$245,640",
+          "ciiRatingAfter": 0.83931598,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using solar panel energy source for supply electricity demand on ship",
+          "cost": "$414,000",
+          "ciiRatingAfter": 0.89106522,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Variable speed electric power generation",
+          "cost": "$525,000",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using wind power energy source for supply electricity demand on ship",
+          "cost": "$552,000",
+          "ciiRatingAfter": 0.87165925,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using LNG for main engine and auxiliary engine",
+          "cost": "$1,877,040",
+          "ciiRatingAfter": 0.83090922,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        }
+      ]
+    },
+    {
+      "name": "two-records-oldest-first",
+      "input": {
+        "ship": "A",
+        "currentYear": 2026,
+        "highestZYear": 2030,
+        "ciiRequired": 62.56963961854975,
+        "annual": [
+          {
+            "year": 2024,
+            "cii": {
+              "ciiRequired": 66.2,
+              "ciiAttained": 58.1,
+              "ciiRating": 0.8776,
+              "ciiGrade": "B",
+              "totalDistance": 18950.25,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 301.4,
+                "fuelConsumptionAeTon": 690.2,
+                "totalFuelConsumptionTon": 991.6
+              }
+            }
+          },
+          {
+            "year": 2025,
+            "cii": {
+              "ciiRequired": 65.3817582530913,
+              "ciiAttained": 60.40916223,
+              "ciiRating": 0.923945208,
+              "ciiGrade": "C",
+              "totalDistance": 20300.58816,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 366.831416415746,
+                "fuelConsumptionAeTon": 737.33114699565,
+                "totalFuelConsumptionTon": 1104.1625634113966
+              }
+            }
+          }
+        ],
+        "voyagePerYear": 41.6666666666667
+      },
+      "measures": {
+        "airLubrication": {
+          "ciiRatingAfter": 0.9332884741705901,
+          "ciiGradeAfter": "C",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        "resistanceReduction": {
+          "ciiRatingAfter": 0.929265679023303,
+          "ciiGradeAfter": "C",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        "hullCoating": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        "powerSystemMachinery": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        "propEffDevice": {
+          "ciiRatingAfter": 0.913174498434155,
+          "ciiGradeAfter": "C",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        "wasteHeatRecovery": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        "lngFuel": {
+          "ciiRatingAfter": 0.7993753513448079,
+          "ciiGradeAfter": "B",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        },
+        "bioFuel": {
+          "ciiRatingAfter": 0.7121707675617379,
+          "ciiGradeAfter": "A",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        "solarPower": {
+          "ciiRatingAfter": 0.8540865996353718,
+          "ciiGradeAfter": "B",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        "windPower": {
+          "ciiRatingAfter": 0.8346266698704463,
+          "ciiGradeAfter": "B",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        "coldIroning": {
+          "ciiRatingAfter": 0.8778709582369476,
+          "ciiGradeAfter": "B",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        "fuelCells": {
+          "ciiRatingAfter": 0.8021934535955705,
+          "ciiGradeAfter": "B",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        }
+      },
+      "calculateSemp": [
+        {
+          "name": "Using biofuels for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.7121707675617379,
+          "ciiGradeAfter": "A",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        {
+          "name": "Hull coating maintenance on the hull surface",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        {
+          "name": "Modified and install hull air cavity lubrication system on ship",
+          "ciiRatingAfter": 0.9332884741705901,
+          "ciiGradeAfter": "C",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        {
+          "name": "Install propulsion exfficiency devices",
+          "ciiRatingAfter": 0.913174498434155,
+          "ciiGradeAfter": "C",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        {
+          "name": "Utilize waste heat recovery from machinery devices on ship",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        {
+          "name": "Modified and install resistance reduction devices on ship",
+          "ciiRatingAfter": 0.929265679023303,
+          "ciiGradeAfter": "C",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        {
+          "name": "Using cold ironing energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8778709582369476,
+          "ciiGradeAfter": "B",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        {
+          "name": "Using fuel cells energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8021934535955705,
+          "ciiGradeAfter": "B",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        },
+        {
+          "name": "Using solar panel energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8540865996353718,
+          "ciiGradeAfter": "B",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        {
+          "name": "Variable speed electric power generation",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        {
+          "name": "Using wind power energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8346266698704463,
+          "ciiGradeAfter": "B",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        {
+          "name": "Using LNG for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.7993753513448079,
+          "ciiGradeAfter": "B",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        }
+      ],
+      "calculateSEEMPbyMMSI": [
+        {
+          "recommendation": "Using biofuels for main engine and auxiliary engine",
+          "cost": "$23,760",
+          "ciiRatingAfter": 0.71217077,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Hull coating maintenance on the hull surface",
+          "cost": "$30,540",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Modified and install hull air cavity lubrication system on ship",
+          "cost": "$107,500",
+          "ciiRatingAfter": 0.93328847,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Install propulsion exfficiency devices",
+          "cost": "$25,000 - $200,000",
+          "ciiRatingAfter": 0.9131745,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Utilize waste heat recovery from machinery devices on ship",
+          "cost": "$118,800",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Modified and install resistance reduction devices on ship",
+          "cost": "$75,000 - $175,000",
+          "ciiRatingAfter": 0.92926568,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using cold ironing energy source for supply electricity demand on ship",
+          "cost": "$200,107",
+          "ciiRatingAfter": 0.87787096,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using fuel cells energy source for supply electricity demand on ship",
+          "cost": "$245,640",
+          "ciiRatingAfter": 0.80219345,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using solar panel energy source for supply electricity demand on ship",
+          "cost": "$414,000",
+          "ciiRatingAfter": 0.8540866,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Variable speed electric power generation",
+          "cost": "$525,000",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using wind power energy source for supply electricity demand on ship",
+          "cost": "$552,000",
+          "ciiRatingAfter": 0.83462667,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using LNG for main engine and auxiliary engine",
+          "cost": "$1,877,040",
+          "ciiRatingAfter": 0.79937535,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.923945208,
+          "ciiGradeBefore": "C"
+        }
+      ]
+    },
+    {
+      "name": "inferior-vessel",
+      "input": {
+        "ship": "A",
+        "currentYear": 2026,
+        "highestZYear": 2030,
+        "ciiRequired": 62.56963961854975,
+        "annual": [
+          {
+            "year": 2025,
+            "cii": {
+              "ciiRequired": 63.9,
+              "ciiAttained": 84.7,
+              "ciiRating": 1.3255,
+              "ciiGrade": "D",
+              "totalDistance": 15000,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 600,
+                "fuelConsumptionAeTon": 620,
+                "totalFuelConsumptionTon": 1220
+              }
+            }
+          }
+        ],
+        "voyagePerYear": 41.6666666666667
+      },
+      "measures": {
+        "airLubrication": {
+          "ciiRatingAfter": 1.3085686151593727,
+          "ciiGradeAfter": "D",
+          "cost": 430000,
+          "costDisplay": "$430,000"
+        },
+        "resistanceReduction": {
+          "ciiRatingAfter": 1.302928233197479,
+          "ciiGradeAfter": "D",
+          "cost": 500000,
+          "costDisplay": "$300,000 - $700,000"
+        },
+        "hullCoating": {
+          "ciiRatingAfter": 1.297287851235585,
+          "ciiGradeAfter": "D",
+          "cost": 122161.02494859256,
+          "costDisplay": "$122,161"
+        },
+        "powerSystemMachinery": {
+          "ciiRatingAfter": 1.297287851235585,
+          "ciiGradeAfter": "D",
+          "cost": 2100000,
+          "costDisplay": "$2,100,000"
+        },
+        "propEffDevice": {
+          "ciiRatingAfter": 1.2803667053499035,
+          "ciiGradeAfter": "D",
+          "cost": 450000,
+          "costDisplay": "$100,000 - $800,000"
+        },
+        "wasteHeatRecovery": {
+          "ciiRatingAfter": 1.297287851235585,
+          "ciiGradeAfter": "D",
+          "cost": 475200,
+          "costDisplay": "$475,200"
+        },
+        "lngFuel": {
+          "ciiRatingAfter": 1.2425038696532724,
+          "ciiGradeAfter": "D",
+          "cost": 7508160,
+          "costDisplay": "$7,508,160"
+        },
+        "bioFuel": {
+          "ciiRatingAfter": 1.1069579929638245,
+          "ciiGradeAfter": "C",
+          "cost": 95040,
+          "costDisplay": "$95,040"
+        },
+        "solarPower": {
+          "ciiRatingAfter": 1.360196798938233,
+          "ciiGradeAfter": "D",
+          "cost": 1656000,
+          "costDisplay": "$1,656,000"
+        },
+        "windPower": {
+          "ciiRatingAfter": 1.3381125981174835,
+          "ciiGradeAfter": "D",
+          "cost": 2208000,
+          "costDisplay": "$2,208,000"
+        },
+        "coldIroning": {
+          "ciiRatingAfter": 1.387188599941372,
+          "ciiGradeAfter": "D",
+          "cost": 800426,
+          "costDisplay": "$800,426"
+        },
+        "fuelCells": {
+          "ciiRatingAfter": 1.3013055967495668,
+          "ciiGradeAfter": "D",
+          "cost": 982560,
+          "costDisplay": "$982,560"
+        }
+      },
+      "calculateSemp": [
+        {
+          "name": "Using biofuels for main engine and auxiliary engine",
+          "ciiRatingAfter": 1.1069579929638245,
+          "ciiGradeAfter": "C",
+          "cost": 95040,
+          "costDisplay": "$95,040"
+        }
+      ],
+      "calculateSEEMPbyMMSI": [
+        {
+          "recommendation": "Using biofuels for main engine and auxiliary engine",
+          "cost": "$95,040",
+          "ciiRatingAfter": 1.10695799,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.3255,
+          "ciiGradeBefore": "D"
+        }
+      ]
+    },
+    {
+      "name": "superior-vessel",
+      "input": {
+        "ship": "A",
+        "currentYear": 2026,
+        "highestZYear": 2030,
+        "ciiRequired": 62.56963961854975,
+        "annual": [
+          {
+            "year": 2025,
+            "cii": {
+              "ciiRequired": 63.9,
+              "ciiAttained": 41.2,
+              "ciiRating": 0.6448,
+              "ciiGrade": "A",
+              "totalDistance": 26000,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 420,
+                "fuelConsumptionAeTon": 380,
+                "totalFuelConsumptionTon": 800
+              }
+            }
+          }
+        ],
+        "voyagePerYear": 41.6666666666667
+      },
+      "measures": {
+        "airLubrication": {
+          "ciiRatingAfter": 0.6365174373620561,
+          "ciiGradeAfter": "A",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        "resistanceReduction": {
+          "ciiRatingAfter": 0.6337738277182542,
+          "ciiGradeAfter": "A",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        "hullCoating": {
+          "ciiRatingAfter": 0.6310302180744523,
+          "ciiGradeAfter": "A",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        "powerSystemMachinery": {
+          "ciiRatingAfter": 0.6310302180744523,
+          "ciiGradeAfter": "A",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        "propEffDevice": {
+          "ciiRatingAfter": 0.6227993891430463,
+          "ciiGradeAfter": "A",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        "wasteHeatRecovery": {
+          "ciiRatingAfter": 0.6310302180744523,
+          "ciiGradeAfter": "A",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        "lngFuel": {
+          "ciiRatingAfter": 0.47005190529127583,
+          "ciiGradeAfter": "A",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        },
+        "bioFuel": {
+          "ciiRatingAfter": 0.41877351562313664,
+          "ciiGradeAfter": "A",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        "solarPower": {
+          "ciiRatingAfter": 0.5167593393043971,
+          "ciiGradeAfter": "A",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        "windPower": {
+          "ciiRatingAfter": 0.5089504097337845,
+          "ciiGradeAfter": "A",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        "coldIroning": {
+          "ciiRatingAfter": 0.5263035865573679,
+          "ciiGradeAfter": "A",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        "fuelCells": {
+          "ciiRatingAfter": 0.49593552711609684,
+          "ciiGradeAfter": "A",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        }
+      },
+      "calculateSemp": [
+        {
+          "name": "Using biofuels for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.41877351562313664,
+          "ciiGradeAfter": "A",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        {
+          "name": "Hull coating maintenance on the hull surface",
+          "ciiRatingAfter": 0.6310302180744523,
+          "ciiGradeAfter": "A",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        {
+          "name": "Modified and install hull air cavity lubrication system on ship",
+          "ciiRatingAfter": 0.6365174373620561,
+          "ciiGradeAfter": "A",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        {
+          "name": "Install propulsion exfficiency devices",
+          "ciiRatingAfter": 0.6227993891430463,
+          "ciiGradeAfter": "A",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        {
+          "name": "Utilize waste heat recovery from machinery devices on ship",
+          "ciiRatingAfter": 0.6310302180744523,
+          "ciiGradeAfter": "A",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        {
+          "name": "Modified and install resistance reduction devices on ship",
+          "ciiRatingAfter": 0.6337738277182542,
+          "ciiGradeAfter": "A",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        {
+          "name": "Using cold ironing energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.5263035865573679,
+          "ciiGradeAfter": "A",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        {
+          "name": "Using fuel cells energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.49593552711609684,
+          "ciiGradeAfter": "A",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        },
+        {
+          "name": "Using solar panel energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.5167593393043971,
+          "ciiGradeAfter": "A",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        {
+          "name": "Variable speed electric power generation",
+          "ciiRatingAfter": 0.6310302180744523,
+          "ciiGradeAfter": "A",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        {
+          "name": "Using wind power energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.5089504097337845,
+          "ciiGradeAfter": "A",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        {
+          "name": "Using LNG for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.47005190529127583,
+          "ciiGradeAfter": "A",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        }
+      ],
+      "calculateSEEMPbyMMSI": [
+        {
+          "recommendation": "Using biofuels for main engine and auxiliary engine",
+          "cost": "$23,760",
+          "ciiRatingAfter": 0.41877352,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Hull coating maintenance on the hull surface",
+          "cost": "$30,540",
+          "ciiRatingAfter": 0.63103022,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Modified and install hull air cavity lubrication system on ship",
+          "cost": "$107,500",
+          "ciiRatingAfter": 0.63651744,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Install propulsion exfficiency devices",
+          "cost": "$25,000 - $200,000",
+          "ciiRatingAfter": 0.62279939,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Utilize waste heat recovery from machinery devices on ship",
+          "cost": "$118,800",
+          "ciiRatingAfter": 0.63103022,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Modified and install resistance reduction devices on ship",
+          "cost": "$75,000 - $175,000",
+          "ciiRatingAfter": 0.63377383,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Using cold ironing energy source for supply electricity demand on ship",
+          "cost": "$200,107",
+          "ciiRatingAfter": 0.52630359,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Using fuel cells energy source for supply electricity demand on ship",
+          "cost": "$245,640",
+          "ciiRatingAfter": 0.49593553,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Using solar panel energy source for supply electricity demand on ship",
+          "cost": "$414,000",
+          "ciiRatingAfter": 0.51675934,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Variable speed electric power generation",
+          "cost": "$525,000",
+          "ciiRatingAfter": 0.63103022,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Using wind power energy source for supply electricity demand on ship",
+          "cost": "$552,000",
+          "ciiRatingAfter": 0.50895041,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        },
+        {
+          "recommendation": "Using LNG for main engine and auxiliary engine",
+          "cost": "$1,877,040",
+          "ciiRatingAfter": 0.47005191,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.6448,
+          "ciiGradeBefore": "A"
+        }
+      ]
+    },
+    {
+      "name": "bulk-loa-250",
+      "input": {
+        "ship": "B",
+        "currentYear": 2026,
+        "highestZYear": 2030,
+        "ciiRequired": 4.5041842296260395,
+        "annual": [
+          {
+            "year": 2025,
+            "cii": {
+              "ciiRequired": 4.4,
+              "ciiAttained": 4.9,
+              "ciiRating": 1.11,
+              "ciiGrade": "D",
+              "totalDistance": 52000,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 4500,
+                "fuelConsumptionAeTon": 450,
+                "totalFuelConsumptionTon": 4950
+              }
+            }
+          }
+        ],
+        "voyagePerYear": 75
+      },
+      "measures": {
+        "airLubrication": {
+          "ciiRatingAfter": 1.0226047082409002,
+          "ciiGradeAfter": "C",
+          "cost": 640000,
+          "costDisplay": "$640,000"
+        },
+        "resistanceReduction": {
+          "ciiRatingAfter": 1.014445628121957,
+          "ciiGradeAfter": "C",
+          "cost": 250000,
+          "costDisplay": "$150,000 - $350,000"
+        },
+        "hullCoating": {
+          "ciiRatingAfter": 1.0062865480030136,
+          "ciiGradeAfter": "C",
+          "cost": 372918.92726631847,
+          "costDisplay": "$372,919"
+        },
+        "powerSystemMachinery": {
+          "ciiRatingAfter": 1.0062865480030136,
+          "ciiGradeAfter": "C",
+          "cost": 2000000,
+          "costDisplay": "$2,000,000"
+        },
+        "propEffDevice": {
+          "ciiRatingAfter": 0.9818093076461835,
+          "ciiGradeAfter": "C",
+          "cost": 150000,
+          "costDisplay": "$33,333 - $266,667"
+        },
+        "wasteHeatRecovery": {
+          "ciiRatingAfter": 1.0062865480030136,
+          "ciiGradeAfter": "C",
+          "cost": 490000,
+          "costDisplay": "$490,000"
+        },
+        "lngFuel": {
+          "ciiRatingAfter": 0.9686506028180393,
+          "ciiGradeAfter": "C",
+          "cost": 5161333.333333333,
+          "costDisplay": "$5,161,333"
+        },
+        "bioFuel": {
+          "ciiRatingAfter": 0.8629796279651625,
+          "ciiGradeAfter": "B",
+          "cost": 49000,
+          "costDisplay": "$49,000"
+        },
+        "solarPower": {
+          "ciiRatingAfter": 1.084898922038614,
+          "ciiGradeAfter": "D",
+          "cost": 5400000,
+          "costDisplay": "$5,400,000"
+        },
+        "windPower": {
+          "ciiRatingAfter": 1.0819074728050515,
+          "ciiGradeAfter": "D",
+          "cost": 7200000,
+          "costDisplay": "$7,200,000"
+        },
+        "coldIroning": {
+          "ciiRatingAfter": 1.0819074728050515,
+          "ciiGradeAfter": "D",
+          "cost": 801050,
+          "costDisplay": "$801,050"
+        },
+        "fuelCells": {
+          "ciiRatingAfter": 1.0769217240824478,
+          "ciiGradeAfter": "D",
+          "cost": 3204000,
+          "costDisplay": "$3,204,000"
+        }
+      },
+      "calculateSemp": [
+        {
+          "name": "Using biofuels for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.8629796279651625,
+          "ciiGradeAfter": "B",
+          "cost": 49000,
+          "costDisplay": "$49,000"
+        },
+        {
+          "name": "Install propulsion exfficiency devices",
+          "ciiRatingAfter": 0.9818093076461835,
+          "ciiGradeAfter": "C",
+          "cost": 150000,
+          "costDisplay": "$33,333 - $266,667"
+        },
+        {
+          "name": "Modified and install resistance reduction devices on ship",
+          "ciiRatingAfter": 1.014445628121957,
+          "ciiGradeAfter": "C",
+          "cost": 250000,
+          "costDisplay": "$150,000 - $350,000"
+        },
+        {
+          "name": "Hull coating maintenance on the hull surface",
+          "ciiRatingAfter": 1.0062865480030136,
+          "ciiGradeAfter": "C",
+          "cost": 372918.92726631847,
+          "costDisplay": "$372,919"
+        },
+        {
+          "name": "Utilize waste heat recovery from machinery devices on ship",
+          "ciiRatingAfter": 1.0062865480030136,
+          "ciiGradeAfter": "C",
+          "cost": 490000,
+          "costDisplay": "$490,000"
+        },
+        {
+          "name": "Modified and install hull air cavity lubrication system on ship",
+          "ciiRatingAfter": 1.0226047082409002,
+          "ciiGradeAfter": "C",
+          "cost": 640000,
+          "costDisplay": "$640,000"
+        },
+        {
+          "name": "Variable speed electric power generation",
+          "ciiRatingAfter": 1.0062865480030136,
+          "ciiGradeAfter": "C",
+          "cost": 2000000,
+          "costDisplay": "$2,000,000"
+        },
+        {
+          "name": "Using LNG for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.9686506028180393,
+          "ciiGradeAfter": "C",
+          "cost": 5161333.333333333,
+          "costDisplay": "$5,161,333"
+        }
+      ],
+      "calculateSEEMPbyMMSI": [
+        {
+          "recommendation": "Using biofuels for main engine and auxiliary engine",
+          "cost": "$49,000",
+          "ciiRatingAfter": 0.86297963,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        },
+        {
+          "recommendation": "Install propulsion exfficiency devices",
+          "cost": "$33,333 - $266,667",
+          "ciiRatingAfter": 0.98180931,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        },
+        {
+          "recommendation": "Modified and install resistance reduction devices on ship",
+          "cost": "$150,000 - $350,000",
+          "ciiRatingAfter": 1.01444563,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        },
+        {
+          "recommendation": "Hull coating maintenance on the hull surface",
+          "cost": "$372,919",
+          "ciiRatingAfter": 1.00628655,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        },
+        {
+          "recommendation": "Utilize waste heat recovery from machinery devices on ship",
+          "cost": "$490,000",
+          "ciiRatingAfter": 1.00628655,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        },
+        {
+          "recommendation": "Modified and install hull air cavity lubrication system on ship",
+          "cost": "$640,000",
+          "ciiRatingAfter": 1.02260471,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        },
+        {
+          "recommendation": "Variable speed electric power generation",
+          "cost": "$2,000,000",
+          "ciiRatingAfter": 1.00628655,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        },
+        {
+          "recommendation": "Using LNG for main engine and auxiliary engine",
+          "cost": "$5,161,333",
+          "ciiRatingAfter": 0.9686506,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 1.11,
+          "ciiGradeBefore": "D"
+        }
+      ]
+    },
+    {
+      "name": "container-loa-150",
+      "input": {
+        "ship": "C",
+        "currentYear": 2026,
+        "highestZYear": 2030,
+        "ciiRequired": 8.89478269241803,
+        "annual": [
+          {
+            "year": 2025,
+            "cii": {
+              "ciiRequired": 9,
+              "ciiAttained": 8.1,
+              "ciiRating": 0.9,
+              "ciiGrade": "C",
+              "totalDistance": 90000,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 12000,
+                "fuelConsumptionAeTon": 900,
+                "totalFuelConsumptionTon": 12900
+              }
+            }
+          }
+        ],
+        "voyagePerYear": 60
+      },
+      "measures": {
+        "airLubrication": {
+          "ciiRatingAfter": 0.8669351761199379,
+          "ciiGradeAfter": "B",
+          "cost": 212500,
+          "costDisplay": "$212,500"
+        },
+        "resistanceReduction": {
+          "ciiRatingAfter": 0.861471298959518,
+          "ciiGradeAfter": "B",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        "hullCoating": {
+          "ciiRatingAfter": 0.8560074217990983,
+          "ciiGradeAfter": "B",
+          "cost": 247679.77161751848,
+          "costDisplay": "$247,680"
+        },
+        "powerSystemMachinery": {
+          "ciiRatingAfter": 0.8560074217990983,
+          "ciiGradeAfter": "B",
+          "cost": 3750000,
+          "costDisplay": "$3,750,000"
+        },
+        "propEffDevice": {
+          "ciiRatingAfter": 0.839615790317839,
+          "ciiGradeAfter": "B",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        "wasteHeatRecovery": {
+          "ciiRatingAfter": 0.8560074217990983,
+          "ciiGradeAfter": "B",
+          "cost": 1050000,
+          "costDisplay": "$1,050,000"
+        },
+        "lngFuel": {
+          "ciiRatingAfter": 0.8862873446085576,
+          "ciiGradeAfter": "B",
+          "cost": 16590000,
+          "costDisplay": "$16,590,000"
+        },
+        "bioFuel": {
+          "ciiRatingAfter": 0.7896014524694425,
+          "ciiGradeAfter": "A",
+          "cost": 210000,
+          "costDisplay": "$210,000"
+        },
+        "solarPower": {
+          "ciiRatingAfter": 0.9951973315262165,
+          "ciiGradeAfter": "C",
+          "cost": 12000000,
+          "costDisplay": "$12,000,000"
+        },
+        "windPower": {
+          "ciiRatingAfter": 0.9930967743067664,
+          "ciiGradeAfter": "C",
+          "cost": 16000000,
+          "costDisplay": "$16,000,000"
+        },
+        "coldIroning": {
+          "ciiRatingAfter": 0.9951973315262165,
+          "ciiGradeAfter": "C",
+          "cost": 268716.6666666667,
+          "costDisplay": "$268,717"
+        },
+        "fuelCells": {
+          "ciiRatingAfter": 0.9895958456076825,
+          "ciiGradeAfter": "C",
+          "cost": 7120000,
+          "costDisplay": "$7,120,000"
+        }
+      },
+      "calculateSemp": [
+        {
+          "name": "Install propulsion exfficiency devices",
+          "ciiRatingAfter": 0.839615790317839,
+          "ciiGradeAfter": "B",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        {
+          "name": "Modified and install resistance reduction devices on ship",
+          "ciiRatingAfter": 0.861471298959518,
+          "ciiGradeAfter": "B",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        {
+          "name": "Using biofuels for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.7896014524694425,
+          "ciiGradeAfter": "A",
+          "cost": 210000,
+          "costDisplay": "$210,000"
+        },
+        {
+          "name": "Modified and install hull air cavity lubrication system on ship",
+          "ciiRatingAfter": 0.8669351761199379,
+          "ciiGradeAfter": "B",
+          "cost": 212500,
+          "costDisplay": "$212,500"
+        },
+        {
+          "name": "Hull coating maintenance on the hull surface",
+          "ciiRatingAfter": 0.8560074217990983,
+          "ciiGradeAfter": "B",
+          "cost": 247679.77161751848,
+          "costDisplay": "$247,680"
+        },
+        {
+          "name": "Using cold ironing energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.9951973315262165,
+          "ciiGradeAfter": "C",
+          "cost": 268716.6666666667,
+          "costDisplay": "$268,717"
+        },
+        {
+          "name": "Utilize waste heat recovery from machinery devices on ship",
+          "ciiRatingAfter": 0.8560074217990983,
+          "ciiGradeAfter": "B",
+          "cost": 1050000,
+          "costDisplay": "$1,050,000"
+        },
+        {
+          "name": "Variable speed electric power generation",
+          "ciiRatingAfter": 0.8560074217990983,
+          "ciiGradeAfter": "B",
+          "cost": 3750000,
+          "costDisplay": "$3,750,000"
+        },
+        {
+          "name": "Using fuel cells energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.9895958456076825,
+          "ciiGradeAfter": "C",
+          "cost": 7120000,
+          "costDisplay": "$7,120,000"
+        },
+        {
+          "name": "Using solar panel energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.9951973315262165,
+          "ciiGradeAfter": "C",
+          "cost": 12000000,
+          "costDisplay": "$12,000,000"
+        },
+        {
+          "name": "Using wind power energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.9930967743067664,
+          "ciiGradeAfter": "C",
+          "cost": 16000000,
+          "costDisplay": "$16,000,000"
+        },
+        {
+          "name": "Using LNG for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.8862873446085576,
+          "ciiGradeAfter": "B",
+          "cost": 16590000,
+          "costDisplay": "$16,590,000"
+        }
+      ],
+      "calculateSEEMPbyMMSI": [
+        {
+          "recommendation": "Install propulsion exfficiency devices",
+          "cost": "$25,000 - $200,000",
+          "ciiRatingAfter": 0.83961579,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Modified and install resistance reduction devices on ship",
+          "cost": "$75,000 - $175,000",
+          "ciiRatingAfter": 0.8614713,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using biofuels for main engine and auxiliary engine",
+          "cost": "$210,000",
+          "ciiRatingAfter": 0.78960145,
+          "ciiGradeAfter": "A",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Modified and install hull air cavity lubrication system on ship",
+          "cost": "$212,500",
+          "ciiRatingAfter": 0.86693518,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Hull coating maintenance on the hull surface",
+          "cost": "$247,680",
+          "ciiRatingAfter": 0.85600742,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using cold ironing energy source for supply electricity demand on ship",
+          "cost": "$268,717",
+          "ciiRatingAfter": 0.99519733,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Utilize waste heat recovery from machinery devices on ship",
+          "cost": "$1,050,000",
+          "ciiRatingAfter": 0.85600742,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Variable speed electric power generation",
+          "cost": "$3,750,000",
+          "ciiRatingAfter": 0.85600742,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using fuel cells energy source for supply electricity demand on ship",
+          "cost": "$7,120,000",
+          "ciiRatingAfter": 0.98959585,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using solar panel energy source for supply electricity demand on ship",
+          "cost": "$12,000,000",
+          "ciiRatingAfter": 0.99519733,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using wind power energy source for supply electricity demand on ship",
+          "cost": "$16,000,000",
+          "ciiRatingAfter": 0.99309677,
+          "ciiGradeAfter": "C",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        },
+        {
+          "recommendation": "Using LNG for main engine and auxiliary engine",
+          "cost": "$16,590,000",
+          "ciiRatingAfter": 0.88628734,
+          "ciiGradeAfter": "B",
+          "ciiRatingBefore": 0.9,
+          "ciiGradeBefore": "C"
+        }
+      ]
+    },
+    {
+      "name": "no-previous-year-record",
+      "input": {
+        "ship": "A",
+        "currentYear": 2026,
+        "highestZYear": 2030,
+        "ciiRequired": 62.56963961854975,
+        "annual": [
+          {
+            "year": 2023,
+            "cii": {
+              "ciiRequired": 65.3817582530913,
+              "ciiAttained": 60.40916223,
+              "ciiRating": 0.923945208,
+              "ciiGrade": "C",
+              "totalDistance": 20300.58816,
+              "fuelConsumption": {
+                "fuelConsumptionMeTon": 366.831416415746,
+                "fuelConsumptionAeTon": 737.33114699565,
+                "totalFuelConsumptionTon": 1104.1625634113966
+              }
+            }
+          }
+        ],
+        "voyagePerYear": 41.6666666666667
+      },
+      "measures": {
+        "airLubrication": {
+          "ciiRatingAfter": 0.9332884741705901,
+          "ciiGradeAfter": "C",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        "resistanceReduction": {
+          "ciiRatingAfter": 0.929265679023303,
+          "ciiGradeAfter": "C",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        "hullCoating": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        "powerSystemMachinery": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        "propEffDevice": {
+          "ciiRatingAfter": 0.913174498434155,
+          "ciiGradeAfter": "C",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        "wasteHeatRecovery": {
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        "lngFuel": {
+          "ciiRatingAfter": 0.8309092159914957,
+          "ciiGradeAfter": "B",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        },
+        "bioFuel": {
+          "ciiRatingAfter": 0.740264574246969,
+          "ciiGradeAfter": "B",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        "solarPower": {
+          "ciiRatingAfter": 0.8910652162830123,
+          "ciiGradeAfter": "B",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        "windPower": {
+          "ciiRatingAfter": 0.8716592524929713,
+          "ciiGradeAfter": "B",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        "coldIroning": {
+          "ciiRatingAfter": 0.9147836164708402,
+          "ciiGradeAfter": "C",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        "fuelCells": {
+          "ciiRatingAfter": 0.8393159795095696,
+          "ciiGradeAfter": "B",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        }
+      },
+      "calculateSemp": [
+        {
+          "name": "Using biofuels for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.740264574246969,
+          "ciiGradeAfter": "B",
+          "cost": 23760,
+          "costDisplay": "$23,760"
+        },
+        {
+          "name": "Hull coating maintenance on the hull surface",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 30540.25623714814,
+          "costDisplay": "$30,540"
+        },
+        {
+          "name": "Modified and install hull air cavity lubrication system on ship",
+          "ciiRatingAfter": 0.9332884741705901,
+          "ciiGradeAfter": "C",
+          "cost": 107500,
+          "costDisplay": "$107,500"
+        },
+        {
+          "name": "Install propulsion exfficiency devices",
+          "ciiRatingAfter": 0.913174498434155,
+          "ciiGradeAfter": "C",
+          "cost": 112500,
+          "costDisplay": "$25,000 - $200,000"
+        },
+        {
+          "name": "Utilize waste heat recovery from machinery devices on ship",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 118800,
+          "costDisplay": "$118,800"
+        },
+        {
+          "name": "Modified and install resistance reduction devices on ship",
+          "ciiRatingAfter": 0.929265679023303,
+          "ciiGradeAfter": "C",
+          "cost": 125000,
+          "costDisplay": "$75,000 - $175,000"
+        },
+        {
+          "name": "Using cold ironing energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.9147836164708402,
+          "ciiGradeAfter": "C",
+          "cost": 200106.5,
+          "costDisplay": "$200,107"
+        },
+        {
+          "name": "Using fuel cells energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8393159795095696,
+          "ciiGradeAfter": "B",
+          "cost": 245640,
+          "costDisplay": "$245,640"
+        },
+        {
+          "name": "Using solar panel energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8910652162830123,
+          "ciiGradeAfter": "B",
+          "cost": 414000,
+          "costDisplay": "$414,000"
+        },
+        {
+          "name": "Variable speed electric power generation",
+          "ciiRatingAfter": 0.925242883876016,
+          "ciiGradeAfter": "C",
+          "cost": 525000,
+          "costDisplay": "$525,000"
+        },
+        {
+          "name": "Using wind power energy source for supply electricity demand on ship",
+          "ciiRatingAfter": 0.8716592524929713,
+          "ciiGradeAfter": "B",
+          "cost": 552000,
+          "costDisplay": "$552,000"
+        },
+        {
+          "name": "Using LNG for main engine and auxiliary engine",
+          "ciiRatingAfter": 0.8309092159914957,
+          "ciiGradeAfter": "B",
+          "cost": 1877040,
+          "costDisplay": "$1,877,040"
+        }
+      ],
+      "calculateSEEMPbyMMSI": [
+        {
+          "recommendation": "Using biofuels for main engine and auxiliary engine",
+          "cost": "$23,760",
+          "ciiRatingAfter": 0.74026457,
+          "ciiGradeAfter": "B"
+        },
+        {
+          "recommendation": "Hull coating maintenance on the hull surface",
+          "cost": "$30,540",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C"
+        },
+        {
+          "recommendation": "Modified and install hull air cavity lubrication system on ship",
+          "cost": "$107,500",
+          "ciiRatingAfter": 0.93328847,
+          "ciiGradeAfter": "C"
+        },
+        {
+          "recommendation": "Install propulsion exfficiency devices",
+          "cost": "$25,000 - $200,000",
+          "ciiRatingAfter": 0.9131745,
+          "ciiGradeAfter": "C"
+        },
+        {
+          "recommendation": "Utilize waste heat recovery from machinery devices on ship",
+          "cost": "$118,800",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C"
+        },
+        {
+          "recommendation": "Modified and install resistance reduction devices on ship",
+          "cost": "$75,000 - $175,000",
+          "ciiRatingAfter": 0.92926568,
+          "ciiGradeAfter": "C"
+        },
+        {
+          "recommendation": "Using cold ironing energy source for supply electricity demand on ship",
+          "cost": "$200,107",
+          "ciiRatingAfter": 0.91478362,
+          "ciiGradeAfter": "C"
+        },
+        {
+          "recommendation": "Using fuel cells energy source for supply electricity demand on ship",
+          "cost": "$245,640",
+          "ciiRatingAfter": 0.83931598,
+          "ciiGradeAfter": "B"
+        },
+        {
+          "recommendation": "Using solar panel energy source for supply electricity demand on ship",
+          "cost": "$414,000",
+          "ciiRatingAfter": 0.89106522,
+          "ciiGradeAfter": "B"
+        },
+        {
+          "recommendation": "Variable speed electric power generation",
+          "cost": "$525,000",
+          "ciiRatingAfter": 0.92524288,
+          "ciiGradeAfter": "C"
+        },
+        {
+          "recommendation": "Using wind power energy source for supply electricity demand on ship",
+          "cost": "$552,000",
+          "ciiRatingAfter": 0.87165925,
+          "ciiGradeAfter": "B"
+        },
+        {
+          "recommendation": "Using LNG for main engine and auxiliary engine",
+          "cost": "$1,877,040",
+          "ciiRatingAfter": 0.83090922,
+          "ciiGradeAfter": "B"
+        }
+      ]
+    }
+  ],
+  "amortization": [
+    {
+      "input": {
+        "ship": "A",
+        "rating": 0.3,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 0.6,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 0.75,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 0.9,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 1,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 1.05,
+        "totalCost": 850000
+      },
+      "years": 3,
+      "output": 283333.3333333333
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 1.12,
+        "totalCost": 850000
+      },
+      "years": 0,
+      "output": 850000
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 1.2,
+        "totalCost": 850000
+      },
+      "years": 0,
+      "output": 850000
+    },
+    {
+      "input": {
+        "ship": "A",
+        "rating": 1.5,
+        "totalCost": 850000
+      },
+      "years": 0,
+      "output": 850000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 0.3,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 0.6,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 0.75,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 0.9,
+        "totalCost": 850000
+      },
+      "years": 4,
+      "output": 212500
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 1,
+        "totalCost": 850000
+      },
+      "years": 2,
+      "output": 425000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 1.05,
+        "totalCost": 850000
+      },
+      "years": 1,
+      "output": 850000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 1.12,
+        "totalCost": 850000
+      },
+      "years": 0,
+      "output": 850000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 1.2,
+        "totalCost": 850000
+      },
+      "years": 0,
+      "output": 850000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "rating": 1.5,
+        "totalCost": 850000
+      },
+      "years": 0,
+      "output": 850000
+    }
+  ],
+  "costByPower": [
+    {
+      "input": {
+        "ship": "A",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": true
+      },
+      "output": 2376000
+    },
+    {
+      "input": {
+        "ship": "A",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": false
+      },
+      "output": 2100000
+    },
+    {
+      "input": {
+        "ship": "A",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": true
+      },
+      "output": 276000
+    },
+    {
+      "input": {
+        "ship": "A",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": false
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "B",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": true
+      },
+      "output": 4900000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": false
+      },
+      "output": 4000000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": true
+      },
+      "output": 900000
+    },
+    {
+      "input": {
+        "ship": "B",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": false
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "C",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": true
+      },
+      "output": 21000000
+    },
+    {
+      "input": {
+        "ship": "C",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": false
+      },
+      "output": 15000000
+    },
+    {
+      "input": {
+        "ship": "C",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": true
+      },
+      "output": 6000000
+    },
+    {
+      "input": {
+        "ship": "C",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": false
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "D",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": true
+      },
+      "output": 1280000
+    },
+    {
+      "input": {
+        "ship": "D",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": false
+      },
+      "output": 1200000
+    },
+    {
+      "input": {
+        "ship": "D",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": true
+      },
+      "output": 80000
+    },
+    {
+      "input": {
+        "ship": "D",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": false
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "ship": "E",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": true
+      },
+      "output": 4700000
+    },
+    {
+      "input": {
+        "ship": "E",
+        "costPerKw": 500,
+        "useMe": true,
+        "useAe": false
+      },
+      "output": 4300000
+    },
+    {
+      "input": {
+        "ship": "E",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": true
+      },
+      "output": 400000
+    },
+    {
+      "input": {
+        "ship": "E",
+        "costPerKw": 500,
+        "useMe": false,
+        "useAe": false
+      },
+      "output": 0
+    }
+  ],
+  "formatCost": [
+    {
+      "input": 0,
+      "output": "$0"
+    },
+    {
+      "input": 0.4,
+      "output": "$0"
+    },
+    {
+      "input": 0.5,
+      "output": "$1"
+    },
+    {
+      "input": 1.5,
+      "output": "$2"
+    },
+    {
+      "input": 999.49,
+      "output": "$999"
+    },
+    {
+      "input": 1234.5,
+      "output": "$1,235"
+    },
+    {
+      "input": 98765.4321,
+      "output": "$98,765"
+    },
+    {
+      "input": 1280000,
+      "output": "$1,280,000"
+    },
+    {
+      "input": 2147483647.6,
+      "output": "$2,147,483,648"
+    }
+  ],
+  "reductions": {
+    "first": [
+      {
+        "input": {
+          "ciiAttained": 60.40916223,
+          "ciiRequired": 62.6,
+          "voyagePerYear": 41.6666666666667,
+          "potential": 8
+        },
+        "output": {
+          "ciiRatingAfter": 0.9328358384824281,
+          "ciiGradeAfter": "C"
+        }
+      },
+      {
+        "input": {
+          "ciiAttained": 84.7,
+          "ciiRequired": 63.9,
+          "voyagePerYear": 30,
+          "potential": 13
+        },
+        "output": {
+          "ciiRatingAfter": 1.273813771517997,
+          "ciiGradeAfter": "D"
+        }
+      },
+      {
+        "input": {
+          "ciiAttained": 41.2,
+          "ciiRequired": 63.9,
+          "voyagePerYear": 100,
+          "potential": 10
+        },
+        "output": {
+          "ciiRatingAfter": 0.5802816901408452,
+          "ciiGradeAfter": "A"
+        }
+      }
+    ]
+  }
+}

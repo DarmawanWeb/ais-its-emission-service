@@ -1,0 +1,5794 @@
+{
+  "description": "legacy utils/cii/fuel-calculation.ts evaluateFormula / getFuelByNavStatus / calculateTotalFuelTon / calculateFirstFormulaFuel",
+  "multipliers": {
+    "0": {
+      "ME": 1,
+      "AE": 1
+    },
+    "1": {
+      "ME": 0,
+      "AE": 0.5
+    },
+    "2": {
+      "ME": 1,
+      "AE": 1
+    },
+    "3": {
+      "ME": 0.5,
+      "AE": 1
+    },
+    "4": {
+      "ME": 0.5,
+      "AE": 1
+    },
+    "5": {
+      "ME": 0,
+      "AE": 1
+    },
+    "6": {
+      "ME": 1,
+      "AE": 1
+    },
+    "7": {
+      "ME": 0.5,
+      "AE": 1
+    },
+    "8": {
+      "ME": 1,
+      "AE": 1
+    },
+    "9": {
+      "ME": 1,
+      "AE": 1
+    },
+    "10": {
+      "ME": 1,
+      "AE": 1
+    },
+    "11": {
+      "ME": 1,
+      "AE": 1
+    },
+    "12": {
+      "ME": 1,
+      "AE": 1
+    },
+    "13": {
+      "ME": 1,
+      "AE": 1
+    },
+    "14": {
+      "ME": 0,
+      "AE": 0
+    },
+    "15": {
+      "ME": 1,
+      "AE": 1
+    }
+  },
+  "navstatus": [
+    {
+      "navstatus": 0,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 1,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 0,
+        "totalAE": 0.375
+      }
+    },
+    {
+      "navstatus": 2,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 3,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 1.25,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 4,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 1.25,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 5,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 0,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 6,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 7,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 1.25,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 8,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 9,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 10,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 11,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 12,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 13,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 14,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 0,
+        "totalAE": 0
+      }
+    },
+    {
+      "navstatus": 15,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 2.5,
+        "totalAE": 0.75
+      }
+    },
+    {
+      "navstatus": 16,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 0,
+        "totalAE": 0
+      }
+    },
+    {
+      "navstatus": -1,
+      "input": {
+        "fuelMe": 2.5,
+        "fuelAe": 0.75
+      },
+      "output": {
+        "totalME": 0,
+        "totalAE": 0
+      }
+    }
+  ],
+  "totalFuelTon": [
+    {
+      "input": {
+        "litres": 10,
+        "density": 0.86
+      },
+      "output": 0.0086
+    },
+    {
+      "input": {
+        "litres": 123.456,
+        "density": 0.991
+      },
+      "output": 0.12234489600000001
+    },
+    {
+      "input": {
+        "litres": 0,
+        "density": 0.9
+      },
+      "output": 0
+    }
+  ],
+  "cases": [
+    {
+      "name": "postman-sample/northeast-13kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 4.782526560094295,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.041129728416810944,
+        "fuelConsumptionAeTon": 0.005659854775970599,
+        "totalFuelConsumptionTon": 0.046789583192781536
+      }
+    },
+    {
+      "name": "postman-sample/northeast-13kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 4.782526560094295,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0028299273879852996,
+        "totalFuelConsumptionTon": 0.0028299273879852996
+      }
+    },
+    {
+      "name": "postman-sample/northeast-13kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 4.782526560094295,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.005659854775970599,
+        "totalFuelConsumptionTon": 0.005659854775970599
+      }
+    },
+    {
+      "name": "postman-sample/northeast-13kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 4.782526560094295,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/northeast-13kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 4.782526560094295,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/capped-30kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0043,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0086
+      }
+    },
+    {
+      "name": "postman-sample/capped-30kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00215,
+        "totalFuelConsumptionTon": 0.00215
+      }
+    },
+    {
+      "name": "postman-sample/capped-30kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0043
+      }
+    },
+    {
+      "name": "postman-sample/capped-30kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/capped-30kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/zero-time/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/zero-time/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/zero-time/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/zero-time/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/zero-time/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.000647323847394802,
+        "totalFuelConsumptionTon": 0.000647323847394802
+      }
+    },
+    {
+      "name": "postman-sample/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.000647323847394802,
+        "totalFuelConsumptionTon": 0.000647323847394802
+      }
+    },
+    {
+      "name": "postman-sample/tiny-move/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.001294647694789604,
+        "totalFuelConsumptionTon": 0.001294647694789604
+      }
+    },
+    {
+      "name": "postman-sample/tiny-move/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/tiny-move/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/southwest-8kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 4.569439980982823,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.11789155150935683,
+        "fuelConsumptionAeTon": 0.022684404425347318,
+        "totalFuelConsumptionTon": 0.14057595593470415
+      }
+    },
+    {
+      "name": "postman-sample/southwest-8kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 4.569439980982823,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.011342202212673659,
+        "totalFuelConsumptionTon": 0.011342202212673659
+      }
+    },
+    {
+      "name": "postman-sample/southwest-8kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 4.569439980982823,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.022684404425347318,
+        "totalFuelConsumptionTon": 0.022684404425347318
+      }
+    },
+    {
+      "name": "postman-sample/southwest-8kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 4.569439980982823,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/southwest-8kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 4.569439980982823,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 4.882525686922615,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.029502856771868837,
+        "totalFuelConsumptionTon": 0.029502856771868837
+      }
+    },
+    {
+      "name": "postman-sample/northwest-11kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 4.882525686922615,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.014751428385934419,
+        "totalFuelConsumptionTon": 0.014751428385934419
+      }
+    },
+    {
+      "name": "postman-sample/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 4.882525686922615,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.029502856771868837,
+        "totalFuelConsumptionTon": 0.029502856771868837
+      }
+    },
+    {
+      "name": "postman-sample/northwest-11kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 4.882525686922615,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/northwest-11kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 4.882525686922615,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/southeast-5kn/nav3",
+      "input": {
+        "navstatus": 3,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 3.4455305091883495,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.037039452973774756,
+        "fuelConsumptionAeTon": 0.023291942066536724,
+        "totalFuelConsumptionTon": 0.060331395040311486
+      }
+    },
+    {
+      "name": "postman-sample/southeast-5kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 3.4455305091883495,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.011645971033268362,
+        "totalFuelConsumptionTon": 0.011645971033268362
+      }
+    },
+    {
+      "name": "postman-sample/southeast-5kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 3.4455305091883495,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.023291942066536724,
+        "totalFuelConsumptionTon": 0.023291942066536724
+      }
+    },
+    {
+      "name": "postman-sample/southeast-5kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 3.4455305091883495,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/southeast-5kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 3.4455305091883495,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/due-north/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678418121352565,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.08046879168726412,
+        "fuelConsumptionAeTon": 0.01460224467043777,
+        "totalFuelConsumptionTon": 0.09507103635770188
+      }
+    },
+    {
+      "name": "postman-sample/due-north/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678418121352565,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.007301122335218885,
+        "totalFuelConsumptionTon": 0.007301122335218885
+      }
+    },
+    {
+      "name": "postman-sample/due-north/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678418121352565,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01460224467043777,
+        "totalFuelConsumptionTon": 0.01460224467043777
+      }
+    },
+    {
+      "name": "postman-sample/due-north/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678418121352565,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/due-north/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678418121352565,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/due-east/nav7",
+      "input": {
+        "navstatus": 7,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678173834482454,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.04023229497654911,
+        "fuelConsumptionAeTon": 0.014603525840813944,
+        "totalFuelConsumptionTon": 0.05483582081736306
+      }
+    },
+    {
+      "name": "postman-sample/due-east/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678173834482454,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.007301762920406972,
+        "totalFuelConsumptionTon": 0.007301762920406972
+      }
+    },
+    {
+      "name": "postman-sample/due-east/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678173834482454,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.014603525840813944,
+        "totalFuelConsumptionTon": 0.014603525840813944
+      }
+    },
+    {
+      "name": "postman-sample/due-east/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678173834482454,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/due-east/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 4.678173834482454,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/six-hours-10kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 4.8171880919933034,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 1.491401433281127,
+        "fuelConsumptionAeTon": 0.24672778525517072,
+        "totalFuelConsumptionTon": 1.7381292185362978
+      }
+    },
+    {
+      "name": "postman-sample/six-hours-10kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 4.8171880919933034,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.12336389262758536,
+        "totalFuelConsumptionTon": 0.12336389262758536
+      }
+    },
+    {
+      "name": "postman-sample/six-hours-10kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 4.8171880919933034,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.24672778525517072,
+        "totalFuelConsumptionTon": 0.24672778525517072
+      }
+    },
+    {
+      "name": "postman-sample/six-hours-10kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 4.8171880919933034,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "postman-sample/six-hours-10kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "-0.0382 * speedKnot ** 2 + 0.8658 * speedKnot - 0.0197",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 4.8171880919933034,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northeast-13kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 29.138652846318326,
+        "ae": 1.07020745688759
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.2505924144783376,
+        "fuelConsumptionAeTon": 0.009203784129233273,
+        "totalFuelConsumptionTon": 0.25979619860757086
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northeast-13kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 29.138652846318326,
+        "ae": 1.07020745688759
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0046018920646166365,
+        "totalFuelConsumptionTon": 0.0046018920646166365
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northeast-13kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 29.138652846318326,
+        "ae": 1.07020745688759
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.009203784129233273,
+        "totalFuelConsumptionTon": 0.009203784129233273
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northeast-13kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 29.138652846318326,
+        "ae": 1.07020745688759
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northeast-13kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 29.138652846318326,
+        "ae": 1.07020745688759
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/capped-30kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 327.36930639376294,
+        "ae": 0.8999999999999999
+      },
+      "output": {
+        "fuelConsumptionMeTon": 2.8153760349863615,
+        "fuelConsumptionAeTon": 0.00774,
+        "totalFuelConsumptionTon": 2.823116034986361
+      }
+    },
+    {
+      "name": "pow-and-sqrt/capped-30kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 327.36930639376294,
+        "ae": 0.8999999999999999
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00387,
+        "totalFuelConsumptionTon": 0.00387
+      }
+    },
+    {
+      "name": "pow-and-sqrt/capped-30kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 327.36930639376294,
+        "ae": 0.8999999999999999
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00774,
+        "totalFuelConsumptionTon": 0.00774
+      }
+    },
+    {
+      "name": "pow-and-sqrt/capped-30kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 327.36930639376294,
+        "ae": 0.8999999999999999
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/capped-30kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 327.36930639376294,
+        "ae": 0.8999999999999999
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/zero-time/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 1.2
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/zero-time/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 1.2
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/zero-time/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 1.2
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/zero-time/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 1.2
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/zero-time/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 1.2
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.056310642299169,
+        "ae": 1.1994926860824995
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0005157818550154747,
+        "totalFuelConsumptionTon": 0.0005157818550154747
+      }
+    },
+    {
+      "name": "pow-and-sqrt/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.056310642299169,
+        "ae": 1.1994926860824995
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0005157818550154747,
+        "totalFuelConsumptionTon": 0.0005157818550154747
+      }
+    },
+    {
+      "name": "pow-and-sqrt/tiny-move/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.056310642299169,
+        "ae": 1.1994926860824995
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0010315637100309495,
+        "totalFuelConsumptionTon": 0.0010315637100309495
+      }
+    },
+    {
+      "name": "pow-and-sqrt/tiny-move/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.056310642299169,
+        "ae": 1.1994926860824995
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/tiny-move/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.056310642299169,
+        "ae": 1.1994926860824995
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southwest-8kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.975315756164418,
+        "ae": 1.1154679468962774
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.257363146509042,
+        "fuelConsumptionAeTon": 0.028779073029923958,
+        "totalFuelConsumptionTon": 0.28614221953896596
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southwest-8kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.975315756164418,
+        "ae": 1.1154679468962774
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.014389536514961979,
+        "totalFuelConsumptionTon": 0.014389536514961979
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southwest-8kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.975315756164418,
+        "ae": 1.1154679468962774
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.028779073029923958,
+        "totalFuelConsumptionTon": 0.028779073029923958
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southwest-8kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.975315756164418,
+        "ae": 1.1154679468962774
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southwest-8kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.975315756164418,
+        "ae": 1.1154679468962774
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 18.91398448745389,
+        "ae": 1.0897437945370012
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.04311026451188376,
+        "totalFuelConsumptionTon": 0.04311026451188376
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northwest-11kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 18.91398448745389,
+        "ae": 1.0897437945370012
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.02155513225594188,
+        "totalFuelConsumptionTon": 0.02155513225594188
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 18.91398448745389,
+        "ae": 1.0897437945370012
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.04311026451188376,
+        "totalFuelConsumptionTon": 0.04311026451188376
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northwest-11kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 18.91398448745389,
+        "ae": 1.0897437945370012
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/northwest-11kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 18.91398448745389,
+        "ae": 1.0897437945370012
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southeast-5kn/nav3",
+      "input": {
+        "navstatus": 3,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 4.248621224320575,
+        "ae": 1.1480853476530115
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.045672678161446184,
+        "fuelConsumptionAeTon": 0.024683834974539746,
+        "totalFuelConsumptionTon": 0.07035651313598594
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southeast-5kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 4.248621224320575,
+        "ae": 1.1480853476530115
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.012341917487269873,
+        "totalFuelConsumptionTon": 0.012341917487269873
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southeast-5kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 4.248621224320575,
+        "ae": 1.1480853476530115
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.024683834974539746,
+        "totalFuelConsumptionTon": 0.024683834974539746
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southeast-5kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 4.248621224320575,
+        "ae": 1.1480853476530115
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/southeast-5kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 4.248621224320575,
+        "ae": 1.1480853476530115
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-north/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.499960934508469,
+        "ae": 1.1099933704746523
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.19779932807354564,
+        "fuelConsumptionAeTon": 0.01909188597216402,
+        "totalFuelConsumptionTon": 0.21689121404570968
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-north/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.499960934508469,
+        "ae": 1.1099933704746523
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00954594298608201,
+        "totalFuelConsumptionTon": 0.00954594298608201
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-north/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.499960934508469,
+        "ae": 1.1099933704746523
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01909188597216402,
+        "totalFuelConsumptionTon": 0.01909188597216402
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-north/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.499960934508469,
+        "ae": 1.1099933704746523
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-north/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.499960934508469,
+        "ae": 1.1099933704746523
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-east/nav7",
+      "input": {
+        "navstatus": 7,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.495906452860273,
+        "ae": 1.1100070789211613
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.09886479549459835,
+        "fuelConsumptionAeTon": 0.019092121757443976,
+        "totalFuelConsumptionTon": 0.11795691725204233
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-east/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.495906452860273,
+        "ae": 1.1100070789211613
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.009546060878721988,
+        "totalFuelConsumptionTon": 0.009546060878721988
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-east/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.495906452860273,
+        "ae": 1.1100070789211613
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.019092121757443976,
+        "totalFuelConsumptionTon": 0.019092121757443976
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-east/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.495906452860273,
+        "ae": 1.1100070789211613
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/due-east/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 11.495906452860273,
+        "ae": 1.1100070789211613
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/six-hours-10kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 14.75102083032196,
+        "ae": 1.1001087807178067
+      },
+      "output": {
+        "fuelConsumptionMeTon": 4.566916049067679,
+        "fuelConsumptionAeTon": 0.340593678510233,
+        "totalFuelConsumptionTon": 4.907509727577912
+      }
+    },
+    {
+      "name": "pow-and-sqrt/six-hours-10kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 14.75102083032196,
+        "ae": 1.1001087807178067
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.1702968392551165,
+        "totalFuelConsumptionTon": 0.1702968392551165
+      }
+    },
+    {
+      "name": "pow-and-sqrt/six-hours-10kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 14.75102083032196,
+        "ae": 1.1001087807178067
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.340593678510233,
+        "totalFuelConsumptionTon": 0.340593678510233
+      }
+    },
+    {
+      "name": "pow-and-sqrt/six-hours-10kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 14.75102083032196,
+        "ae": 1.1001087807178067
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "pow-and-sqrt/six-hours-10kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.012 * Math.pow(speedKnot, 3) + Math.sqrt(speedKnot) / 4 + 2",
+          "auxiliaryEngineFormula": "Math.max(0.8, 1.2 - 0.01 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 14.75102083032196,
+        "ae": 1.1001087807178067
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/northeast-13kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0043,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0086
+      }
+    },
+    {
+      "name": "below-floor/northeast-13kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00215,
+        "totalFuelConsumptionTon": 0.00215
+      }
+    },
+    {
+      "name": "below-floor/northeast-13kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0043
+      }
+    },
+    {
+      "name": "below-floor/northeast-13kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/northeast-13kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/capped-30kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0043,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0086
+      }
+    },
+    {
+      "name": "below-floor/capped-30kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00215,
+        "totalFuelConsumptionTon": 0.00215
+      }
+    },
+    {
+      "name": "below-floor/capped-30kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0043
+      }
+    },
+    {
+      "name": "below-floor/capped-30kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/capped-30kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/zero-time/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/zero-time/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/zero-time/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/zero-time/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/zero-time/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.000215,
+        "totalFuelConsumptionTon": 0.000215
+      }
+    },
+    {
+      "name": "below-floor/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.000215,
+        "totalFuelConsumptionTon": 0.000215
+      }
+    },
+    {
+      "name": "below-floor/tiny-move/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00043,
+        "totalFuelConsumptionTon": 0.00043
+      }
+    },
+    {
+      "name": "below-floor/tiny-move/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/tiny-move/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/southwest-8kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0129,
+        "fuelConsumptionAeTon": 0.0129,
+        "totalFuelConsumptionTon": 0.0258
+      }
+    },
+    {
+      "name": "below-floor/southwest-8kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00645,
+        "totalFuelConsumptionTon": 0.00645
+      }
+    },
+    {
+      "name": "below-floor/southwest-8kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0129,
+        "totalFuelConsumptionTon": 0.0129
+      }
+    },
+    {
+      "name": "below-floor/southwest-8kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/southwest-8kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.019780000000000002,
+        "totalFuelConsumptionTon": 0.019780000000000002
+      }
+    },
+    {
+      "name": "below-floor/northwest-11kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.009890000000000001,
+        "totalFuelConsumptionTon": 0.009890000000000001
+      }
+    },
+    {
+      "name": "below-floor/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.019780000000000002,
+        "totalFuelConsumptionTon": 0.019780000000000002
+      }
+    },
+    {
+      "name": "below-floor/northwest-11kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/northwest-11kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/southeast-5kn/nav3",
+      "input": {
+        "navstatus": 3,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.005375,
+        "fuelConsumptionAeTon": 0.01075,
+        "totalFuelConsumptionTon": 0.016125
+      }
+    },
+    {
+      "name": "below-floor/southeast-5kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.005375,
+        "totalFuelConsumptionTon": 0.005375
+      }
+    },
+    {
+      "name": "below-floor/southeast-5kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01075,
+        "totalFuelConsumptionTon": 0.01075
+      }
+    },
+    {
+      "name": "below-floor/southeast-5kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/southeast-5kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/due-north/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0086,
+        "fuelConsumptionAeTon": 0.0086,
+        "totalFuelConsumptionTon": 0.0172
+      }
+    },
+    {
+      "name": "below-floor/due-north/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0043
+      }
+    },
+    {
+      "name": "below-floor/due-north/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0086,
+        "totalFuelConsumptionTon": 0.0086
+      }
+    },
+    {
+      "name": "below-floor/due-north/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/due-north/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/due-east/nav7",
+      "input": {
+        "navstatus": 7,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0043,
+        "fuelConsumptionAeTon": 0.0086,
+        "totalFuelConsumptionTon": 0.0129
+      }
+    },
+    {
+      "name": "below-floor/due-east/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0043
+      }
+    },
+    {
+      "name": "below-floor/due-east/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0086,
+        "totalFuelConsumptionTon": 0.0086
+      }
+    },
+    {
+      "name": "below-floor/due-east/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/due-east/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/six-hours-10kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.15480000000000002,
+        "fuelConsumptionAeTon": 0.15480000000000002,
+        "totalFuelConsumptionTon": 0.30960000000000004
+      }
+    },
+    {
+      "name": "below-floor/six-hours-10kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.07740000000000001,
+        "totalFuelConsumptionTon": 0.07740000000000001
+      }
+    },
+    {
+      "name": "below-floor/six-hours-10kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.15480000000000002,
+        "totalFuelConsumptionTon": 0.15480000000000002
+      }
+    },
+    {
+      "name": "below-floor/six-hours-10kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "below-floor/six-hours-10kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.01 * speedKnot - 1",
+          "auxiliaryEngineFormula": "-(speedKnot) + 0.2"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/northeast-13kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 10.912723187102166,
+        "ae": 1.1393776293372304
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.09384941940907864,
+        "fuelConsumptionAeTon": 0.009798647612300183,
+        "totalFuelConsumptionTon": 0.10364806702137883
+      }
+    },
+    {
+      "name": "log-abs-min/northeast-13kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 10.912723187102166,
+        "ae": 1.1393776293372304
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.004899323806150092,
+        "totalFuelConsumptionTon": 0.004899323806150092
+      }
+    },
+    {
+      "name": "log-abs-min/northeast-13kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 10.912723187102166,
+        "ae": 1.1393776293372304
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.009798647612300183,
+        "totalFuelConsumptionTon": 0.009798647612300183
+      }
+    },
+    {
+      "name": "log-abs-min/northeast-13kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 10.912723187102166,
+        "ae": 1.1393776293372304
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/northeast-13kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 10.912723187102166,
+        "ae": 1.1393776293372304
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/capped-30kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 13.30196161345544,
+        "ae": 1.6500000000000001
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.11439686987571678,
+        "fuelConsumptionAeTon": 0.01419,
+        "totalFuelConsumptionTon": 0.1285868698757168
+      }
+    },
+    {
+      "name": "log-abs-min/capped-30kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 13.30196161345544,
+        "ae": 1.6500000000000001
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.007095,
+        "totalFuelConsumptionTon": 0.007095
+      }
+    },
+    {
+      "name": "log-abs-min/capped-30kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 13.30196161345544,
+        "ae": 1.6500000000000001
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01419,
+        "totalFuelConsumptionTon": 0.01419
+      }
+    },
+    {
+      "name": "log-abs-min/capped-30kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 13.30196161345544,
+        "ae": 1.6500000000000001
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/capped-30kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 13.30196161345544,
+        "ae": 1.6500000000000001
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/zero-time/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 0.75
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/zero-time/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 0.75
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/zero-time/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 0.75
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/zero-time/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 0.75
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/zero-time/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 2,
+        "ae": 0.75
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.153532594934314,
+        "ae": 0.7515219417525016
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0003231544349535757,
+        "totalFuelConsumptionTon": 0.0003231544349535757
+      }
+    },
+    {
+      "name": "log-abs-min/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.153532594934314,
+        "ae": 0.7515219417525016
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0003231544349535757,
+        "totalFuelConsumptionTon": 0.0003231544349535757
+      }
+    },
+    {
+      "name": "log-abs-min/tiny-move/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.153532594934314,
+        "ae": 0.7515219417525016
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0006463088699071514,
+        "totalFuelConsumptionTon": 0.0006463088699071514
+      }
+    },
+    {
+      "name": "log-abs-min/tiny-move/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.153532594934314,
+        "ae": 0.7515219417525016
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/tiny-move/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 2.153532594934314,
+        "ae": 0.7515219417525016
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/southwest-8kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.58438214187053,
+        "ae": 1.003596159311168
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.24727705926025967,
+        "fuelConsumptionAeTon": 0.025892780910228133,
+        "totalFuelConsumptionTon": 0.27316984017048784
+      }
+    },
+    {
+      "name": "log-abs-min/southwest-8kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.58438214187053,
+        "ae": 1.003596159311168
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.012946390455114067,
+        "totalFuelConsumptionTon": 0.012946390455114067
+      }
+    },
+    {
+      "name": "log-abs-min/southwest-8kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.58438214187053,
+        "ae": 1.003596159311168
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.025892780910228133,
+        "totalFuelConsumptionTon": 0.025892780910228133
+      }
+    },
+    {
+      "name": "log-abs-min/southwest-8kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.58438214187053,
+        "ae": 1.003596159311168
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/southwest-8kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 9.58438214187053,
+        "ae": 1.003596159311168
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 10.461118258026755,
+        "ae": 1.0807686163889962
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.04275520646434869,
+        "totalFuelConsumptionTon": 0.04275520646434869
+      }
+    },
+    {
+      "name": "log-abs-min/northwest-11kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 10.461118258026755,
+        "ae": 1.0807686163889962
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.021377603232174344,
+        "totalFuelConsumptionTon": 0.021377603232174344
+      }
+    },
+    {
+      "name": "log-abs-min/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 10.461118258026755,
+        "ae": 1.0807686163889962
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.04275520646434869,
+        "totalFuelConsumptionTon": 0.04275520646434869
+      }
+    },
+    {
+      "name": "log-abs-min/northwest-11kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 10.461118258026755,
+        "ae": 1.0807686163889962
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/northwest-11kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 10.461118258026755,
+        "ae": 1.0807686163889962
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/southeast-5kn/nav3",
+      "input": {
+        "navstatus": 3,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 7.98866182942776,
+        "ae": 0.9057439570409656
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.08587811466634841,
+        "fuelConsumptionAeTon": 0.01947349507638076,
+        "totalFuelConsumptionTon": 0.10535160974272917
+      }
+    },
+    {
+      "name": "log-abs-min/southeast-5kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 7.98866182942776,
+        "ae": 0.9057439570409656
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00973674753819038,
+        "totalFuelConsumptionTon": 0.00973674753819038
+      }
+    },
+    {
+      "name": "log-abs-min/southeast-5kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 7.98866182942776,
+        "ae": 0.9057439570409656
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01947349507638076,
+        "totalFuelConsumptionTon": 0.01947349507638076
+      }
+    },
+    {
+      "name": "log-abs-min/southeast-5kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 7.98866182942776,
+        "ae": 0.9057439570409656
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/southeast-5kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 7.98866182942776,
+        "ae": 0.9057439570409656
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/due-north/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.808020453403746,
+        "ae": 1.0200198885760432
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.1686979517985444,
+        "fuelConsumptionAeTon": 0.01754434208350794,
+        "totalFuelConsumptionTon": 0.18624229388205232
+      }
+    },
+    {
+      "name": "log-abs-min/due-north/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.808020453403746,
+        "ae": 1.0200198885760432
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00877217104175397,
+        "totalFuelConsumptionTon": 0.00877217104175397
+      }
+    },
+    {
+      "name": "log-abs-min/due-north/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.808020453403746,
+        "ae": 1.0200198885760432
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01754434208350794,
+        "totalFuelConsumptionTon": 0.01754434208350794
+      }
+    },
+    {
+      "name": "log-abs-min/due-north/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.808020453403746,
+        "ae": 1.0200198885760432
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/due-north/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.808020453403746,
+        "ae": 1.0200198885760432
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/due-east/nav7",
+      "input": {
+        "navstatus": 7,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.807472114618658,
+        "ae": 1.0199787632365158
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.08434426018572047,
+        "fuelConsumptionAeTon": 0.01754363472766807,
+        "totalFuelConsumptionTon": 0.10188789491338854
+      }
+    },
+    {
+      "name": "log-abs-min/due-east/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.807472114618658,
+        "ae": 1.0199787632365158
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.008771817363834035,
+        "totalFuelConsumptionTon": 0.008771817363834035
+      }
+    },
+    {
+      "name": "log-abs-min/due-east/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.807472114618658,
+        "ae": 1.0199787632365158
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01754363472766807,
+        "totalFuelConsumptionTon": 0.01754363472766807
+      }
+    },
+    {
+      "name": "log-abs-min/due-east/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.807472114618658,
+        "ae": 1.0199787632365158
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/due-east/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 9.807472114618658,
+        "ae": 1.0199787632365158
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/six-hours-10kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 10.189629796468791,
+        "ae": 1.0496736578465795
+      },
+      "output": {
+        "fuelConsumptionMeTon": 3.154709384986738,
+        "fuelConsumptionAeTon": 0.32497896446930097,
+        "totalFuelConsumptionTon": 3.479688349456038
+      }
+    },
+    {
+      "name": "log-abs-min/six-hours-10kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 10.189629796468791,
+        "ae": 1.0496736578465795
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.16248948223465048,
+        "totalFuelConsumptionTon": 0.16248948223465048
+      }
+    },
+    {
+      "name": "log-abs-min/six-hours-10kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 10.189629796468791,
+        "ae": 1.0496736578465795
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.32497896446930097,
+        "totalFuelConsumptionTon": 0.32497896446930097
+      }
+    },
+    {
+      "name": "log-abs-min/six-hours-10kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 10.189629796468791,
+        "ae": 1.0496736578465795
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "log-abs-min/six-hours-10kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "Math.log(speedKnot + 1) * 3 + Math.abs(-2) + Math.min(speedKnot, 10) / 10",
+          "auxiliaryEngineFormula": "(1 + 2) * (0.25 + speedKnot / 100)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 10.189629796468791,
+        "ae": 1.0496736578465795
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/northeast-13kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0043,
+        "fuelConsumptionAeTon": 0.005659854775970599,
+        "totalFuelConsumptionTon": 0.0099598547759706
+      }
+    },
+    {
+      "name": "syntax-error/northeast-13kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0028299273879852996,
+        "totalFuelConsumptionTon": 0.0028299273879852996
+      }
+    },
+    {
+      "name": "syntax-error/northeast-13kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.005659854775970599,
+        "totalFuelConsumptionTon": 0.005659854775970599
+      }
+    },
+    {
+      "name": "syntax-error/northeast-13kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/northeast-13kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 12.979254311241013,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.6581226483686743
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/capped-30kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0043,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0086
+      }
+    },
+    {
+      "name": "syntax-error/capped-30kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.00215,
+        "totalFuelConsumptionTon": 0.00215
+      }
+    },
+    {
+      "name": "syntax-error/capped-30kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.0043,
+        "totalFuelConsumptionTon": 0.0043
+      }
+    },
+    {
+      "name": "syntax-error/capped-30kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/capped-30kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 30,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 10
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.5
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/zero-time/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/zero-time/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/zero-time/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/zero-time/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/zero-time/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 0
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5103
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.000647323847394802,
+        "totalFuelConsumptionTon": 0.000647323847394802
+      }
+    },
+    {
+      "name": "syntax-error/tiny-move/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.000647323847394802,
+        "totalFuelConsumptionTon": 0.000647323847394802
+      }
+    },
+    {
+      "name": "syntax-error/tiny-move/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.001294647694789604,
+        "totalFuelConsumptionTon": 0.001294647694789604
+      }
+    },
+    {
+      "name": "syntax-error/tiny-move/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/tiny-move/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 0.05073139175005055,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 1
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.5054042962669814
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/southwest-8kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0129,
+        "fuelConsumptionAeTon": 0.022684404425347318,
+        "totalFuelConsumptionTon": 0.03558440442534731
+      }
+    },
+    {
+      "name": "syntax-error/southwest-8kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.011342202212673659,
+        "totalFuelConsumptionTon": 0.011342202212673659
+      }
+    },
+    {
+      "name": "syntax-error/southwest-8kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.022684404425347318,
+        "totalFuelConsumptionTon": 0.022684404425347318
+      }
+    },
+    {
+      "name": "syntax-error/southwest-8kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/southwest-8kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.453205310372265,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 30
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8792404816026093
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.029502856771868837,
+        "totalFuelConsumptionTon": 0.029502856771868837
+      }
+    },
+    {
+      "name": "syntax-error/northwest-11kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.014751428385934419,
+        "totalFuelConsumptionTon": 0.014751428385934419
+      }
+    },
+    {
+      "name": "syntax-error/northwest-11kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.029502856771868837,
+        "totalFuelConsumptionTon": 0.029502856771868837
+      }
+    },
+    {
+      "name": "syntax-error/northwest-11kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/northwest-11kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 11.025620546299873,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 46
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7457749436771699
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/southeast-5kn/nav3",
+      "input": {
+        "navstatus": 3,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.005375,
+        "fuelConsumptionAeTon": 0.023291942066536724,
+        "totalFuelConsumptionTon": 0.028666942066536725
+      }
+    },
+    {
+      "name": "syntax-error/southeast-5kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.011645971033268362,
+        "totalFuelConsumptionTon": 0.011645971033268362
+      }
+    },
+    {
+      "name": "syntax-error/southeast-5kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.023291942066536724,
+        "totalFuelConsumptionTon": 0.023291942066536724
+      }
+    },
+    {
+      "name": "syntax-error/southeast-5kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/southeast-5kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 5.191465234698851,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 25
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 1.0833461426296151
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/due-north/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0086,
+        "fuelConsumptionAeTon": 0.01460224467043777,
+        "totalFuelConsumptionTon": 0.02320224467043777
+      }
+    },
+    {
+      "name": "syntax-error/due-north/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.007301122335218885,
+        "totalFuelConsumptionTon": 0.007301122335218885
+      }
+    },
+    {
+      "name": "syntax-error/due-north/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.01460224467043777,
+        "totalFuelConsumptionTon": 0.01460224467043777
+      }
+    },
+    {
+      "name": "syntax-error/due-north/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/due-north/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.000662952534771,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8489677133975448
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/due-east/nav7",
+      "input": {
+        "navstatus": 7,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.0043,
+        "fuelConsumptionAeTon": 0.014603525840813944,
+        "totalFuelConsumptionTon": 0.018903525840813944
+      }
+    },
+    {
+      "name": "syntax-error/due-east/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.007301762920406972,
+        "totalFuelConsumptionTon": 0.007301762920406972
+      }
+    },
+    {
+      "name": "syntax-error/due-east/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.014603525840813944,
+        "totalFuelConsumptionTon": 0.014603525840813944
+      }
+    },
+    {
+      "name": "syntax-error/due-east/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/due-east/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 8.99929210788386,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 20
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.8490422000473223
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/six-hours-10kn/nav0",
+      "input": {
+        "navstatus": 0,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0.15480000000000002,
+        "fuelConsumptionAeTon": 0.24672778525517072,
+        "totalFuelConsumptionTon": 0.40152778525517074
+      }
+    },
+    {
+      "name": "syntax-error/six-hours-10kn/nav1",
+      "input": {
+        "navstatus": 1,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.12336389262758536,
+        "totalFuelConsumptionTon": 0.12336389262758536
+      }
+    },
+    {
+      "name": "syntax-error/six-hours-10kn/nav5",
+      "input": {
+        "navstatus": 5,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0.24672778525517072,
+        "totalFuelConsumptionTon": 0.24672778525517072
+      }
+    },
+    {
+      "name": "syntax-error/six-hours-10kn/nav14",
+      "input": {
+        "navstatus": 14,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    },
+    {
+      "name": "syntax-error/six-hours-10kn/nav16",
+      "input": {
+        "navstatus": 16,
+        "fuelDensity": 0.86,
+        "speedKnot": 9.98912192821932,
+        "formula": {
+          "mainEngineFormula": "0.5 * speedKnot +",
+          "auxiliaryEngineFormula": "1.5103 * Math.exp(-0.064 * speedKnot)"
+        },
+        "timeDifferenceMinutes": 360
+      },
+      "flows": {
+        "me": 0.5,
+        "ae": 0.7969243709792335
+      },
+      "output": {
+        "fuelConsumptionMeTon": 0,
+        "fuelConsumptionAeTon": 0,
+        "totalFuelConsumptionTon": 0
+      }
+    }
+  ]
+}

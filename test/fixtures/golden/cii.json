@@ -1,0 +1,1288 @@
+{
+  "description": "legacy utils/cii/cii-calculation.ts calculateCIIRequired / calculateCII / assignGradeBasedOnDdVector(New)",
+  "now": "2026-06-15T12:00:00.000Z",
+  "zTable": [
+    {
+      "year": 2023,
+      "zValue": 5
+    },
+    {
+      "year": 2024,
+      "zValue": 7
+    },
+    {
+      "year": 2025,
+      "zValue": 9
+    },
+    {
+      "year": 2026,
+      "zValue": 11
+    },
+    {
+      "year": 2027,
+      "zValue": 13.625
+    },
+    {
+      "year": 2028,
+      "zValue": 16.25
+    },
+    {
+      "year": 2029,
+      "zValue": 18.875
+    },
+    {
+      "year": 2030,
+      "zValue": 21.5
+    }
+  ],
+  "required": [
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2023,
+        "zPercent": 5
+      },
+      "output": 66.7878175703621
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2024,
+        "zPercent": 7
+      },
+      "output": 65.3817582530913
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2025,
+        "zPercent": 9
+      },
+      "output": 63.97569893582053
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2026,
+        "zPercent": 11
+      },
+      "output": 62.56963961854975
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2027,
+        "zPercent": 13.625
+      },
+      "output": 60.72418676463185
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2028,
+        "zPercent": 16.25
+      },
+      "output": 58.87873391071395
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2029,
+        "zPercent": 18.875
+      },
+      "output": 57.03328105679605
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": 2030,
+        "zPercent": 21.5
+      },
+      "output": 55.18782820287815
+    },
+    {
+      "input": {
+        "ship": "A",
+        "a": 7540,
+        "c": 0.587,
+        "capacity": 2877,
+        "year": null,
+        "zPercent": 11
+      },
+      "output": 62.56963961854975
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2023,
+        "zPercent": 5
+      },
+      "output": 4.8078370990390304
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2024,
+        "zPercent": 7
+      },
+      "output": 4.706619475901366
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2025,
+        "zPercent": 9
+      },
+      "output": 4.605401852763703
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2026,
+        "zPercent": 11
+      },
+      "output": 4.5041842296260395
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2027,
+        "zPercent": 13.625
+      },
+      "output": 4.371336099257856
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2028,
+        "zPercent": 16.25
+      },
+      "output": 4.238487968889672
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2029,
+        "zPercent": 18.875
+      },
+      "output": 4.105639838521488
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": 2030,
+        "zPercent": 21.5
+      },
+      "output": 3.9727917081533044
+    },
+    {
+      "input": {
+        "ship": "B",
+        "a": 4745,
+        "c": 0.622,
+        "capacity": 60000,
+        "year": null,
+        "zPercent": 11
+      },
+      "output": 4.5041842296260395
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2023,
+        "zPercent": 5
+      },
+      "output": 9.494430963816997
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2024,
+        "zPercent": 7
+      },
+      "output": 9.294548206684007
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2025,
+        "zPercent": 9
+      },
+      "output": 9.09466544955102
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2026,
+        "zPercent": 11
+      },
+      "output": 8.89478269241803
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2027,
+        "zPercent": 13.625
+      },
+      "output": 8.632436573680982
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2028,
+        "zPercent": 16.25
+      },
+      "output": 8.370090454943933
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2029,
+        "zPercent": 18.875
+      },
+      "output": 8.107744336206885
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": 2030,
+        "zPercent": 21.5
+      },
+      "output": 7.845398217469835
+    },
+    {
+      "input": {
+        "ship": "C",
+        "a": 1984,
+        "c": 0.489,
+        "capacity": 50000,
+        "year": null,
+        "zPercent": 11
+      },
+      "output": 8.89478269241803
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2023,
+        "zPercent": 5
+      },
+      "output": 221.09709561320534
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2024,
+        "zPercent": 7
+      },
+      "output": 216.4424199160852
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2025,
+        "zPercent": 9
+      },
+      "output": 211.78774421896512
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2026,
+        "zPercent": 11
+      },
+      "output": 207.13306852184502
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2027,
+        "zPercent": 13.625
+      },
+      "output": 201.02380666937486
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2028,
+        "zPercent": 16.25
+      },
+      "output": 194.9145448169047
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2029,
+        "zPercent": 18.875
+      },
+      "output": 188.80528296443458
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": 2030,
+        "zPercent": 21.5
+      },
+      "output": 182.69602111196443
+    },
+    {
+      "input": {
+        "ship": "D",
+        "a": 31948,
+        "c": 0.792,
+        "capacity": 500,
+        "year": null,
+        "zPercent": 11
+      },
+      "output": 207.13306852184502
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2023,
+        "zPercent": 5
+      },
+      "output": 62.17223269316192
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2024,
+        "zPercent": 7
+      },
+      "output": 60.86334358383219
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2025,
+        "zPercent": 9
+      },
+      "output": 59.55445447450247
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2026,
+        "zPercent": 11
+      },
+      "output": 58.245565365172745
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2027,
+        "zPercent": 13.625
+      },
+      "output": 56.52764840917749
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2028,
+        "zPercent": 16.25
+      },
+      "output": 54.80973145318222
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2029,
+        "zPercent": 18.875
+      },
+      "output": 53.09181449718696
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": 2030,
+        "zPercent": 21.5
+      },
+      "output": 51.373897541191695
+    },
+    {
+      "input": {
+        "ship": "E",
+        "a": 5739,
+        "c": 0.631,
+        "capacity": 1200,
+        "year": null,
+        "zPercent": 11
+      },
+      "output": 58.245565365172745
+    }
+  ],
+  "accumulation": [
+    {
+      "ship": "A",
+      "year": 2026,
+      "steps": [
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.041129728416810944,
+              "fuelConsumptionAeTon": 0.005659854775970599,
+              "totalFuelConsumptionTon": 0.046789583192781536
+            },
+            "distance": 2.163209051873502
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 24.10317983310267,
+            "ciiRating": 0.3852216503090886,
+            "ciiGrade": "A",
+            "totalDistance": 2.163209051873502,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.041129728416810944,
+              "fuelConsumptionAeTon": 0.005659854775970599,
+              "totalFuelConsumptionTon": 0.046789583192781536
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.0043,
+              "fuelConsumptionAeTon": 0.0043,
+              "totalFuelConsumptionTon": 0.0086
+            },
+            "distance": 16.970244732711993
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 3.225955568537427,
+            "ciiRating": 0.05155784160184042,
+            "ciiGrade": "A",
+            "totalDistance": 19.133453784585495,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.04542972841681094,
+              "fuelConsumptionAeTon": 0.0099598547759706,
+              "totalFuelConsumptionTon": 0.05538958319278153
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0,
+              "fuelConsumptionAeTon": 0.000647323847394802,
+              "totalFuelConsumptionTon": 0.000647323847394802
+            },
+            "distance": 0.0008455231958341758
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 3.263512266264748,
+            "ciiRating": 0.05215807995955324,
+            "ciiGrade": "A",
+            "totalDistance": 19.13429930778133,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.04542972841681094,
+              "fuelConsumptionAeTon": 0.010607178623365401,
+              "totalFuelConsumptionTon": 0.05603690704017634
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.11789155150935683,
+              "fuelConsumptionAeTon": 0.022684404425347318,
+              "totalFuelConsumptionTon": 0.14057595593470415
+            },
+            "distance": 4.226602655186133
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 9.378771963235334,
+            "ciiRating": 0.14989333517680753,
+            "ciiGrade": "A",
+            "totalDistance": 23.36090196296746,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.16332127992616777,
+              "fuelConsumptionAeTon": 0.03329158304871272,
+              "totalFuelConsumptionTon": 0.19661286297488048
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0,
+              "fuelConsumptionAeTon": 0.029502856771868837,
+              "totalFuelConsumptionTon": 0.029502856771868837
+            },
+            "distance": 8.452975752163237
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 7.920230202674757,
+            "ciiRating": 0.1265826405739227,
+            "ciiGrade": "A",
+            "totalDistance": 31.813877715130698,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.16332127992616777,
+              "fuelConsumptionAeTon": 0.06279443982058155,
+              "totalFuelConsumptionTon": 0.22611571974674932
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.037039452973774756,
+              "fuelConsumptionAeTon": 0.023291942066536724,
+              "totalFuelConsumptionTon": 0.060331395040311486
+            },
+            "distance": 2.1631105144578546
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 9.394706754230883,
+            "ciiRating": 0.15014800806756884,
+            "ciiGrade": "A",
+            "totalDistance": 33.97698822958855,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.20036073289994252,
+              "fuelConsumptionAeTon": 0.08608638188711829,
+              "totalFuelConsumptionTon": 0.2864471147870608
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.08046879168726412,
+              "fuelConsumptionAeTon": 0.01460224467043777,
+              "totalFuelConsumptionTon": 0.09507103635770188
+            },
+            "distance": 3.0002209841782568
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 11.497534739482136,
+            "ciiRating": 0.1837558088807261,
+            "ciiGrade": "A",
+            "totalDistance": 36.977209213766805,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.28082952458720667,
+              "fuelConsumptionAeTon": 0.10068862655755606,
+              "totalFuelConsumptionTon": 0.3815181511447627
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.04023229497654911,
+              "fuelConsumptionAeTon": 0.014603525840813944,
+              "totalFuelConsumptionTon": 0.05483582081736306
+            },
+            "distance": 2.9997640359612867
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 12.163335334286947,
+            "ciiRating": 0.1943967618870692,
+            "ciiGrade": "A",
+            "totalDistance": 39.97697324972809,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.3210618195637558,
+              "fuelConsumptionAeTon": 0.11529215239837,
+              "totalFuelConsumptionTon": 0.4363539719621257
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 1.491401433281127,
+              "fuelConsumptionAeTon": 0.24672778525517072,
+              "totalFuelConsumptionTon": 1.7381292185362978
+            },
+            "distance": 59.93473156931593
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 62.56963961854975,
+            "ciiAttained": 24.252881309095304,
+            "ciiRating": 0.3876142080560291,
+            "ciiGrade": "A",
+            "totalDistance": 99.91170481904402,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 1.8124632528448827,
+              "fuelConsumptionAeTon": 0.36201993765354074,
+              "totalFuelConsumptionTon": 2.1744831904984236
+            }
+          }
+        }
+      ]
+    },
+    {
+      "ship": "B",
+      "year": 2026,
+      "steps": [
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.42163209051873507,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.471632090518735
+            },
+            "distance": 2.163209051873502
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 11.315459999912079,
+            "ciiRating": 2.512210740734188,
+            "ciiGrade": "E",
+            "totalDistance": 2.163209051873502,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.42163209051873507,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.471632090518735
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.5697024473271199,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.61970244732712
+            },
+            "distance": 16.970244732711993
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 2.9602738299047204,
+            "ciiRating": 0.6572275197878612,
+            "ciiGrade": "A",
+            "totalDistance": 19.133453784585495,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 0.991334537845855,
+              "fuelConsumptionAeTon": 0.1,
+              "totalFuelConsumptionTon": 1.091334537845855
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.4000084552319584,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.45000845523195837
+            },
+            "distance": 0.0008455231958341758
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 4.180748929134118,
+            "ciiRating": 0.9281922576868543,
+            "ciiGrade": "B",
+            "totalDistance": 19.13429930778133,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 1.3913429930778134,
+              "fuelConsumptionAeTon": 0.15000000000000002,
+              "totalFuelConsumptionTon": 1.5413429930778133
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.44226602655186137,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.49226602655186136
+            },
+            "distance": 4.226602655186133
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 4.517989428922424,
+            "ciiRating": 1.003064972166454,
+            "ciiGrade": "C",
+            "totalDistance": 23.36090196296746,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 1.8336090196296748,
+              "fuelConsumptionAeTon": 0.2,
+              "totalFuelConsumptionTon": 2.0336090196296746
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.4845297575216324,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.5345297575216323
+            },
+            "distance": 8.452975752163237
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 4.189567952942805,
+            "ciiRating": 0.9301502201855194,
+            "ciiGrade": "B",
+            "totalDistance": 31.813877715130698,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 2.318138777151307,
+              "fuelConsumptionAeTon": 0.25,
+              "totalFuelConsumptionTon": 2.568138777151307
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.4216311051445786,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.47163110514457857
+            },
+            "distance": 2.1631105144578546
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 4.643261957920363,
+            "ciiRating": 1.0308774510997014,
+            "ciiGrade": "C",
+            "totalDistance": 33.97698822958855,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 2.7397698822958856,
+              "fuelConsumptionAeTon": 0.3,
+              "totalFuelConsumptionTon": 3.039769882295886
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.4300022098417826,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.4800022098417826
+            },
+            "distance": 3.0002209841782568
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 4.940236850376845,
+            "ciiRating": 1.0968105651368991,
+            "ciiGrade": "D",
+            "totalDistance": 36.977209213766805,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 3.169772092137668,
+              "fuelConsumptionAeTon": 0.35,
+              "totalFuelConsumptionTon": 3.5197720921376683
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.4299976403596129,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 0.4799976403596129
+            },
+            "distance": 2.9997640359612867
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 5.19269049759841,
+            "ciiRating": 1.152859259939626,
+            "ciiGrade": "D",
+            "totalDistance": 39.97697324972809,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 3.5997697324972813,
+              "fuelConsumptionAeTon": 0.39999999999999997,
+              "totalFuelConsumptionTon": 3.999769732497281
+            }
+          }
+        },
+        {
+          "input": {
+            "segmentFuel": {
+              "fuelConsumptionMeTon": 0.9993473156931593,
+              "fuelConsumptionAeTon": 0.05,
+              "totalFuelConsumptionTon": 1.0493473156931592
+            },
+            "distance": 59.93473156931593
+          },
+          "output": {
+            "notes": "",
+            "ciiRequired": 4.5041842296260395,
+            "ciiAttained": 2.6228075606926793,
+            "ciiRating": 0.5823046809322979,
+            "ciiGrade": "A",
+            "totalDistance": 99.91170481904402,
+            "fuelConsumption": {
+              "fuelConsumptionMeTon": 4.599117048190441,
+              "fuelConsumptionAeTon": 0.44999999999999996,
+              "totalFuelConsumptionTon": 5.049117048190441
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "grades": [
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 0
+      },
+      "output": "A"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 0.5
+      },
+      "output": "A"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 0.7199999
+      },
+      "output": "A"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 0.72
+      },
+      "output": "B"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 0.8
+      },
+      "output": "B"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 0.9
+      },
+      "output": "C"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 0.95
+      },
+      "output": "C"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 1
+      },
+      "output": "C"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 1.119999
+      },
+      "output": "C"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 1.12
+      },
+      "output": "D"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 1.3
+      },
+      "output": "D"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 1.41
+      },
+      "output": "E"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 1.5
+      },
+      "output": "E"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": 2.054
+      },
+      "output": "E"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": -1
+      },
+      "output": "A"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": "NaN"
+      },
+      "output": "E"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "rating": "Infinity"
+      },
+      "output": "E"
+    }
+  ],
+  "gradesNew": [
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 40,
+        "required": 62.5
+      },
+      "output": "A"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 45,
+        "required": 62.5
+      },
+      "output": "B"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 56.25,
+        "required": 62.5
+      },
+      "output": "C"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 62.5,
+        "required": 62.5
+      },
+      "output": "C"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 70,
+        "required": 62.5
+      },
+      "output": "D"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 88.125,
+        "required": 62.5
+      },
+      "output": "E"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 90,
+        "required": 62.5
+      },
+      "output": "E"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 100,
+        "required": 0
+      },
+      "output": "E"
+    },
+    {
+      "input": {
+        "d": {
+          "d1": 0.72,
+          "d2": 0.9,
+          "d3": 1.12,
+          "d4": 1.41
+        },
+        "attained": 0,
+        "required": 0
+      },
+      "output": "E"
+    }
+  ]
+}
