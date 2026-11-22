@@ -193,7 +193,7 @@ export class CiiController {
   @RequirePermissions('cii:read')
   @ApiOperation({
     summary:
-      'CII grade distribution of the fleet of the active organization (super_admin: all or ?orgId)',
+      'CII grade distribution of the fleet of the active organization (super_admin: all or ?orgId) with one page of its vessels',
   })
   @ApiOkResponse({ type: FleetSummaryDto })
   async fleetSummary(
@@ -201,9 +201,13 @@ export class CiiController {
     @CurrentPrincipal() principal: Principal,
   ): Promise<FleetSummaryDto> {
     const summary = await this.cii.fleetSummary(
-      query.year ?? currentYear(),
+      {
+        year: query.year ?? currentYear(),
+        orgId: query.orgId,
+        page: query.page,
+        pageSize: query.pageSize,
+      },
       principal,
-      query.orgId,
     );
     return new FleetSummaryDto(summary, mergeMethodIds(METHOD_IDS.rating));
   }

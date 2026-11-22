@@ -176,7 +176,10 @@ describe('emission.cii.updated.v1 publication and recomputation by replay', () =
 
   describe('POST /cii/vessels/:mmsi/recompute', () => {
     const base = Date.now() - 3 * 60 * MINUTE_MS;
-    const strayStart = new Date(base - 20 * MINUTE_MS);
+    // Between the first and the second rebuilt segment (segments start every 30 min from base).
+    const strayStart = new Date(base + 20 * MINUTE_MS);
+    // Before the first replayed position: no evidence it is stale (its position may have left the stream), kept.
+    const earlyStart = new Date(base - 20 * MINUTE_MS);
 
     beforeAll(async () => {
       for (const position of positionsAt(RECOMPUTED_MMSI, base))
@@ -188,18 +191,16 @@ describe('emission.cii.updated.v1 publication and recomputation by replay', () =
         'first_formula',
         'first_formula',
       ]);
-      // a segment the replay will not produce again (e.g. from an earlier, corrected position)
-      await service.pool.query(
-        `INSERT INTO segments (time_start, time_end, mmsi, vessel_id, distance_nm, speed_kn, fuel_me_ton, fuel_ae_ton, co2_ton,
-                               method, navstatus, fuel_code, conversion_factor)
-         SELECT $1, $2, mmsi, vessel_id, 1, 6, 0.01, 0.001, 0.035, 'first_formula', 0, 'diesel_gas_oil', 3.206
-           FROM vessel_profiles WHERE mmsi = $3`,
-        [
-          strayStart,
-          new Date(strayStart.getTime() + 10 * MINUTE_MS),
-          RECOMPUTED_MMSI,
-        ],
-      );
+      // segments the replay will not produce again (e.g. from an earlier, corrected position)
+      for (const start of [strayStart, earlyStart]) {
+        await service.pool.query(
+          `INSERT INTO segments (time_start, time_end, mmsi, vessel_id, distance_nm, speed_kn, fuel_me_ton, fuel_ae_ton, co2_ton,
+                                 method, navstatus, fuel_code, conversion_factor)
+           SELECT $1, $2, mmsi, vessel_id, 1, 6, 0.01, 0.001, 0.035, 'first_formula', 0, 'diesel_gas_oil', 3.206
+             FROM vessel_profiles WHERE mmsi = $3`,
+          [start, new Date(start.getTime() + 5 * MINUTE_MS), RECOMPUTED_MMSI],
+        );
+      }
       // the fleet removes the first fuel formula: live segments keep their old method until recomputed
       const updatedAt = new Date().toISOString();
       await service.publish(
@@ -267,7 +268,15 @@ describe('emission.cii.updated.v1 publication and recomputation by replay', () =
         error: null,
       });
 
-      const segments = await segmentsOf(service, RECOMPUTED_MMSI);
+      const all = await segmentsOf(service, RECOMPUTED_MMSI);
+      expect(
+        all.find(
+          (segment) => segment.timeStart.getTime() === earlyStart.getTime(),
+        )?.method,
+      ).toBe('first_formula');
+      const segments = all.filter(
+        (segment) => segment.timeStart.getTime() !== earlyStart.getTime(),
+      );
       expect(segments).toHaveLength(4);
       expect(segments.map((segment) => segment.method)).toEqual([
         'holtrop',
@@ -297,8 +306,8 @@ describe('emission.cii.updated.v1 publication and recomputation by replay', () =
       }>();
       expect(cii).toMatchObject({
         lastMethod: 'holtrop',
-        segments: 4,
-        methods: { holtrop: 4, firstFormula: 0 },
+        segments: 5,
+        methods: { holtrop: 4, firstFormula: 1 },
       });
 
       const again = await service.request({

@@ -42,6 +42,8 @@ describe(`${SERVICE.packageName} platform behaviour`, () => {
       'init',
       'seed',
       'cii_aggregates',
+      'vessel_scoped_history',
+      'cii_aggregates_per_vessel',
     ]);
     const hypertables = await service.pool.query<{ name: string }>(
       `SELECT hypertable_name AS name FROM timescaledb_information.hypertables WHERE hypertable_schema = 'emission' ORDER BY 1`,
@@ -60,6 +62,16 @@ describe(`${SERVICE.packageName} platform behaviour`, () => {
     expect(aggregates.rows).toEqual([
       { name: 'cii_annual', realtime: true },
       { name: 'cii_daily', realtime: true },
+    ]);
+    // the aggregates are per vessel, not per MMSI (0005)
+    const keys = await service.pool.query<{ view: string; column: string }>(
+      `SELECT table_name AS view, column_name AS column FROM information_schema.columns
+        WHERE table_schema = 'emission' AND table_name IN ('cii_daily', 'cii_annual')
+          AND column_name IN ('vessel_id', 'mmsi') ORDER BY 1, 2`,
+    );
+    expect(keys.rows).toEqual([
+      { view: 'cii_annual', column: 'vessel_id' },
+      { view: 'cii_daily', column: 'vessel_id' },
     ]);
   });
 

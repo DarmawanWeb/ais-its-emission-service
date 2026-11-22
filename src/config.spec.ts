@@ -41,6 +41,16 @@ describe('configSchema', () => {
     expect(() => load({ PORT: 'eighty' })).toThrow(ConfigValidationError);
   });
 
+  it('aligns the reading period bound with the telemetry service (TELEMETRY_MAX_PERIOD_H 1–744 h, default 24)', () => {
+    expect(load().TELEMETRY_MAX_PERIOD_H).toBe(24);
+    expect(load({ TELEMETRY_MAX_PERIOD_H: '744' }).TELEMETRY_MAX_PERIOD_H).toBe(
+      744,
+    );
+    expect(() => load({ TELEMETRY_MAX_PERIOD_H: '745' })).toThrow(
+      ConfigValidationError,
+    );
+  });
+
   it('refuses the development secrets in production', () => {
     expect(() =>
       load({

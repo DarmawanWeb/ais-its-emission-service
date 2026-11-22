@@ -73,23 +73,29 @@ class FakeRedis {
 
 describe('Open-Meteo client and weather service', () => {
   const fake = new FakeOpenMeteo();
+  /** Generous timeout: a cold first request on a loaded machine must not abort the success paths. */
   let config: Config;
+  /** Short timeout, only for the test of the timeout itself. */
+  let shortTimeoutConfig: Config;
 
   beforeAll(async () => {
     // the fallback paths log warnings on purpose
     Logger.overrideLogger(false);
     const url = await fake.start();
-    config = loadConfig(configSchema, {
-      env: {
-        LOG_LEVEL: 'silent',
-        WEATHER_API_URL: url,
-        WEATHER_TIMEOUT_MS: '200',
-        WEATHER_BREAKER_THRESHOLD: '2',
-        WEATHER_BREAKER_COOLDOWN_MS: '60000',
-      },
-      envFile: false,
-      output: null,
-    });
+    const configWithTimeout = (timeoutMs: number): Config =>
+      loadConfig(configSchema, {
+        env: {
+          LOG_LEVEL: 'silent',
+          WEATHER_API_URL: url,
+          WEATHER_TIMEOUT_MS: String(timeoutMs),
+          WEATHER_BREAKER_THRESHOLD: '2',
+          WEATHER_BREAKER_COOLDOWN_MS: '60000',
+        },
+        envFile: false,
+        output: null,
+      });
+    config = configWithTimeout(5_000);
+    shortTimeoutConfig = configWithTimeout(200);
   });
 
   afterAll(async () => {
@@ -162,9 +168,9 @@ describe('Open-Meteo client and weather service', () => {
       WeatherRequestError,
     );
     mode = 'slow';
-    await expect(client.getCurrentWind(cell)).rejects.toThrow(
-      /aborted|timeout/i,
-    );
+    await expect(
+      new OpenMeteoClient(shortTimeoutConfig).getCurrentWind(cell),
+    ).rejects.toThrow(/aborted|timeout/i);
   });
 
   it('caches per cell and hour', async () => {

@@ -3,6 +3,7 @@ import type { Pool } from '@darmawanweb/ais-its-nest/db';
 import { describe, expect, it } from 'vitest';
 
 import { configSchema } from '../../config.js';
+import { PG_LOCK_NOT_AVAILABLE } from '../../db/errors.js';
 import { AggregateRefresher } from './aggregate-refresher.service.js';
 
 /** Records the refresh calls; each takes `delayMs` and may fail once. */
@@ -14,6 +15,8 @@ class FakePool {
     endedAt: number;
   }[] = [];
   failNext = false;
+  /** Errors thrown by the next calls, in order (before `failNext`). */
+  readonly errors: Error[] = [];
   private active = 0;
   maxActive = 0;
 
@@ -25,6 +28,8 @@ class FakePool {
     const startedAt = Date.now();
     await new Promise((resolve) => setTimeout(resolve, this.delayMs));
     this.active -= 1;
+    const error = this.errors.shift();
+    if (error !== undefined) throw error;
     if (this.failNext) {
       this.failNext = false;
       throw new Error('lock timeout');
@@ -66,6 +71,57 @@ describe('AggregateRefresher', () => {
     expect(annualTo.getUTCMonth()).toBe(0);
 
     await service.flush();
+    expect(pool.calls).toHaveLength(2);
+  });
+
+  it('refreshes a pending late change at shutdown, and nothing without one', async () => {
+    const pool = new FakePool(1);
+    const service = refresher(pool);
+    service.markChanged(new Date(Date.now() - 2 * 86_400_000));
+    await service.beforeApplicationShutdown();
+    expect(pool.calls).toHaveLength(2);
+    await service.beforeApplicationShutdown();
+    expect(pool.calls).toHaveLength(2);
+  });
+
+  it('refreshes once after boot, for late writes of a replica that crashed before refreshing', async () => {
+    const pool = new FakePool(1);
+    const service = refresher(pool);
+    service.onApplicationBootstrap();
+    try {
+      await service.flush();
+      expect(pool.calls.map((call) => call.sql)).toEqual([
+        expect.stringContaining("refresh_continuous_aggregate('cii_daily'"),
+        expect.stringContaining("refresh_continuous_aggregate('cii_annual'"),
+      ]);
+      await service.flush();
+      expect(pool.calls).toHaveLength(2);
+    } finally {
+      await service.beforeApplicationShutdown();
+    }
+  });
+
+  it('retries a refresh that overlaps a refresh in progress (55P03), and only that error', async () => {
+    const pool = new FakePool(1);
+    const service = refresher(pool);
+    const concurrent = () =>
+      Object.assign(
+        new Error(
+          'could not refresh continuous aggregate "cii_daily" due to a concurrent refresh',
+        ),
+        { code: PG_LOCK_NOT_AVAILABLE },
+      );
+    pool.errors.push(concurrent());
+    await service.refreshNow();
+    expect(pool.calls.map((call) => call.sql)).toEqual([
+      expect.stringContaining("refresh_continuous_aggregate('cii_daily'"),
+      expect.stringContaining("refresh_continuous_aggregate('cii_annual'"),
+    ]);
+
+    pool.errors.push(
+      Object.assign(new Error('permission denied'), { code: '42501' }),
+    );
+    await expect(service.refreshNow()).rejects.toThrow('permission denied');
     expect(pool.calls).toHaveLength(2);
   });
 

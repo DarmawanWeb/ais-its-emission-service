@@ -7,8 +7,10 @@ import * as schema from '../../db/schema.js';
 
 const { ciiAnnualManual } = schema;
 
-/** A manual / imported annual CII record. */
+/** A manual / imported annual CII record of a vessel-year. */
 export interface AnnualManualRecord {
+  readonly vesselId: string;
+  /** MMSI of the vessel when the record was written (informational). */
   readonly mmsi: number;
   readonly year: number;
   readonly attained: number;
@@ -27,49 +29,55 @@ export interface AnnualManualRecord {
 /** Fields of a manual record. */
 export type AnnualManualInput = Omit<
   AnnualManualRecord,
-  'mmsi' | 'year' | 'updatedAt'
+  'vesselId' | 'mmsi' | 'year' | 'updatedAt'
 >;
 
-/** Drizzle access to `cii_annual_manual`. */
+/**
+ * Drizzle access to `cii_annual_manual`, keyed by vessel and year (a re-used
+ * MMSI never exposes the previous vessel's records, spec §8.5).
+ */
 @Injectable()
 export class AnnualManualRepository {
   constructor(@InjectDb() private readonly db: Database<typeof schema>) {}
 
   async find(
-    mmsi: number,
+    vesselId: string,
     year: number,
   ): Promise<AnnualManualRecord | undefined> {
     const [row] = await this.db
       .select()
       .from(ciiAnnualManual)
       .where(
-        and(eq(ciiAnnualManual.mmsi, mmsi), eq(ciiAnnualManual.year, year)),
+        and(
+          eq(ciiAnnualManual.vesselId, vesselId),
+          eq(ciiAnnualManual.year, year),
+        ),
       )
       .limit(1);
     return row === undefined ? undefined : toRecord(row);
   }
 
-  async listByMmsi(mmsi: number): Promise<AnnualManualRecord[]> {
+  async listByVessel(vesselId: string): Promise<AnnualManualRecord[]> {
     const rows = await this.db
       .select()
       .from(ciiAnnualManual)
-      .where(eq(ciiAnnualManual.mmsi, mmsi))
+      .where(eq(ciiAnnualManual.vesselId, vesselId))
       .orderBy(asc(ciiAnnualManual.year));
     return rows.map(toRecord);
   }
 
-  async listByMmsis(
-    mmsis: readonly number[],
+  async listByVessels(
+    vesselIds: readonly string[],
     year: number,
   ): Promise<AnnualManualRecord[]> {
-    if (mmsis.length === 0) return [];
+    if (vesselIds.length === 0) return [];
     const rows = await this.db
       .select()
       .from(ciiAnnualManual)
       .where(
         and(
           eq(ciiAnnualManual.year, year),
-          inArray(ciiAnnualManual.mmsi, [...mmsis]),
+          inArray(ciiAnnualManual.vesselId, [...vesselIds]),
         ),
       );
     return rows.map(toRecord);
@@ -77,17 +85,22 @@ export class AnnualManualRepository {
 
   /** Inserts or replaces the record of a vessel-year. */
   async upsert(
-    mmsi: number,
+    vessel: { readonly vesselId: string; readonly mmsi: number },
     year: number,
     input: AnnualManualInput,
   ): Promise<AnnualManualRecord> {
-    const values = { mmsi, year, ...input };
+    const values = {
+      vesselId: vessel.vesselId,
+      mmsi: vessel.mmsi,
+      year,
+      ...input,
+    };
     const [row] = await this.db
       .insert(ciiAnnualManual)
       .values(values)
       .onConflictDoUpdate({
-        target: [ciiAnnualManual.mmsi, ciiAnnualManual.year],
-        set: { ...input, updatedAt: sql`now()` },
+        target: [ciiAnnualManual.vesselId, ciiAnnualManual.year],
+        set: { ...input, mmsi: vessel.mmsi, updatedAt: sql`now()` },
       })
       .returning();
     if (row === undefined)
@@ -100,6 +113,7 @@ function toRecord(
   row: typeof ciiAnnualManual.$inferSelect,
 ): AnnualManualRecord {
   return {
+    vesselId: row.vesselId,
     mmsi: row.mmsi,
     year: row.year,
     attained: row.attained,

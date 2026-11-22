@@ -27,6 +27,13 @@ export const configSchema = defineConfig({
   SEGMENT_MAX_GAP_MIN: envInteger(1, 10_080).default(360),
   /** Telemetry counts as active within this many minutes of a reading (spec §13.4). */
   TELEMETRY_ACTIVE_WINDOW_MIN: envInteger(1, 1_440).default(10),
+  /**
+   * Longest measured period (`time − periodStart`) of a reading, hours. MUST
+   * be at least the telemetry service's TELEMETRY_MAX_PERIOD_H (same name,
+   * range and default): it bounds the search for period readings that
+   * overlap a segment, and a longer period would not be fully attributed.
+   */
+  TELEMETRY_MAX_PERIOD_H: envInteger(1, 744).default(24),
   /** Minimum interval between two emission.cii.updated.v1 of a vessel, seconds. */
   CII_PUBLISH_INTERVAL_S: envInteger(1, 86_400).default(60),
   /** How often pending CII publications are checked, milliseconds. */

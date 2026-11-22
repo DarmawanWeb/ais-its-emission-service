@@ -18,7 +18,7 @@ export interface PeriodTotals {
 
 /** Totals of a vessel-year (`cii_annual`). */
 export interface YearTotals extends PeriodTotals {
-  readonly mmsi: number;
+  readonly vesselId: string;
   readonly year: number;
 }
 
@@ -44,8 +44,9 @@ const TOTALS = `
   last_time AS "lastTime"`;
 
 /**
- * Reads of the continuous aggregates `cii_daily` and `cii_annual`
- * (real-time: rows after the last refresh come from `segments`).
+ * Reads of the continuous aggregates `cii_daily` and `cii_annual` per vessel
+ * (`vessel_id`, not MMSI: a re-used MMSI never exposes the previous vessel's
+ * CII, spec §8.5); real-time: rows after the last refresh come from `segments`.
  */
 @Injectable()
 export class CiiRepository {
@@ -53,31 +54,34 @@ export class CiiRepository {
 
   /** Totals of a vessel-year, `undefined` without counted segments. */
   async yearTotals(
-    mmsi: number,
+    vesselId: string,
     year: number,
   ): Promise<YearTotals | undefined> {
-    const rows = await this.years([mmsi], year);
+    const rows = await this.years([vesselId], year);
     return rows[0];
   }
 
   /** Every year with segments of a vessel. */
-  async allYears(mmsi: number): Promise<YearTotals[]> {
+  async allYears(vesselId: string): Promise<YearTotals[]> {
     const result = await this.pool.query<YearTotals>(
-      `SELECT mmsi, extract(year FROM year AT TIME ZONE 'UTC')::int AS "year", ${TOTALS}
-         FROM cii_annual WHERE mmsi = $1 AND segments > 0 ORDER BY year`,
-      [mmsi],
+      `SELECT vessel_id AS "vesselId", extract(year FROM year AT TIME ZONE 'UTC')::int AS "year", ${TOTALS}
+         FROM cii_annual WHERE vessel_id = $1 AND segments > 0 ORDER BY year`,
+      [vesselId],
     );
     return result.rows;
   }
 
   /** Totals of several vessels for one year. */
-  async years(mmsis: readonly number[], year: number): Promise<YearTotals[]> {
-    if (mmsis.length === 0) return [];
+  async years(
+    vesselIds: readonly string[],
+    year: number,
+  ): Promise<YearTotals[]> {
+    if (vesselIds.length === 0) return [];
     const result = await this.pool.query<YearTotals>(
-      `SELECT mmsi, extract(year FROM year AT TIME ZONE 'UTC')::int AS "year", ${TOTALS}
+      `SELECT vessel_id AS "vesselId", extract(year FROM year AT TIME ZONE 'UTC')::int AS "year", ${TOTALS}
          FROM cii_annual
-        WHERE mmsi = ANY($1::int[]) AND year = $2 AND segments > 0`,
-      [[...mmsis], new Date(Date.UTC(year, 0, 1))],
+        WHERE vessel_id = ANY($1::uuid[]) AND year = $2 AND segments > 0`,
+      [[...vesselIds], new Date(Date.UTC(year, 0, 1))],
     );
     return result.rows;
   }
@@ -86,7 +90,7 @@ export class CiiRepository {
    * Daily totals of a vessel for days in `[from, to)` with year-to-date sums
    * (the sums restart on 1 January, UTC).
    */
-  async days(mmsi: number, from: Date, to: Date): Promise<DayTotals[]> {
+  async days(vesselId: string, from: Date, to: Date): Promise<DayTotals[]> {
     const yearStart = new Date(Date.UTC(from.getUTCFullYear(), 0, 1));
     const result = await this.pool.query<DayTotals>(
       `WITH daily AS (
@@ -96,7 +100,7 @@ export class CiiRepository {
                 sum(fuel_ae_ton) OVER ytd AS ytd_fuel_ae_ton,
                 sum(co2_ton) OVER ytd AS ytd_co2_ton
            FROM cii_daily
-          WHERE mmsi = $1 AND day >= $2 AND day < $4
+          WHERE vessel_id = $1 AND day >= $2 AND day < $4
          WINDOW ytd AS (PARTITION BY extract(year FROM day AT TIME ZONE 'UTC') ORDER BY day))
        SELECT day, "distanceNm", "fuelMeTon", "fuelAeTon", "co2Ton", "segments", "telemetrySegments",
               "firstFormulaSegments", "holtropSegments", "excludedSegments", "lastTime",
@@ -106,7 +110,7 @@ export class CiiRepository {
               ytd_co2_ton::double precision AS "ytdCo2Ton"
          FROM daily WHERE day >= $3 ORDER BY day`,
       [
-        mmsi,
+        vesselId,
         yearStart,
         new Date(
           Date.UTC(

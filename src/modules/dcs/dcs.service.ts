@@ -33,7 +33,7 @@ export class DcsService {
     const profile = await this.access.accessible(mmsi, principal);
     const { snapshot } = profile;
     const totals = await this.segments.fuelTotals(
-      mmsi,
+      profile.vesselId,
       new Date(Date.UTC(year, 0, 1)),
       new Date(Date.UTC(year + 1, 0, 1)),
       UNDER_WAY_MIN_SPEED_KN,
@@ -66,7 +66,7 @@ export class DcsService {
         },
       };
     }
-    const record = await this.manual.find(mmsi, year);
+    const record = await this.manual.find(profile.vesselId, year);
     if (record === undefined) throw new CiiNotAvailableError(mmsi, year);
     const totalTon = record.fuelMeTon + record.fuelAeTon;
     const co2Ton =

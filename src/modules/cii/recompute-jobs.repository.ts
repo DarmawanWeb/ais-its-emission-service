@@ -20,11 +20,11 @@ export class RecomputeAlreadyRunning extends Error {
 export class RecomputeJobsRepository {
   constructor(@InjectDb() private readonly db: Database<typeof schema>) {}
 
-  /** Creates a running job (one per vessel, `recompute_jobs_running_idx`). */
+  /** Creates a running job (one per MMSI, `recompute_jobs_running_idx`). */
   async start(
     job: Pick<
       RecomputeJob,
-      'id' | 'mmsi' | 'fromTime' | 'toTime' | 'requestedBy'
+      'id' | 'mmsi' | 'vesselId' | 'fromTime' | 'toTime' | 'requestedBy'
     >,
   ): Promise<RecomputeJob> {
     try {
@@ -42,6 +42,7 @@ export class RecomputeJobsRepository {
     }
   }
 
+  /** Records the outcome of a job that is still running (a job failed meanwhile as stale keeps its state). */
   async finish(
     id: string,
     outcome: Pick<
@@ -51,8 +52,20 @@ export class RecomputeJobsRepository {
   ): Promise<void> {
     await this.db
       .update(recomputeJobs)
-      .set({ ...outcome, finishedAt: sql`now()` })
-      .where(eq(recomputeJobs.id, id));
+      .set({ ...outcome, finishedAt: sql`now()`, heartbeatAt: sql`now()` })
+      .where(
+        and(eq(recomputeJobs.id, id), eq(recomputeJobs.status, 'running')),
+      );
+  }
+
+  /** Records that a running job is alive (database clock). */
+  async heartbeat(id: string): Promise<void> {
+    await this.db
+      .update(recomputeJobs)
+      .set({ heartbeatAt: sql`now()` })
+      .where(
+        and(eq(recomputeJobs.id, id), eq(recomputeJobs.status, 'running')),
+      );
   }
 
   async find(id: string): Promise<RecomputeJob | undefined> {
@@ -64,19 +77,27 @@ export class RecomputeJobsRepository {
     return row;
   }
 
-  /** Fails running jobs older than `olderThan` (an instance stopped while running them). */
-  async failStale(olderThan: Date): Promise<number> {
+  /**
+   * Fails the running jobs whose heartbeat is older than `staleAfterMs`
+   * (database clock): the instance running them stopped without recording
+   * an outcome. Returns how many jobs were failed.
+   */
+  async failStale(staleAfterMs: number): Promise<number> {
     const rows = await this.db
       .update(recomputeJobs)
       .set({
         status: 'failed',
-        error: 'interrupted (service restarted)',
+        error:
+          'INTERRUPTED: no heartbeat (the instance running the job stopped)',
         finishedAt: sql`now()`,
       })
       .where(
         and(
           eq(recomputeJobs.status, 'running'),
-          lt(recomputeJobs.createdAt, olderThan),
+          lt(
+            recomputeJobs.heartbeatAt,
+            sql`now() - make_interval(secs => ${staleAfterMs / 1000})`,
+          ),
         ),
       )
       .returning({ id: recomputeJobs.id });

@@ -99,11 +99,11 @@ export class CiiPublisherService
   }
 
   private async publishOne(mmsi: number): Promise<boolean> {
-    const [profile, latest] = await Promise.all([
-      this.profiles.findByMmsi(mmsi),
-      this.segments.latestCounted(mmsi),
-    ]);
-    if (profile === undefined || latest === undefined) return false;
+    // The MMSI's current vessel: a re-used MMSI publishes its new vessel's CII only.
+    const profile = await this.profiles.findByMmsi(mmsi);
+    if (profile === undefined) return false;
+    const latest = await this.segments.latestCounted(profile.vesselId);
+    if (latest === undefined) return false;
     const year = latest.timeStart.getUTCFullYear();
     let data: CiiUpdatedV1;
     try {

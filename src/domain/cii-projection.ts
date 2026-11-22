@@ -1,8 +1,14 @@
+import { attainedCii } from './cii.js';
+
 /** Totals of a period that scale with time. */
 export interface ScalableTotals {
+  /** Distance sailed, nm. */
   readonly distanceNm: number;
+  /** Main engine fuel, t. */
   readonly fuelMeTon: number;
+  /** Auxiliary engine fuel, t. */
   readonly fuelAeTon: number;
+  /** CO2, t. */
   readonly co2Ton: number;
 }
 
@@ -17,10 +23,11 @@ export function elapsedYearFraction(year: number, asOf: Date): number {
 /**
  * Linear year-end projection of year-to-date totals:
  * `X_year = X_YTD / f` with `f` the elapsed fraction of the calendar year at
- * the time of the last segment. Ratios such as the attained CII are not
- * changed by this scaling; see {@link projectCumulativeAttained}.
+ * the time of the last segment (the vessel keeps operating at its
+ * year-to-date rate until 31 December).
  *
  * @method cii.year_end_projection
+ * @param fraction elapsed fraction of the year, in (0, 1] ({@link elapsedYearFraction}).
  */
 export function projectTotals(
   totals: ScalableTotals,
@@ -34,48 +41,41 @@ export function projectTotals(
   };
 }
 
-/** A daily point of the cumulative (year-to-date) attained CII. */
-export interface CumulativePoint {
-  /** Day (UTC midnight). */
-  readonly day: Date;
-  /** Year-to-date attained CII at the end of the day. */
-  readonly cumulativeAttained: number;
+/** The year-end projection of a year in progress. */
+export interface YearEndProjection {
+  /** Projected totals of the whole calendar year. */
+  readonly totals: ScalableTotals;
+  /** Attained CII of the projected totals, g CO2 / (capacity · nm). */
+  readonly attained: number;
 }
 
 /**
- * Year-end attained CII from the least-squares line through the daily
- * cumulative attained values (`y = α + β·x`, x = day index), evaluated on
- * 31 December; the last value when fewer than two days exist. Clamped at 0.
+ * Year-end projection of a year in progress: the totals projected linearly
+ * ({@link projectTotals}) and the attained CII they give,
+ * `CII_year = CO2_year · 10⁶ / (Capacity · D_year)`.
+ *
+ * CO2 and distance both scale by `1 / f`, so the projected attained CII — and
+ * the rating and grade derived from it — equal the year-to-date values: the
+ * linear model projects the annual totals, not a change of carbon intensity.
+ * The trend of the daily cumulative (year-to-date) CII is deliberately not
+ * extrapolated: that ratio converges over the year and is not linear in time,
+ * so extending a short slope to 31 December diverges (to 0, or to many times
+ * the year-to-date value).
  *
  * @method cii.year_end_projection
- * @param year calendar year of the points.
+ * @method cii.attained_accumulation
+ * @param ytd year-to-date totals (distance nm, fuel and CO2 t).
+ * @param fraction elapsed fraction of the year, in (0, 1].
+ * @param capacity CII capacity (DWT or GT).
  */
-export function projectCumulativeAttained(
-  points: readonly CumulativePoint[],
-  year: number,
-): number | null {
-  const valid = points.filter((point) =>
-    Number.isFinite(point.cumulativeAttained),
-  );
-  const last = valid.at(-1);
-  if (last === undefined) return null;
-  if (valid.length < 2) return last.cumulativeAttained;
-  const dayMs = 86_400_000;
-  const origin = Date.UTC(year, 0, 1);
-  const xs = valid.map((point) => (point.day.getTime() - origin) / dayMs);
-  const ys = valid.map((point) => point.cumulativeAttained);
-  const n = valid.length;
-  const meanX = xs.reduce((sum, x) => sum + x, 0) / n;
-  const meanY = ys.reduce((sum, y) => sum + y, 0) / n;
-  let sxx = 0;
-  let sxy = 0;
-  xs.forEach((x, index) => {
-    const y = ys[index] ?? meanY;
-    sxx += (x - meanX) ** 2;
-    sxy += (x - meanX) * (y - meanY);
-  });
-  if (sxx === 0) return last.cumulativeAttained;
-  const slope = sxy / sxx;
-  const yearEnd = (Date.UTC(year, 11, 31) - origin) / dayMs;
-  return Math.max(meanY + slope * (yearEnd - meanX), 0);
+export function projectYearEnd(
+  ytd: ScalableTotals,
+  fraction: number,
+  capacity: number,
+): YearEndProjection {
+  const totals = projectTotals(ytd, fraction);
+  return {
+    totals,
+    attained: attainedCii(totals.co2Ton, totals.distanceNm, capacity),
+  };
 }

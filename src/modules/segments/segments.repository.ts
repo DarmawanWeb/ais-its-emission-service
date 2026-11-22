@@ -7,6 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { and, desc, eq, gte, lt, lte, ne, not, sql } from 'drizzle-orm';
 
+import type { Executor } from '../../db/executor.js';
 import * as schema from '../../db/schema.js';
 
 const { segments } = schema;
@@ -16,14 +17,12 @@ export type SegmentRow = typeof segments.$inferSelect;
 /** A segment to store (`computed_at` defaults to now). */
 export type NewSegment = Omit<typeof segments.$inferInsert, 'computedAt'>;
 
-/** Telemetry fuel replacing the fuel of a stored segment. */
+/** Telemetry fuel replacing the fuel of one stored segment. */
 export interface TelemetryFuelUpdate {
-  readonly mmsi: number;
   readonly timeStart: Date;
   readonly fuelMeTon: number;
   readonly fuelAeTon: number;
   readonly co2Ton: number;
-  readonly flags: readonly string[];
 }
 
 /** Totals of a vessel-year per fuel (DCS). */
@@ -46,7 +45,35 @@ export interface LatestSegment {
   readonly method: 'telemetry' | 'first_formula' | 'holtrop';
 }
 
-/** Access to the `segments` hypertable. */
+/** Segments of one vessel under one MMSI starting in `[from, to]`, computed before `computedBefore`. */
+export interface StaleSegmentsRange {
+  readonly mmsi: number;
+  readonly vesselId: string;
+  readonly from: Date;
+  /** Inclusive. */
+  readonly to: Date;
+  readonly computedBefore: Date;
+}
+
+/**
+ * Flags of a fuel model that telemetry replaces (dropped when a segment is
+ * re-attributed, together with an earlier `telemetry_reattributed`).
+ */
+export const MODEL_FLAGS: readonly string[] = [
+  'no_fuel_model',
+  'formula_error',
+  'weather_unavailable',
+  'fuel_not_finite',
+  'fuel_negative',
+  'telemetry_reattributed',
+];
+
+/**
+ * Access to the `segments` hypertable. A segment is identified by
+ * `(mmsi, time_start)`; the history of a vessel is read by `vessel_id`
+ * (spec §8.5: a re-used MMSI never exposes the previous vessel's segments,
+ * and a vessel keeps its history when its MMSI changes).
+ */
 @Injectable()
 export class SegmentsRepository {
   constructor(
@@ -55,8 +82,11 @@ export class SegmentsRepository {
   ) {}
 
   /** Stores a segment; `false` when `(mmsi, time_start)` exists (idempotent consumer). */
-  async insert(segment: NewSegment): Promise<boolean> {
-    const rows = await this.db
+  async insert(
+    segment: NewSegment,
+    executor: Executor = this.db,
+  ): Promise<boolean> {
+    const rows = await executor
       .insert(segments)
       .values(segment)
       .onConflictDoNothing({ target: [segments.mmsi, segments.timeStart] })
@@ -64,16 +94,22 @@ export class SegmentsRepository {
     return rows.length > 0;
   }
 
-  /** Stores or replaces a segment (recomputation). */
-  async upsert(segment: NewSegment): Promise<void> {
-    await this.db
+  /**
+   * Stores or replaces a segment (recomputation); `false` when
+   * `(mmsi, time_start)` belongs to another vessel (the previous holder of a
+   * re-assigned MMSI), whose row is left untouched.
+   */
+  async upsert(
+    segment: NewSegment,
+    executor: Executor = this.db,
+  ): Promise<boolean> {
+    const rows = await executor
       .insert(segments)
       .values(segment)
       .onConflictDoUpdate({
         target: [segments.mmsi, segments.timeStart],
         set: {
           timeEnd: sql`excluded.time_end`,
-          vesselId: sql`excluded.vessel_id`,
           distanceNm: sql`excluded.distance_nm`,
           speedKn: sql`excluded.speed_kn`,
           fuelMeTon: sql`excluded.fuel_me_ton`,
@@ -87,41 +123,61 @@ export class SegmentsRepository {
           flags: sql`excluded.flags`,
           computedAt: sql`now()`,
         },
-      });
+        // `segments` is the existing row of the conflict, `excluded` the proposed one.
+        setWhere: sql`segments.vessel_id = excluded.vessel_id`,
+      })
+      .returning({ timeStart: segments.timeStart });
+    return rows.length > 0;
   }
 
   /**
-   * Deletes the segments of a vessel starting in `[from, to)` except those
-   * starting at one of `keep` (the segments a recomputation rebuilt); returns
-   * how many were deleted.
+   * Deletes the segments of a recomputed range that the replay did not
+   * produce again: rows of the vessel under the replayed MMSI starting in
+   * `[from, to]` and computed before the job started. Rebuilt rows, live
+   * inserts and telemetry re-attributions during the job carry a later
+   * `computed_at` and are kept. Returns how many rows were deleted.
    */
-  async deleteRangeExcept(
-    mmsi: number,
-    from: Date,
-    to: Date,
-    keep: readonly Date[],
+  async deleteStale(
+    range: StaleSegmentsRange,
+    executor: Executor = this.db,
   ): Promise<number> {
-    const result = await this.pool.query(
-      `DELETE FROM segments
-        WHERE mmsi = $1 AND time_start >= $2 AND time_start < $3
-          AND NOT (time_start = ANY($4::timestamptz[]))`,
-      [mmsi, from, to, keep.map((time) => time.toISOString())],
-    );
-    return result.rowCount ?? 0;
+    const rows = await executor
+      .delete(segments)
+      .where(staleCondition(range))
+      .returning({ timeStart: segments.timeStart });
+    return rows.length;
   }
 
-  /** Segments of a vessel whose window intersects `[from, to]`, gaps excluded. */
-  async findOverlapping(
+  /** Number of segments matching {@link deleteStale}'s condition. */
+  async countStale(range: StaleSegmentsRange): Promise<number> {
+    const [row] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(segments)
+      .where(staleCondition(range));
+    return row?.count ?? 0;
+  }
+
+  /**
+   * The query of {@link findOverlapping}: segments stored under an MMSI whose
+   * window intersects `[from, to]`, gaps excluded, oldest first. Segments are
+   * never longer than `maxSegmentMs` (SEGMENT_MAX_GAP_MIN: longer windows are
+   * gaps), so `time_start ≥ from − maxSegmentMs` bounds the scan to the
+   * hypertable chunks of the window instead of the vessel's whole history.
+   */
+  overlappingQuery(
     mmsi: number,
     from: Date,
     to: Date,
-  ): Promise<SegmentRow[]> {
-    return this.db
+    maxSegmentMs: number,
+    executor: Executor = this.db,
+  ) {
+    return executor
       .select()
       .from(segments)
       .where(
         and(
           eq(segments.mmsi, mmsi),
+          gte(segments.timeStart, new Date(from.getTime() - maxSegmentMs)),
           lte(segments.timeStart, to),
           gte(segments.timeEnd, from),
           not(sql`'gap' = ANY(${segments.flags})`),
@@ -130,30 +186,56 @@ export class SegmentsRepository {
       .orderBy(segments.timeStart);
   }
 
-  /** Replaces the fuel of a segment with telemetry. */
-  async updateTelemetryFuel(update: TelemetryFuelUpdate): Promise<void> {
-    await this.db
-      .update(segments)
-      .set({
-        method: 'telemetry',
-        fuelMeTon: update.fuelMeTon,
-        fuelAeTon: update.fuelAeTon,
-        co2Ton: update.co2Ton,
-        weather: null,
-        flags: [...update.flags],
-        computedAt: sql`now()`,
-      })
-      .where(
-        and(
-          eq(segments.mmsi, update.mmsi),
-          eq(segments.timeStart, update.timeStart),
-        ),
-      );
+  /** Segments stored under an MMSI whose window intersects `[from, to]` (see {@link overlappingQuery}). */
+  async findOverlapping(
+    mmsi: number,
+    from: Date,
+    to: Date,
+    maxSegmentMs: number,
+    executor: Executor = this.db,
+  ): Promise<SegmentRow[]> {
+    return this.overlappingQuery(mmsi, from, to, maxSegmentMs, executor);
+  }
+
+  /**
+   * Replaces the fuel of segments stored under an MMSI with telemetry, in one
+   * statement: method `telemetry`, no weather, the model flags dropped and
+   * `telemetry_reattributed` added.
+   */
+  async applyTelemetryFuel(
+    mmsi: number,
+    updates: readonly TelemetryFuelUpdate[],
+    executor: Executor = this.db,
+  ): Promise<number> {
+    if (updates.length === 0) return 0;
+    const starts = updates.map((update) => update.timeStart.getTime());
+    const result = await executor.execute(sql`
+      UPDATE ${segments} AS s
+         SET method = 'telemetry',
+             fuel_me_ton = u.fuel_me_ton,
+             fuel_ae_ton = u.fuel_ae_ton,
+             co2_ton = u.co2_ton,
+             weather = NULL,
+             flags = array_append(
+               ARRAY(SELECT f FROM unnest(s.flags) AS f WHERE NOT (f = ANY(${toTextArray(MODEL_FLAGS)}))),
+               'telemetry_reattributed'),
+             computed_at = now()
+        FROM unnest(
+               ${toTimestampArray(updates.map((update) => update.timeStart))},
+               ${toFloatArray(updates.map((update) => update.fuelMeTon))},
+               ${toFloatArray(updates.map((update) => update.fuelAeTon))},
+               ${toFloatArray(updates.map((update) => update.co2Ton))}
+             ) AS u(time_start, fuel_me_ton, fuel_ae_ton, co2_ton)
+       WHERE s.mmsi = ${mmsi}
+         AND s.time_start = u.time_start
+         AND s.time_start >= ${new Date(Math.min(...starts))}
+         AND s.time_start <= ${new Date(Math.max(...starts))}`);
+    return result.rowCount ?? 0;
   }
 
   /** One page of a vessel's segments in `[from, to)`, newest first, older than `before`. */
   async page(
-    mmsi: number,
+    vesselId: string,
     from: Date,
     to: Date,
     before: Date | undefined,
@@ -164,7 +246,7 @@ export class SegmentsRepository {
       .from(segments)
       .where(
         and(
-          eq(segments.mmsi, mmsi),
+          eq(segments.vesselId, vesselId),
           gte(segments.timeStart, from),
           lt(
             segments.timeStart,
@@ -179,7 +261,7 @@ export class SegmentsRepository {
   }
 
   /** The most recent counted segment of a vessel, if any. */
-  async latestCounted(mmsi: number): Promise<LatestSegment | undefined> {
+  async latestCounted(vesselId: string): Promise<LatestSegment | undefined> {
     const [row] = await this.db
       .select({
         timeStart: segments.timeStart,
@@ -187,7 +269,7 @@ export class SegmentsRepository {
         method: segments.method,
       })
       .from(segments)
-      .where(and(eq(segments.mmsi, mmsi), ne(segments.method, 'none')))
+      .where(and(eq(segments.vesselId, vesselId), ne(segments.method, 'none')))
       .orderBy(desc(segments.timeStart))
       .limit(1);
     if (row === undefined || row.method === 'none') return undefined;
@@ -203,7 +285,7 @@ export class SegmentsRepository {
    * fuel, with the hours under way (segments at ≥ `underWayMinSpeedKn`).
    */
   async fuelTotals(
-    mmsi: number,
+    vesselId: string,
     from: Date,
     to: Date,
     underWayMinSpeedKn: number,
@@ -219,11 +301,30 @@ export class SegmentsRepository {
               coalesce(sum(extract(epoch FROM time_end - time_start)) FILTER (WHERE speed_kn >= $4) / 3600, 0)::double precision AS "hoursUnderWay",
               count(*)::int AS "segments"
          FROM segments
-        WHERE mmsi = $1 AND time_start >= $2 AND time_start < $3 AND method <> 'none'
+        WHERE vessel_id = $1 AND time_start >= $2 AND time_start < $3 AND method <> 'none'
         GROUP BY fuel_code
         ORDER BY fuel_code`,
-      [mmsi, from, to, underWayMinSpeedKn],
+      [vesselId, from, to, underWayMinSpeedKn],
     );
     return result.rows;
   }
 }
+
+function staleCondition(range: StaleSegmentsRange) {
+  return and(
+    eq(segments.mmsi, range.mmsi),
+    eq(segments.vesselId, range.vesselId),
+    gte(segments.timeStart, range.from),
+    lte(segments.timeStart, range.to),
+    lt(segments.computedAt, range.computedBefore),
+  );
+}
+
+const toTextArray = (values: readonly string[]) =>
+  sql`${`{${values.map((value) => `"${value}"`).join(',')}}`}::text[]`;
+
+const toTimestampArray = (values: readonly Date[]) =>
+  sql`${`{${values.map((value) => `"${value.toISOString()}"`).join(',')}}`}::timestamptz[]`;
+
+const toFloatArray = (values: readonly number[]) =>
+  sql`${`{${values.map((value) => String(value)).join(',')}}`}::double precision[]`;

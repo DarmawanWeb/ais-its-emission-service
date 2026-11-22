@@ -28,6 +28,7 @@ export async function setup(
     );
     project.provide('infra', {
       databaseUrl,
+      adminUrl: infra.postgres.adminUrl,
       natsUrl: infra.nats.url,
       redisUrl: infra.redis.url,
     });
@@ -43,6 +44,8 @@ declare module 'vitest' {
     infra: {
       /** `DATABASE_URL` of the service role. */
       databaseUrl: string;
+      /** Superuser URL of the same database (provisioning further schemas). */
+      adminUrl: string;
       natsUrl: string;
       /** `REDIS_URL` of the Valkey container (weather cache). */
       redisUrl: string;

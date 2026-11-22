@@ -25,6 +25,18 @@ export interface ProfileVersion {
 /** Outcome of applying a snapshot. */
 export type UpsertOutcome = 'inserted' | 'updated' | 'stale';
 
+/** A vessel of the fleet summary with its CII rating inputs. */
+export interface FleetRatingRow {
+  readonly vesselId: string;
+  readonly mmsi: number;
+  readonly orgId: string | null;
+  readonly name: string;
+  /** `snapshot.type` (reference line, d-vector, fixed capacity). */
+  readonly type: VesselSnapshotV1['type'];
+  /** `snapshot.dimensions.capacity`. */
+  readonly capacity: number;
+}
+
 /** Drizzle access to `vessel_profiles` (FLEET projection). */
 @Injectable()
 export class VesselProfilesRepository {
@@ -34,35 +46,57 @@ export class VesselProfilesRepository {
   ) {}
 
   /**
-   * Stores a snapshot unless a newer one (by `updatedAt`) is stored already;
-   * a different vessel holding the same MMSI (re-assigned MMSI) is removed in
-   * the same transaction.
+   * Applies a FLEET snapshot (transaction under a projection-wide advisory
+   * lock: FLEET changes are rare, and serialized writers see a consistent
+   * table across replicas). Versions are `snapshot.updatedAt`:
+   * - `stale` without any side effect when the stored profile of the same
+   *   vessel is newer, or when another vessel holds the MMSI with a version
+   *   at least as new (its claim is the current one; the snapshot being
+   *   applied was superseded by a later one of its vessel, still to come or
+   *   already applied);
+   * - otherwise another vessel holding the MMSI with an older version lost
+   *   it (re-assigned MMSI) and is removed, then the snapshot is stored.
    */
   async upsert(snapshot: VesselSnapshotV1): Promise<UpsertOutcome> {
+    const updatedAt = new Date(snapshot.updatedAt);
     return withTransaction(this.pool, async (client) => {
       await client.query(
-        'DELETE FROM vessel_profiles WHERE mmsi = $1 AND vessel_id <> $2',
-        [snapshot.mmsi, snapshot.id],
+        "SELECT pg_advisory_xact_lock(hashtext('emission.vessel_profiles'))",
       );
-      const result = await client.query<{ inserted: boolean }>(
+      const { rows } = await client.query<{
+        vessel_id: string;
+        snapshot_updated_at: Date;
+      }>(
+        `SELECT vessel_id, snapshot_updated_at FROM vessel_profiles
+          WHERE vessel_id = $1 OR mmsi = $2`,
+        [snapshot.id, snapshot.mmsi],
+      );
+      const own = rows.find((row) => row.vessel_id === snapshot.id);
+      const holder = rows.find((row) => row.vessel_id !== snapshot.id);
+      if (own !== undefined && own.snapshot_updated_at > updatedAt)
+        return 'stale';
+      if (holder !== undefined && holder.snapshot_updated_at >= updatedAt)
+        return 'stale';
+      if (holder !== undefined) {
+        await client.query('DELETE FROM vessel_profiles WHERE vessel_id = $1', [
+          holder.vessel_id,
+        ]);
+      }
+      await client.query(
         `INSERT INTO vessel_profiles (vessel_id, mmsi, org_id, snapshot, snapshot_updated_at)
          VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT (vessel_id) DO UPDATE SET
            mmsi = EXCLUDED.mmsi, org_id = EXCLUDED.org_id, snapshot = EXCLUDED.snapshot,
-           snapshot_updated_at = EXCLUDED.snapshot_updated_at, updated_at = now()
-         WHERE vessel_profiles.snapshot_updated_at <= EXCLUDED.snapshot_updated_at
-         RETURNING (xmax = 0) AS inserted`,
+           snapshot_updated_at = EXCLUDED.snapshot_updated_at, updated_at = now()`,
         [
           snapshot.id,
           snapshot.mmsi,
           snapshot.orgId,
           JSON.stringify(snapshot),
-          new Date(snapshot.updatedAt),
+          updatedAt,
         ],
       );
-      const row = result.rows[0];
-      if (row === undefined) return 'stale';
-      return row.inserted ? 'inserted' : 'updated';
+      return own === undefined ? 'inserted' : 'updated';
     });
   }
 
@@ -106,8 +140,12 @@ export class VesselProfilesRepository {
       .from(vesselProfiles);
   }
 
-  /** Profiles visible in a scope (fleet summary), ordered by MMSI. */
-  async list(scope: OrgScope, orgId?: string): Promise<VesselProfile[]> {
+  /**
+   * The vessels visible in a scope with the snapshot fields the CII rating
+   * needs (fleet summary), ordered by MMSI; the snapshots themselves are not
+   * loaded.
+   */
+  async ratingRows(scope: OrgScope, orgId?: string): Promise<FleetRatingRow[]> {
     const conditions: (SQL | undefined)[] = [
       scope.kind === 'all'
         ? undefined
@@ -116,12 +154,18 @@ export class VesselProfilesRepository {
           : eq(vesselProfiles.orgId, scope.orgId),
       orgId === undefined ? undefined : eq(vesselProfiles.orgId, orgId),
     ];
-    const rows = await this.db
-      .select()
+    return this.db
+      .select({
+        vesselId: vesselProfiles.vesselId,
+        mmsi: vesselProfiles.mmsi,
+        orgId: vesselProfiles.orgId,
+        name: sql<string>`${vesselProfiles.snapshot}->>'name'`,
+        type: sql<VesselSnapshotV1['type']>`${vesselProfiles.snapshot}->'type'`,
+        capacity: sql<number>`(${vesselProfiles.snapshot}->'dimensions'->>'capacity')::double precision`,
+      })
       .from(vesselProfiles)
       .where(and(...conditions))
       .orderBy(vesselProfiles.mmsi);
-    return rows.map(toProfile);
   }
 
   /** Distinct vessel types of the projection (latest snapshot per type id). */

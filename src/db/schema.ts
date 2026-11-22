@@ -69,7 +69,7 @@ export interface SegmentWeather {
   readonly hour: string;
 }
 
-/** Voyage segments hypertable (`0001_init.sql`). */
+/** Voyage segments hypertable (`0001_init.sql`, vessel index `0004_vessel_scoped_history.sql`). */
 export const segments = serviceSchema.table(
   'segments',
   {
@@ -97,7 +97,12 @@ export const segments = serviceSchema.table(
       .notNull()
       .defaultNow(),
   },
-  (table) => [pg.primaryKey({ columns: [table.mmsi, table.timeStart] })],
+  (table) => [
+    pg.primaryKey({ columns: [table.mmsi, table.timeStart] }),
+    pg
+      .index('segments_vessel_time_idx')
+      .on(table.vesselId, table.timeStart.desc()),
+  ],
 );
 
 /** Reduction factors Z (`0001_init.sql`, seeded in `0002_seed.sql`). */
@@ -108,10 +113,12 @@ export const reductionFactors = serviceSchema.table('reduction_factors', {
   ...timestamps,
 });
 
-/** Manual / imported annual CII (`0001_init.sql`). */
+/** Manual / imported annual CII per vessel-year (`0001_init.sql`, `0004_vessel_scoped_history.sql`). */
 export const ciiAnnualManual = serviceSchema.table(
   'cii_annual_manual',
   {
+    vesselId: pg.uuid('vessel_id').notNull(),
+    /** MMSI of the vessel when the record was written (informational). */
     mmsi: pg.integer('mmsi').notNull(),
     year: pg.integer('year').notNull(),
     attained: pg.doublePrecision('attained').notNull(),
@@ -126,7 +133,7 @@ export const ciiAnnualManual = serviceSchema.table(
     updatedBy: pg.uuid('updated_by'),
     ...timestamps,
   },
-  (table) => [pg.primaryKey({ columns: [table.mmsi, table.year] })],
+  (table) => [pg.primaryKey({ columns: [table.vesselId, table.year] })],
 );
 
 /** SEEMP measure catalog (`0001_init.sql`, seeded in `0002_seed.sql`). */
@@ -176,10 +183,12 @@ export const ciiPublication = serviceSchema.table('cii_publication', {
   lastYear: pg.integer('last_year'),
 });
 
-/** Recomputations by replay (`0001_init.sql`). */
+/** Recomputations by replay (`0001_init.sql`, `0004_vessel_scoped_history.sql`). */
 export const recomputeJobs = serviceSchema.table('recompute_jobs', {
   id: pg.uuid('id').primaryKey(),
   mmsi: pg.integer('mmsi').notNull(),
+  /** The vessel whose segments are rebuilt (`null` for jobs created before 0004). */
+  vesselId: pg.uuid('vessel_id'),
   fromTime: pg.timestamp('from_time', { withTimezone: true }).notNull(),
   toTime: pg.timestamp('to_time', { withTimezone: true }).notNull(),
   status: pg
@@ -195,10 +204,15 @@ export const recomputeJobs = serviceSchema.table('recompute_jobs', {
     .notNull()
     .defaultNow(),
   finishedAt: pg.timestamp('finished_at', { withTimezone: true }),
+  /** Written while the job runs; a running job with a stale heartbeat was interrupted. */
+  heartbeatAt: pg
+    .timestamp('heartbeat_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 const aggregateColumns = {
-  mmsi: pg.integer('mmsi').notNull(),
+  vesselId: pg.uuid('vessel_id').notNull(),
   distanceNm: pg.doublePrecision('distance_nm').notNull(),
   fuelMeTon: pg.doublePrecision('fuel_me_ton').notNull(),
   fuelAeTon: pg.doublePrecision('fuel_ae_ton').notNull(),
@@ -217,7 +231,7 @@ const aggregateColumns = {
   lastTime: pg.timestamp('last_time', { withTimezone: true }),
 };
 
-/** Continuous aggregate `cii_daily` (`0003_cii_aggregates.sql`). */
+/** Continuous aggregate `cii_daily` per vessel-day (`0005_cii_aggregates_per_vessel.sql`). */
 export const ciiDaily = serviceSchema
   .view('cii_daily', {
     day: pg.timestamp('day', { withTimezone: true }).notNull(),
@@ -225,7 +239,7 @@ export const ciiDaily = serviceSchema
   })
   .existing();
 
-/** Hierarchical continuous aggregate `cii_annual` on `cii_daily` (`0003_cii_aggregates.sql`). */
+/** Hierarchical continuous aggregate `cii_annual` per vessel-year on `cii_daily` (`0005_cii_aggregates_per_vessel.sql`). */
 export const ciiAnnual = serviceSchema
   .view('cii_annual', {
     year: pg.timestamp('year', { withTimezone: true }).notNull(),

@@ -2,7 +2,8 @@ import {
   CII_GRADES,
   type CiiGrade,
 } from '@darmawanweb/ais-its-contracts/domain';
-import { CursorPageInfoDto } from '@darmawanweb/ais-its-nest/http';
+import type { PageMeta } from '@darmawanweb/ais-its-contracts/api';
+import { CursorPageInfoDto, PageMetaDto } from '@darmawanweb/ais-its-nest/http';
 import { ApiProperty, type ApiPropertyOptions } from '@nestjs/swagger';
 
 import { DdVectorDto, isoOrNull } from '../../../common/dto.js';
@@ -14,6 +15,7 @@ import type {
   CiiSummary,
   DailyCiiPoint,
   FleetSummary,
+  FleetSummaryItem,
 } from '../cii.service.js';
 import type { YearFigures } from '../cii-figures.js';
 
@@ -58,10 +60,11 @@ export class CiiProjectionDto {
   @ApiProperty({ description: 'Projected CO2, t' }) readonly co2Ton: number;
   @ApiProperty({
     description:
-      'Year-end attained CII from the linear trend of the daily cumulative values',
+      'Attained CII of the projected totals; equal to the year-to-date value (a linear projection scales CO2 and distance alike)',
   })
   readonly attained: number;
-  @ApiProperty() readonly rating: number;
+  @ApiProperty({ description: 'Rating of the projected attained CII' })
+  readonly rating: number;
   @ApiProperty({ enum: CII_GRADES }) readonly grade: CiiGrade;
 
   constructor(projection: CiiProjection) {
@@ -408,10 +411,10 @@ export class FleetVesselCiiDto {
   @ApiProperty({ enum: ['segments', 'manual'], nullable: true })
   readonly source: 'segments' | 'manual' | null;
 
-  constructor(item: FleetSummary['items'][number]) {
-    this.mmsi = item.profile.mmsi;
-    this.vesselId = item.profile.vesselId;
-    this.name = item.profile.snapshot.name;
+  constructor(item: FleetSummaryItem) {
+    this.mmsi = item.vessel.mmsi;
+    this.vesselId = item.vessel.vesselId;
+    this.name = item.vessel.name;
     this.grade = item.figures?.grade ?? null;
     this.rating = item.figures?.rating ?? null;
     this.attained = item.figures?.attained ?? null;
@@ -429,21 +432,37 @@ export class FleetSummaryDto {
     description: 'null = every organization (super_admin)',
   })
   readonly orgId: string | null;
-  @ApiProperty() readonly vessels: number;
-  @ApiProperty({ type: GradeCountsDto }) readonly grades: GradeCountsDto;
+  @ApiProperty({ description: 'Vessels of the fleet (all pages)' })
+  readonly vessels: number;
+  @ApiProperty({
+    type: GradeCountsDto,
+    description: 'Grade distribution of the whole fleet',
+  })
+  readonly grades: GradeCountsDto;
   @ApiProperty({ description: 'Vessels without CII data for the year' })
   readonly notAvailable: number;
-  @ApiProperty({ type: [FleetVesselCiiDto] })
+  @ApiProperty({
+    type: [FleetVesselCiiDto],
+    description:
+      'One page of the vessels (`page`, `pageSize` ≤ 100), ordered by MMSI',
+  })
   readonly items: FleetVesselCiiDto[];
+  @ApiProperty({ type: PageMetaDto, description: 'Page of `items`' })
+  readonly meta: PageMeta;
   @ApiProperty(METHOD_IDS_PROPERTY) readonly methodIds: string[];
 
   constructor(summary: FleetSummary, methodIds: string[]) {
     this.year = summary.year;
     this.orgId = summary.orgId;
-    this.vessels = summary.items.length;
+    this.vessels = summary.vessels;
     this.grades = new GradeCountsDto(summary.grades);
     this.notAvailable = summary.notAvailable;
     this.items = summary.items.map((item) => new FleetVesselCiiDto(item));
+    this.meta = {
+      page: summary.page,
+      pageSize: summary.pageSize,
+      total: summary.vessels,
+    };
     this.methodIds = methodIds;
   }
 }

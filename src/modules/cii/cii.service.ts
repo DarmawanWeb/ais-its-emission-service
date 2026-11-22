@@ -18,8 +18,7 @@ import {
 } from '../../domain/cii.js';
 import {
   elapsedYearFraction,
-  projectCumulativeAttained,
-  projectTotals,
+  projectYearEnd,
 } from '../../domain/cii-projection.js';
 import { mergeMethodIds, METHOD_IDS } from '../methodology/method-ids.js';
 import { VesselAccessService } from '../profiles/vessel-access.service.js';
@@ -27,7 +26,10 @@ import {
   ciiRatingProfileOf,
   type VesselProfile,
 } from '../profiles/vessel-profile.js';
-import { VesselProfilesRepository } from '../profiles/vessel-profiles.repository.js';
+import {
+  type FleetRatingRow,
+  VesselProfilesRepository,
+} from '../profiles/vessel-profiles.repository.js';
 import {
   type SegmentRow,
   SegmentsRepository,
@@ -62,7 +64,7 @@ export interface CiiProjection {
   readonly fuelMeTon: number;
   readonly fuelAeTon: number;
   readonly co2Ton: number;
-  /** Year-end attained CII of the trend of the daily cumulative values. */
+  /** Attained CII of the projected totals (equals the year-to-date value). */
   readonly attained: number;
   readonly rating: number;
   readonly grade: CiiGrade;
@@ -78,16 +80,33 @@ export interface DailyCiiPoint {
   readonly cumulativeGrade: CiiGrade | null;
 }
 
-/** Grade distribution of an organization's fleet for a year. */
+/** A vessel of the fleet summary with its figures of the year. */
+export interface FleetSummaryItem {
+  readonly vessel: FleetRatingRow;
+  readonly figures: YearFigures | null;
+}
+
+/** Grade distribution of an organization's fleet for a year, with one page of its vessels. */
 export interface FleetSummary {
   readonly year: number;
   readonly orgId: string | null;
+  /** Vessels of the fleet (all pages). */
+  readonly vessels: number;
   readonly grades: Record<CiiGrade, number>;
   readonly notAvailable: number;
-  readonly items: {
-    readonly profile: VesselProfile;
-    readonly figures: YearFigures | null;
-  }[];
+  /** The requested page of vessels, ordered by MMSI. */
+  readonly items: FleetSummaryItem[];
+  readonly page: number;
+  readonly pageSize: number;
+}
+
+/** Query of the fleet summary. */
+export interface FleetSummaryRequest {
+  readonly year: number;
+  /** Organization (platform administrators only). */
+  readonly orgId?: string | undefined;
+  readonly page: number;
+  readonly pageSize: number;
 }
 
 /** The current calendar year (UTC). */
@@ -101,6 +120,8 @@ export function currentYear(now: Date = new Date()): number {
  * combines the aggregate sums with the vessel profile and `reduction_factors`;
  * a year without segments falls back to `cii_annual_manual`, and without
  * either the answer is `404 CII_NOT_AVAILABLE` (no default CII, spec §15.2).
+ * The history is read by vessel id: the MMSI of a request only resolves the
+ * vessel that holds it now (spec §8.5).
  */
 @Injectable()
 export class CiiService {
@@ -121,13 +142,13 @@ export class CiiService {
   ): Promise<YearFigures | undefined> {
     const zTable = factors ?? (await this.reductionFactors.list());
     const rating = ciiRatingProfileOf(profile.snapshot);
-    const totals = await this.repository.yearTotals(profile.mmsi, year);
+    const totals = await this.repository.yearTotals(profile.vesselId, year);
     if (totals !== undefined && totals.distanceNm > 0) {
       const z = reductionFactorOf(zTable, year);
       if (z === undefined) throw new ReductionFactorMissingError(year);
       return figuresFromTotals(year, totals, rating, z);
     }
-    const record = await this.manual.find(profile.mmsi, year);
+    const record = await this.manual.find(profile.vesselId, year);
     return record === undefined
       ? undefined
       : figuresFromManual(record, rating, reductionFactorOf(zTable, year));
@@ -136,8 +157,8 @@ export class CiiService {
   /** Years with CII data of a vessel (segments or manual), ascending. */
   async yearsWithData(profile: VesselProfile): Promise<number[]> {
     const [totals, manual] = await Promise.all([
-      this.repository.allYears(profile.mmsi),
-      this.manual.listByMmsi(profile.mmsi),
+      this.repository.allYears(profile.vesselId),
+      this.manual.listByVessel(profile.vesselId),
     ]);
     const years = new Set([
       ...totals.filter((row) => row.distanceNm > 0).map((row) => row.year),
@@ -169,14 +190,11 @@ export class CiiService {
     const rating = ciiRatingProfileOf(profile.snapshot);
     const latest =
       figures.source === 'segments'
-        ? await this.segments.latestCounted(profile.mmsi)
+        ? await this.segments.latestCounted(profile.vesselId)
         : undefined;
     const projection =
-      figures.source === 'segments' &&
-      year === currentYear(now) &&
-      figures.asOf !== null &&
-      figures.required !== null
-        ? await this.projection(profile, year, figures, rating)
+      figures.source === 'segments' && year === currentYear(now)
+        ? projectionOf(year, figures, rating)
         : null;
     return {
       profile,
@@ -192,57 +210,6 @@ export class CiiService {
     };
   }
 
-  private async projection(
-    profile: VesselProfile,
-    year: number,
-    figures: YearFigures,
-    rating: CiiRatingProfile,
-  ): Promise<CiiProjection | null> {
-    if (
-      figures.asOf === null ||
-      figures.required === null ||
-      figures.co2Ton === null
-    )
-      return null;
-    const fraction = elapsedYearFraction(year, figures.asOf);
-    const totals = projectTotals(
-      {
-        distanceNm: figures.distanceNm,
-        fuelMeTon: figures.fuelMeTon,
-        fuelAeTon: figures.fuelAeTon,
-        co2Ton: figures.co2Ton,
-      },
-      fraction,
-    );
-    const days = await this.repository.days(
-      profile.mmsi,
-      new Date(Date.UTC(year, 0, 1)),
-      new Date(Date.UTC(year + 1, 0, 1)),
-    );
-    const attained =
-      projectCumulativeAttained(
-        days
-          .filter((day) => day.ytdDistanceNm > 0)
-          .map((day) => ({
-            day: day.day,
-            cumulativeAttained: attainedCii(
-              day.ytdCo2Ton,
-              day.ytdDistanceNm,
-              rating.capacity,
-            ),
-          })),
-        year,
-      ) ?? figures.attained;
-    const rated = rateAttained(attained, figures.required, rating.d);
-    return {
-      yearFraction: fraction,
-      ...totals,
-      attained,
-      rating: rated.rating,
-      grade: rated.grade,
-    };
-  }
-
   /** `GET /cii/vessels/:mmsi/daily?from&to` — daily points with the cumulative CII. */
   async daily(
     mmsi: number,
@@ -254,7 +221,7 @@ export class CiiService {
     const rating = ciiRatingProfileOf(profile.snapshot);
     const factors = await this.reductionFactors.list();
     const reference = referenceCii(rating.referenceLine, rating.capacity);
-    const days = await this.repository.days(mmsi, from, to);
+    const days = await this.repository.days(profile.vesselId, from, to);
     const points = days.map((day): DailyCiiPoint => {
       const z = reductionFactorOf(factors, day.day.getUTCFullYear());
       const required = z === undefined ? null : requiredCii(z, reference);
@@ -290,8 +257,8 @@ export class CiiService {
     const rating = ciiRatingProfileOf(profile.snapshot);
     const factors = await this.reductionFactors.list();
     const [totals, manual] = await Promise.all([
-      this.repository.allYears(mmsi),
-      this.manual.listByMmsi(mmsi),
+      this.repository.allYears(profile.vesselId),
+      this.manual.listByVessel(profile.vesselId),
     ]);
     const years = new Map<number, YearFigures>();
     for (const record of manual) {
@@ -325,36 +292,49 @@ export class CiiService {
     limit: number,
     principal: Principal,
   ): Promise<SegmentRow[]> {
-    await this.access.accessible(mmsi, principal);
-    return this.segments.page(mmsi, range.from, range.to, before, limit);
+    const profile = await this.access.accessible(mmsi, principal);
+    return this.segments.page(
+      profile.vesselId,
+      range.from,
+      range.to,
+      before,
+      limit,
+    );
   }
 
-  /** `GET /cii/fleet/summary?year=` — grade distribution of the visible fleet. */
+  /**
+   * `GET /cii/fleet/summary?year=` — grade distribution of the visible fleet
+   * (all its vessels) and one page of the vessels with their figures. Only
+   * the rating fields of the snapshots are loaded.
+   */
   async fleetSummary(
-    year: number,
+    request: FleetSummaryRequest,
     principal: Principal,
-    orgId?: string,
   ): Promise<FleetSummary> {
+    const { year } = request;
     const scope = orgScopeOf(principal);
-    const profiles = await this.profiles.list(
+    const vessels = await this.profiles.ratingRows(
       scope,
-      scope.kind === 'all' ? orgId : undefined,
+      scope.kind === 'all' ? request.orgId : undefined,
     );
     const factors = await this.reductionFactors.list();
-    const mmsis = profiles.map((profile) => profile.mmsi);
+    const ids = vessels.map((vessel) => vessel.vesselId);
     const [totals, manual] = await Promise.all([
-      this.repository.years(mmsis, year),
-      this.manual.listByMmsis(mmsis, year),
+      this.repository.years(ids, year),
+      this.manual.listByVessels(ids, year),
     ]);
-    const totalsByMmsi = new Map(totals.map((row) => [row.mmsi, row]));
-    const manualByMmsi = new Map(manual.map((row) => [row.mmsi, row]));
+    const totalsByVessel = new Map(totals.map((row) => [row.vesselId, row]));
+    const manualByVessel = new Map(manual.map((row) => [row.vesselId, row]));
     const z = reductionFactorOf(factors, year);
     const grades: Record<CiiGrade, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
     let notAvailable = 0;
-    const items = profiles.map((profile) => {
-      const rating = ciiRatingProfileOf(profile.snapshot);
-      const row = totalsByMmsi.get(profile.mmsi);
-      const record = manualByMmsi.get(profile.mmsi);
+    const items = vessels.map((vessel): FleetSummaryItem => {
+      const rating = ciiRatingProfileOf({
+        type: vessel.type,
+        dimensions: { capacity: vessel.capacity },
+      });
+      const row = totalsByVessel.get(vessel.vesselId);
+      const record = manualByVessel.get(vessel.vesselId);
       const figures =
         row !== undefined && row.distanceNm > 0 && z !== undefined
           ? figuresFromTotals(year, row, rating, z)
@@ -364,14 +344,18 @@ export class CiiService {
       const grade = figures?.grade ?? null;
       if (grade === null) notAvailable += 1;
       else grades[grade] += 1;
-      return { profile, figures };
+      return { vessel, figures };
     });
+    const offset = (request.page - 1) * request.pageSize;
     return {
       year,
-      orgId: scope.kind === 'org' ? scope.orgId : (orgId ?? null),
+      orgId: scope.kind === 'org' ? scope.orgId : (request.orgId ?? null),
+      vessels: vessels.length,
       grades,
       notAvailable,
-      items,
+      items: items.slice(offset, offset + request.pageSize),
+      page: request.page,
+      pageSize: request.pageSize,
     };
   }
 
@@ -385,7 +369,7 @@ export class CiiService {
     record: AnnualManualRecord | undefined;
   }> {
     const profile = await this.access.accessible(mmsi, principal);
-    return { profile, record: await this.manual.find(mmsi, year) };
+    return { profile, record: await this.manual.find(profile.vesselId, year) };
   }
 
   /** `PUT /cii/vessels/:mmsi/annual-manual/:year`. */
@@ -396,10 +380,49 @@ export class CiiService {
     principal: Principal,
   ): Promise<{ profile: VesselProfile; record: AnnualManualRecord }> {
     const profile = await this.access.accessible(mmsi, principal);
-    const record = await this.manual.upsert(mmsi, year, {
+    const record = await this.manual.upsert(profile, year, {
       ...input,
       updatedBy: principal.kind === 'user' ? principal.id : null,
     });
     return { profile, record };
   }
+}
+
+/**
+ * Linear year-end projection of a year in progress (`null` without a
+ * required CII): projected totals, and the attained CII, rating and grade of
+ * those totals — equal to the year-to-date values under the linear model.
+ *
+ * @method cii.year_end_projection
+ */
+function projectionOf(
+  year: number,
+  figures: YearFigures,
+  rating: CiiRatingProfile,
+): CiiProjection | null {
+  if (
+    figures.asOf === null ||
+    figures.required === null ||
+    figures.co2Ton === null
+  )
+    return null;
+  const fraction = elapsedYearFraction(year, figures.asOf);
+  const projection = projectYearEnd(
+    {
+      distanceNm: figures.distanceNm,
+      fuelMeTon: figures.fuelMeTon,
+      fuelAeTon: figures.fuelAeTon,
+      co2Ton: figures.co2Ton,
+    },
+    fraction,
+    rating.capacity,
+  );
+  const rated = rateAttained(projection.attained, figures.required, rating.d);
+  return {
+    yearFraction: fraction,
+    ...projection.totals,
+    attained: projection.attained,
+    rating: rated.rating,
+    grade: rated.grade,
+  };
 }

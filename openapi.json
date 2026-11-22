@@ -282,6 +282,27 @@
             }
           },
           {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
             "name": "orgId",
             "required": false,
             "in": "query",
@@ -314,7 +335,7 @@
             }
           }
         },
-        "summary": "CII grade distribution of the fleet of the active organization (super_admin: all or ?orgId)",
+        "summary": "CII grade distribution of the fleet of the active organization (super_admin: all or ?orgId) with one page of its vessels",
         "tags": [
           "cii"
         ],
@@ -1196,10 +1217,11 @@
           },
           "attained": {
             "type": "number",
-            "description": "Year-end attained CII from the linear trend of the daily cumulative values"
+            "description": "Attained CII of the projected totals; equal to the year-to-date value (a linear projection scales CO2 and distance alike)"
           },
           "rating": {
-            "type": "number"
+            "type": "number",
+            "description": "Rating of the projected attained CII"
           },
           "grade": {
             "type": "string",
@@ -1903,6 +1925,30 @@
           "source"
         ]
       },
+      "PageMetaDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of items across all pages"
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "total"
+        ]
+      },
       "FleetSummaryDto": {
         "type": "object",
         "properties": {
@@ -1916,20 +1962,35 @@
             "description": "null = every organization (super_admin)"
           },
           "vessels": {
-            "type": "number"
+            "type": "number",
+            "description": "Vessels of the fleet (all pages)"
           },
           "grades": {
-            "$ref": "#/components/schemas/GradeCountsDto"
+            "description": "Grade distribution of the whole fleet",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GradeCountsDto"
+              }
+            ]
           },
           "notAvailable": {
             "type": "number",
             "description": "Vessels without CII data for the year"
           },
           "items": {
+            "description": "One page of the vessels (`page`, `pageSize` ≤ 100), ordered by MMSI",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/FleetVesselCiiDto"
             }
+          },
+          "meta": {
+            "description": "Page of `items`",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PageMetaDto"
+              }
+            ]
           },
           "methodIds": {
             "example": [
@@ -1952,14 +2013,20 @@
           "grades",
           "notAvailable",
           "items",
+          "meta",
           "methodIds"
         ]
       },
       "AnnualManualDto": {
         "type": "object",
         "properties": {
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "mmsi": {
-            "type": "number"
+            "type": "number",
+            "description": "MMSI of the vessel when the record was written"
           },
           "year": {
             "type": "number"
@@ -2014,6 +2081,7 @@
           }
         },
         "required": [
+          "vesselId",
           "mmsi",
           "year",
           "attained",
@@ -2099,6 +2167,12 @@
           "mmsi": {
             "type": "number"
           },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "The vessel whose segments are rebuilt"
+          },
           "from": {
             "type": "string",
             "format": "date-time"
@@ -2125,15 +2199,21 @@
           },
           "deleted": {
             "type": "number",
-            "description": "Segments of the range the replay did not produce again (deleted)"
+            "description": "Segments of the range computed before the job that the replay did not produce again (deleted after a complete replay only)"
           },
           "error": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "description": "Why the job failed, `CODE: message` (INTERRUPTED, REPLAY_INCOMPLETE, NO_POSITIONS, VESSEL_CHANGED, or an unexpected error)"
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "heartbeatAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last sign of life of a running job (every 10 s)"
           },
           "finishedAt": {
             "type": "string",
@@ -2144,6 +2224,7 @@
         "required": [
           "id",
           "mmsi",
+          "vesselId",
           "from",
           "to",
           "status",
@@ -2152,6 +2233,7 @@
           "deleted",
           "error",
           "createdAt",
+          "heartbeatAt",
           "finishedAt"
         ]
       },
@@ -2728,30 +2810,6 @@
           "result",
           "createdBy",
           "createdAt"
-        ]
-      },
-      "PageMetaDto": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "pageSize": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
-          },
-          "total": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Number of items across all pages"
-          }
-        },
-        "required": [
-          "page",
-          "pageSize",
-          "total"
         ]
       },
       "CreateScenarioDto": {

@@ -88,7 +88,11 @@ export class PutAnnualManualDto {
 
 /** A manual / imported annual CII record. */
 export class AnnualManualDto {
-  @ApiProperty() readonly mmsi: number;
+  @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
+  @ApiProperty({
+    description: 'MMSI of the vessel when the record was written',
+  })
+  readonly mmsi: number;
   @ApiProperty() readonly year: number;
   @ApiProperty() readonly attained: number;
   @ApiProperty({ type: Number, nullable: true }) readonly required:
@@ -106,6 +110,7 @@ export class AnnualManualDto {
   @ApiProperty({ format: 'date-time' }) readonly updatedAt: string;
 
   constructor(record: AnnualManualRecord) {
+    this.vesselId = record.vesselId;
     this.mmsi = record.mmsi;
     this.year = record.year;
     this.attained = record.attained;

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { isUniqueViolation, PG_UNIQUE_VIOLATION } from './errors.js';
+import {
+  isLockNotAvailable,
+  isUniqueViolation,
+  PG_LOCK_NOT_AVAILABLE,
+  PG_UNIQUE_VIOLATION,
+} from './errors.js';
 
 /** A driver error as `pg` throws it. */
 function driverError(code: string, constraint?: string): Error {
@@ -32,5 +37,26 @@ describe('isUniqueViolation', () => {
     expect(isUniqueViolation(new Error('boom'))).toBe(false);
     expect(isUniqueViolation({ code: PG_UNIQUE_VIOLATION })).toBe(false);
     expect(isUniqueViolation(undefined)).toBe(false);
+  });
+});
+
+describe('isLockNotAvailable', () => {
+  it('recognizes a concurrent refresh of a continuous aggregate (55P03), also wrapped', () => {
+    const refresh = Object.assign(
+      new Error(
+        'could not refresh continuous aggregate "cii_daily" due to a concurrent refresh',
+      ),
+      { code: PG_LOCK_NOT_AVAILABLE },
+    );
+    expect(isLockNotAvailable(refresh)).toBe(true);
+    expect(
+      isLockNotAvailable(new Error('Failed query', { cause: refresh })),
+    ).toBe(true);
+  });
+
+  it('ignores other errors', () => {
+    expect(isLockNotAvailable(driverError(PG_UNIQUE_VIOLATION))).toBe(false);
+    expect(isLockNotAvailable(new Error('boom'))).toBe(false);
+    expect(isLockNotAvailable(undefined)).toBe(false);
   });
 });

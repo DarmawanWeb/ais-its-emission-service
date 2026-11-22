@@ -277,6 +277,14 @@ describe('segments → cii_daily / cii_annual → CII API (spec §13.5)', () => 
         ]),
       );
       expect(cii.methodIds).not.toContain('fuel.second_formula_me');
+      // the linear year-end projection scales CO2 and distance alike: same intensity and grade
+      expect(cii.projection).not.toBeNull();
+      expectClose(
+        cii.projection?.attained ?? Number.NaN,
+        cii.attained,
+        'projected attained = year-to-date attained',
+      );
+      expect(cii.projection?.grade).toBe(cii.grade);
     });
 
     it('GET /cii/vessels/:mmsi/daily: daily sums and the cumulative attained CII', async () => {
@@ -830,6 +838,31 @@ describe('segments → cii_daily / cii_annual → CII API (spec §13.5)', () => 
       ).toBe(4);
       const formula = summary.items.find((item) => item.mmsi === MMSI.formula);
       expect(formula?.grade).toBe(LEGACY_FINAL.ciiGrade);
+
+      // `items` is paginated; the distribution always covers the whole fleet
+      const paged = (
+        await service.request({
+          url: '/api/v2/cii/fleet/summary?year=2026&page=2&pageSize=2',
+          as: MANAGER,
+        })
+      ).json<{
+        vessels: number;
+        notAvailable: number;
+        grades: Record<string, number>;
+        items: { mmsi: number }[];
+        meta: { page: number; pageSize: number; total: number };
+      }>();
+      const ordered = summary.items.map((item) => item.mmsi).sort();
+      expect(paged.items.map((item) => item.mmsi)).toEqual(ordered.slice(2, 4));
+      expect(paged.meta).toEqual({ page: 2, pageSize: 2, total: 5 });
+      expect(paged.vessels).toBe(5);
+      expect(paged.grades).toEqual(summary.grades);
+      expect(paged.notAvailable).toBe(1);
+      const tooLarge = await service.request({
+        url: '/api/v2/cii/fleet/summary?year=2026&pageSize=101',
+        as: MANAGER,
+      });
+      expect(tooLarge.statusCode).toBe(400);
     });
 
     it('validates path parameters (400 VALIDATION_FAILED)', async () => {

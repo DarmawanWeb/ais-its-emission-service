@@ -50,12 +50,18 @@ export function hullFormOf(snapshot: VesselSnapshotV1): HullForm {
   };
 }
 
+/** The snapshot fields of the CII rating. */
+export interface CiiRatingSource {
+  readonly type: VesselSnapshotV1['type'];
+  readonly dimensions: { readonly capacity: number };
+}
+
 /**
  * Rating inputs: capacity `type.capacityFixed ?? dimensions.capacity` (spec
  * §13.5), reference line a/c and d-vector of the ship type.
  */
 export function ciiRatingProfileOf(
-  snapshot: VesselSnapshotV1,
+  snapshot: CiiRatingSource,
 ): CiiRatingProfile {
   return {
     capacity: ciiCapacity(snapshot),

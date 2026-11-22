@@ -2,7 +2,12 @@ import { assignCiiGrade } from '@darmawanweb/ais-its-contracts/domain';
 import { describe, expect, it } from 'vitest';
 import * as z from 'zod';
 
-import { expectAllClose, loadGolden, num } from '../../test/support/golden.js';
+import {
+  expectAllClose,
+  expectClose,
+  loadGolden,
+  num,
+} from '../../test/support/golden.js';
 import {
   LegacyShipSchema,
   snapshotOfLegacyShip,
@@ -21,7 +26,7 @@ import {
 } from './cii.js';
 import {
   elapsedYearFraction,
-  projectCumulativeAttained,
+  projectYearEnd,
   projectTotals,
 } from './cii-projection.js';
 
@@ -242,15 +247,45 @@ describe('year-end projection', () => {
     });
   });
 
-  it('extends the least-squares trend of the cumulative attained CII to 31 December', () => {
-    const day = (iso: string) => new Date(`${iso}T00:00:00Z`);
-    // y = 10 + 0.1 x (x = day of year from 0): 31 Dec = day 364 → 46.4
-    const points = [0, 10, 20].map((x) => ({
-      day: new Date(day('2026-01-01').getTime() + x * 86_400_000),
-      cumulativeAttained: 10 + 0.1 * x,
-    }));
-    expect(projectCumulativeAttained(points, 2026)).toBeCloseTo(46.4, 9);
-    expect(projectCumulativeAttained(points.slice(0, 1), 2026)).toBe(10);
-    expect(projectCumulativeAttained([], 2026)).toBeNull();
+  it('rates the projected totals: attained, rating and grade equal the year-to-date values', () => {
+    const ytd = {
+      distanceNm: 1234.5,
+      fuelMeTon: 21.5,
+      fuelAeTon: 3.25,
+      co2Ton: 79.3,
+    };
+    const capacity = 2877;
+    const projection = projectYearEnd(ytd, 0.13, capacity);
+    expect(projection.totals).toEqual(projectTotals(ytd, 0.13));
+    expectClose(
+      projection.attained,
+      attainedCii(ytd.co2Ton, ytd.distanceNm, capacity),
+      'projected attained',
+    );
+  });
+
+  it('does not diverge for converging or rising cumulative values (the extrapolated trend did)', () => {
+    // Five January days whose cumulative attained CII falls 30 → 22 (the
+    // former least-squares projection gave 0, grade A) or rises 10 → 16
+    // (it gave 538): the projection stays at the year-to-date value.
+    const capacity = 1000;
+    for (const ytdAttained of [22, 16]) {
+      const distanceNm = 500;
+      const co2Ton = (ytdAttained * capacity * distanceNm) / 1e6;
+      const fraction = elapsedYearFraction(
+        2026,
+        new Date('2026-01-05T00:00:00Z'),
+      );
+      const projection = projectYearEnd(
+        { distanceNm, fuelMeTon: 1, fuelAeTon: 0.1, co2Ton },
+        fraction,
+        capacity,
+      );
+      expectClose(projection.attained, ytdAttained, `attained ${ytdAttained}`);
+      expect(projection.totals.distanceNm).toBeCloseTo(
+        distanceNm / fraction,
+        6,
+      );
+    }
   });
 });

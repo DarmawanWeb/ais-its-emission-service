@@ -78,18 +78,31 @@ export class ProfileDirectory
     return this.byMmsi.size;
   }
 
-  /** Applies a profile stored by the local FLEET consumer. */
+  /**
+   * Applies a profile stored by the local FLEET consumer with the rule of
+   * `VesselProfilesRepository.upsert`: ignored when the vessel's entry is
+   * newer, or when another vessel holds the MMSI with a version at least as
+   * new; otherwise the vessel's entry (possibly under its former MMSI) and an
+   * older holder of the MMSI are replaced.
+   */
   apply(profile: VesselProfile): void {
-    for (const [mmsi, entry] of this.byMmsi) {
-      if (entry.profile.vesselId === profile.vesselId && mmsi !== profile.mmsi)
-        this.byMmsi.delete(mmsi);
-    }
-    const current = this.byMmsi.get(profile.mmsi);
+    const own = [...this.byMmsi.values()].filter(
+      (entry) => entry.profile.vesselId === profile.vesselId,
+    );
     if (
-      current !== undefined &&
-      current.profile.snapshotUpdatedAt > profile.snapshotUpdatedAt
+      own.some(
+        (entry) => entry.profile.snapshotUpdatedAt > profile.snapshotUpdatedAt,
+      )
     )
       return;
+    const holder = this.byMmsi.get(profile.mmsi);
+    if (
+      holder !== undefined &&
+      holder.profile.vesselId !== profile.vesselId &&
+      holder.profile.snapshotUpdatedAt >= profile.snapshotUpdatedAt
+    )
+      return;
+    for (const entry of own) this.byMmsi.delete(entry.profile.mmsi);
     this.byMmsi.set(profile.mmsi, {
       profile,
       fuel: segmentFuelProfileOf(profile.snapshot),

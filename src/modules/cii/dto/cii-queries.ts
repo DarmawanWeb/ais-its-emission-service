@@ -1,5 +1,6 @@
 import {
   CursorQueryDto,
+  PageQueryDto,
   TimeRangeQueryDto,
 } from '@darmawanweb/ais-its-nest/http';
 import { ApiPropertyOptional, IntersectionType } from '@nestjs/swagger';
@@ -22,8 +23,11 @@ export class YearQuery {
   readonly year?: number;
 }
 
-/** `GET /cii/fleet/summary?year=&orgId=`. */
-export class FleetSummaryQuery extends YearQuery {
+/** `GET /cii/fleet/summary?year=&orgId=&page=&pageSize=` (the page applies to `items`). */
+export class FleetSummaryQuery extends IntersectionType(
+  YearQuery,
+  PageQueryDto,
+) {
   @ApiPropertyOptional({
     format: 'uuid',
     description:
