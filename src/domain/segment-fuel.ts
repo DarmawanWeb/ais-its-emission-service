@@ -42,14 +42,18 @@ export interface SegmentFuelProfile {
  * - `weather_unavailable` — Holtrop with calm weather because Open-Meteo failed;
  * - `telemetry_reattributed` — fuel replaced by telemetry that arrived after the segment.
  */
-export type SegmentFlag =
-  | 'gap'
-  | 'no_fuel_model'
-  | 'fuel_not_finite'
-  | 'fuel_negative'
-  | 'formula_error'
-  | 'weather_unavailable'
-  | 'telemetry_reattributed';
+export const SEGMENT_FLAGS = [
+  'gap',
+  'no_fuel_model',
+  'fuel_not_finite',
+  'fuel_negative',
+  'formula_error',
+  'weather_unavailable',
+  'telemetry_reattributed',
+] as const;
+
+/** A flag of a segment (see {@link SEGMENT_FLAGS}). */
+export type SegmentFlag = (typeof SEGMENT_FLAGS)[number];
 
 /** Inputs of the fuel estimation of one segment. */
 export interface SegmentFuelInput {

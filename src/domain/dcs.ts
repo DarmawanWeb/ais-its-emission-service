@@ -1,3 +1,5 @@
+import { csvDocument, type CsvValue } from '../common/csv.js';
+
 /**
  * Minimum segment speed counted as "under way", knots: the Fourth IMO GHG
  * Study classifies AIS speeds below 1 kn as at berth / at anchor.
@@ -33,7 +35,8 @@ export interface DcsSummary {
   readonly co2Ton: number;
 }
 
-const CSV_COLUMNS = [
+/** Columns of the DCS CSV. */
+export const DCS_CSV_COLUMNS = [
   'year',
   'mmsi',
   'imo',
@@ -51,23 +54,25 @@ const CSV_COLUMNS = [
   'total_co2_t',
 ] as const;
 
-/** Leading characters that make spreadsheet applications evaluate a cell as a formula. */
-const FORMULA_PREFIX = /^[=+\-@\t\r]/;
-
-/**
- * RFC 4180 field: quoted when it contains a comma, quote or line break. Text
- * (never numbers) starting like a spreadsheet formula gets a leading `'`
- * (CSV injection, OWASP).
- */
-function csvField(value: string | number | null): string {
-  if (value === null) return '';
-  const text =
-    typeof value === 'number'
-      ? String(value)
-      : FORMULA_PREFIX.test(value)
-        ? `'${value}`
-        : value;
-  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+/** Rows of a DCS summary in the {@link DCS_CSV_COLUMNS} layout (one per fuel type). */
+export function dcsCsvRows(summary: DcsSummary): CsvValue[][] {
+  return summary.fuel.map((line) => [
+    summary.year,
+    summary.mmsi,
+    summary.imo,
+    summary.vesselName,
+    summary.source,
+    line.fuelCode,
+    line.fuelName,
+    line.conversionFactor,
+    line.fuelMeTon,
+    line.fuelAeTon,
+    line.totalTon,
+    line.co2Ton,
+    summary.distanceNm,
+    summary.hoursUnderWay,
+    summary.co2Ton,
+  ]);
 }
 
 /**
@@ -77,26 +82,15 @@ function csvField(value: string | number | null): string {
  * @method emission.dcs_summary
  */
 export function dcsCsv(summary: DcsSummary): string {
-  const rows = summary.fuel.map((line) =>
-    [
-      summary.year,
-      summary.mmsi,
-      summary.imo,
-      summary.vesselName,
-      summary.source,
-      line.fuelCode,
-      line.fuelName,
-      line.conversionFactor,
-      line.fuelMeTon,
-      line.fuelAeTon,
-      line.totalTon,
-      line.co2Ton,
-      summary.distanceNm,
-      summary.hoursUnderWay,
-      summary.co2Ton,
-    ]
-      .map(csvField)
-      .join(','),
-  );
-  return `${[CSV_COLUMNS.join(','), ...rows].join('\r\n')}\r\n`;
+  return csvDocument(DCS_CSV_COLUMNS, dcsCsvRows(summary));
+}
+
+/**
+ * CSV of the DCS summaries of a fleet, in the per-vessel layout: one header,
+ * then the rows of every vessel (an organization's annual submission).
+ *
+ * @method emission.dcs_summary
+ */
+export function fleetDcsCsv(summaries: readonly DcsSummary[]): string {
+  return csvDocument(DCS_CSV_COLUMNS, summaries.flatMap(dcsCsvRows));
 }

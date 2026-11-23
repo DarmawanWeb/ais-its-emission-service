@@ -4,6 +4,7 @@ import {
 } from '@darmawanweb/ais-its-contracts/events';
 import { InjectConfig } from '@darmawanweb/ais-its-nest';
 import { EventPublisher } from '@darmawanweb/ais-its-nest/nats';
+import { sanitizeError } from '@darmawanweb/ais-its-nest/db';
 import {
   type BeforeApplicationShutdown,
   Injectable,
@@ -56,7 +57,10 @@ export class CiiPublisherService
       this.tick ??= this.publishDue()
         .then(() => undefined)
         .catch((error: unknown) => {
-          this.logger.warn({ err: error }, 'CII publication round failed');
+          this.logger.warn(
+            { err: sanitizeError(error) },
+            'CII publication round failed',
+          );
         })
         .finally(() => {
           this.tick = undefined;
@@ -75,7 +79,7 @@ export class CiiPublisherService
     // Late changes must reach the aggregates before their figures are published.
     await this.refresher.flush().catch((error: unknown) => {
       this.logger.warn(
-        { err: error },
+        { err: sanitizeError(error) },
         'CII aggregate refresh before publication failed',
       );
     });
@@ -89,7 +93,7 @@ export class CiiPublisherService
         if (await this.publishOne(mmsi)) published += 1;
       } catch (error) {
         this.logger.warn(
-          { err: error, mmsi },
+          { err: sanitizeError(error), mmsi },
           'CII publication of a vessel failed',
         );
         await this.publication.settle(mmsi, 'failed');
@@ -148,7 +152,7 @@ export class CiiPublisherService
       return true;
     } catch (error) {
       this.logger.warn(
-        { err: error, mmsi },
+        { err: sanitizeError(error), mmsi },
         'emission.cii.updated.v1 publication failed',
       );
       await this.publication.settle(mmsi, 'failed');

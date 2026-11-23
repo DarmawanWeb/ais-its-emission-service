@@ -90,18 +90,19 @@ flowchart LR
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/domain/`              | pure functions with `@method` TSDoc (no I/O): one file per concern, see below                                                                                        |
 | `src/domain/segment.ts`    | `calculateSpeed` (haversine R = 3438 nm, cap 30 kn, × 0.5144), segment window rule                                                                                   |
-| `src/domain/fuel/`         | method priority, navstatus multipliers, first formula, second formula, telemetry                                                                                     |
-| `src/domain/expression/`   | safe expression evaluator of the first fuel formula (replaces `new Function`)                                                                                        |
+| `src/domain/fuel/`         | method priority, navstatus multipliers, first formula (contracts `parseFuelFormula` / `evaluateFuelFormula`), second formula, telemetry                              |
 | `src/domain/holtrop/`      | Holtrop–Mennen resistance and power chain (legacy `second-formula/*`)                                                                                                |
 | `src/domain/weather/`      | Beaufort number, rhumb-line course, encounter angle, Kwon speed loss                                                                                                 |
 | `src/domain/cii*.ts`       | CO2, attained, reference line, required, rating/grade, year-end projection                                                                                           |
-| `src/domain/seemp/`        | 12 measures, reduction types 1–3, costs and amortization, recommender, simulation                                                                                    |
-| `src/domain/dcs.ts`        | DCS summary model and CSV                                                                                                                                            |
+| `src/domain/seemp/`        | 12 measures, reduction types 1–3, costs and amortization, recommender, simulation, CO2 avoided and cost per tonne                                                    |
+| `src/domain/dcs.ts`        | DCS summary model and CSV (per vessel and fleet)                                                                                                                     |
+| `src/common/`              | problem types, tenancy scope, identity DTO, query transforms (comma lists, signed sort keys), CSV encoding and negotiation (`Vary`, OpenAPI of JSON / CSV routes)    |
+| `src/cors.ts`              | CORS exposure of `Content-Disposition` and `X-Truncated` (CSV exports), on top of the kit's defaults                                                                 |
 | `src/consumers/`           | durable NATS consumers (`emission-positions`, `emission-fuel`, `emission-fleet`)                                                                                     |
 | `src/modules/segments/`    | segment builder, telemetry attribution, repositories, aggregate refresher                                                                                            |
-| `src/modules/cii/`         | CII rating layer, controllers, reduction factors, manual records, publisher, replay                                                                                  |
+| `src/modules/cii/`         | CII rating layer, controllers, fleet summary and fuel, segment CSV, reduction factors, manual records, publisher, replay and job list                                |
 | `src/modules/seemp/`       | SEEMP catalog, recommendations, simulation, scenarios                                                                                                                |
-| `src/modules/dcs/`         | DCS summary (JSON / CSV)                                                                                                                                             |
+| `src/modules/dcs/`         | DCS summary of a vessel and of a fleet (JSON / CSV)                                                                                                                  |
 | `src/modules/weather/`     | Open-Meteo client, Valkey cache, circuit breaker                                                                                                                     |
 | `src/modules/profiles/`    | FLEET projection, in-memory directory, tenancy (`VesselAccessService`)                                                                                               |
 | `src/modules/methodology/` | `GET /emission/methodology`, method ids of the responses                                                                                                             |
@@ -153,9 +154,12 @@ and age out with the retention policies.
 - Fuel method priority (`fuel.method_selection`): telemetry if active for the segment, else the
   vessel's first fuel formula, else Holtrop (needs a main engine with SFOC), else nothing (`none`,
   flag `no_fuel_model`).
-- First formula: `max(f(V), 0.5)` L/min per engine evaluated by the safe evaluator (numbers,
-  `speedKnot`, `+ - * / ** ^ ( )`, `Math.`/bare `exp log ln sqrt pow abs min max`; `^` = power;
-  identical IEEE-754 results to JavaScript for every valid formula), × navstatus factor of the
+- First formula: `max(f(V), 0.5)` L/min per engine evaluated with the contracts fuel formula grammar
+  — the one fleet validates formulas with (`parseFuelFormula` once per profile, then
+  `evaluateFuelFormula`; numbers, `speedKnot`, `+ - * / ** ^ ( )`, `Math.`/bare
+  `exp log ln sqrt pow abs min max`; `^` = power; at most 500 characters, nesting depth 32, finite
+  literals; identical IEEE-754 results to JavaScript for every valid formula; never `new Function`),
+  × navstatus factor of the
   **previous** fix, × minutes × density / 1000. An invalid formula keeps the legacy 0.5 L/min and is
   flagged `formula_error`.
 - Holtrop: the legacy chain (Kwon speed loss from the wind at the previous fix → calm-water speed
@@ -268,38 +272,103 @@ All routes under `/api/v2`, JSON in camelCase, errors as RFC 9457 problem detail
 DCS are **tenant-private**: the vessel's organization (FLEET projection, never the client) must be
 the principal's active organization, unless `super_admin`.
 
-| Method   | Path                                                   | Permission         | Notes                                                                                                                                                       |
-| -------- | ------------------------------------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET`    | `/cii/vessels/:mmsi/current?year=`                     | `cii:read`         | year-to-date `CiiSummaryDto` + linear year-end projection, `methodIds`                                                                                      |
-| `GET`    | `/cii/vessels/:mmsi/daily?from&to`                     | `cii:read`         | daily points with cumulative attained/rating/grade (default from 1 January of the year of `to`)                                                             |
-| `GET`    | `/cii/vessels/:mmsi/annual`                            | `cii:read`         | per year (segments or manual) with `ddVector` = `d_i × required`; 404 without any year                                                                      |
-| `GET`    | `/cii/vessels/:mmsi/segments?from&to&cursor&limit`     | `cii:read`         | cursor page, newest first (default last 24 h, ≤ 31 days)                                                                                                    |
-| `GET`    | `/cii/fleet/summary?year&orgId&page&pageSize`          | `cii:read`         | grade distribution of the whole fleet of the active organization (`orgId` for super_admin) + one page of its vessels (`pageSize` ≤ 100, default 20), `meta` |
-| `GET`    | `/cii/vessels/:mmsi/annual-manual/:year`               | `vessel:write`     | manual / imported annual record                                                                                                                             |
-| `PUT`    | `/cii/vessels/:mmsi/annual-manual/:year`               | `vessel:write`     | create or replace (audited)                                                                                                                                 |
-| `POST`   | `/cii/vessels/:mmsi/recompute?from&to`                 | `super_admin`      | `202` + job; replays `AIS_POSITION` (≤ `RECOMPUTE_MAX_DAYS`, inside the 7-day stream, `to` ≤ now; audited on the vessel id)                                 |
-| `GET`    | `/cii/recompute-jobs/:id`                              | `super_admin`      | job status (`running` / `succeeded` / `failed`, counts, `error`)                                                                                            |
-| `GET`    | `/reduction-factors`                                   | `cii:read`         | Z per year with source                                                                                                                                      |
-| `PUT`    | `/reduction-factors`                                   | `reference:write`  | upsert the given years (others kept); every CII is republished (audited)                                                                                    |
-| `GET`    | `/seemp/measures`                                      | `seemp:read`       | the 12 legacy measures with their models                                                                                                                    |
-| `GET`    | `/seemp/vessels/:mmsi/recommendations?year&targetYear` | `seemp:read`       | legacy `calculateSEEMPbyMMSI` output (A–C after, cheapest first)                                                                                            |
-| `POST`   | `/seemp/vessels/:mmsi/simulate`                        | `seemp:simulate`   | body `{ measureCodes[], year?, targetYear? }`                                                                                                               |
-| `GET`    | `/seemp/scenarios?mmsi&page&pageSize`                  | `seemp:read`       | saved simulations of the organization, newest first                                                                                                         |
-| `POST`   | `/seemp/scenarios`                                     | `seemp:simulate`   | `{ mmsi, name, measureCodes[], year?, targetYear? }` → `201` (audited)                                                                                      |
-| `GET`    | `/seemp/scenarios/:id`                                 | `seemp:read`       | 404 for other organizations                                                                                                                                 |
-| `DELETE` | `/seemp/scenarios/:id`                                 | `seemp:simulate`   | `204` (audited)                                                                                                                                             |
-| `GET`    | `/emission/vessels/:mmsi/dcs?year=`                    | `cii:read`         | JSON, or CSV with `Accept: text/csv`                                                                                                                        |
-| `GET`    | `/emission/methodology`                                | any signed-in user | methods (formula LaTeX, variables, constants, references), active Z, vessel types of the FLEET projection                                                   |
+| Method   | Path                                                              | Permission         | Notes                                                                                                                                                    |
+| -------- | ----------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET`    | `/cii/vessels/:mmsi/current?year=`                                | `cii:read`         | year-to-date `CiiSummaryDto` + linear year-end projection, `vessel` identity, `methodIds`                                                                |
+| `GET`    | `/cii/vessels/:mmsi/daily?from&to`                                | `cii:read`         | daily points with cumulative attained/rating/grade (default from 1 January of the year of `to`)                                                          |
+| `GET`    | `/cii/vessels/:mmsi/annual`                                       | `cii:read`         | per year (segments or manual) with `ddVector` = `d_i × required`, `vessel` identity; 404 without any year                                                |
+| `GET`    | `/cii/vessels/:mmsi/segments?from&to&method&flag&cursor&limit`    | `cii:read`         | cursor page, newest first (default last 24 h, ≤ 31 days); `method` / `flag` filters; `Accept: text/csv` exports the range (below)                        |
+| `GET`    | `/cii/fleet/summary?year&orgId&grade&search&sort&page&pageSize`   | `cii:read`         | grade distribution of the whole fleet of the active organization (`orgId` for super_admin) + one page of the matching vessels (`pageSize` ≤ 100), `meta` |
+| `GET`    | `/cii/fleet/fuel?year&month&orgId`                                | `cii:read`         | fuel (ME, AE, total) and CO2 of the fleet in the year and one month (below)                                                                              |
+| `GET`    | `/cii/vessels/:mmsi/annual-manual/:year`                          | `vessel:write`     | manual / imported annual record                                                                                                                          |
+| `PUT`    | `/cii/vessels/:mmsi/annual-manual/:year`                          | `vessel:write`     | create or replace (audited `cii_annual_manual.update`)                                                                                                   |
+| `DELETE` | `/cii/vessels/:mmsi/annual-manual/:year`                          | `vessel:write`     | `204`, then the year falls back to its segments; 404 `CII_ANNUAL_MANUAL_NOT_FOUND` (audited `cii_annual_manual.delete`)                                  |
+| `POST`   | `/cii/vessels/:mmsi/recompute?from&to`                            | `super_admin`      | `202` + job; replays `AIS_POSITION` (≤ `RECOMPUTE_MAX_DAYS`, inside the 7-day stream, `to` ≤ now; audited on the vessel id)                              |
+| `GET`    | `/cii/recompute-jobs?mmsi&status&cursor&limit`                    | `super_admin`      | jobs of every administrator and instance, newest first (cursor page; stale running jobs are failed first)                                                |
+| `GET`    | `/cii/recompute-jobs/:id`                                         | `super_admin`      | job status (`running` / `succeeded` / `failed`, counts, `error`)                                                                                         |
+| `GET`    | `/reduction-factors`                                              | `cii:read`         | Z per year with source                                                                                                                                   |
+| `PUT`    | `/reduction-factors`                                              | `reference:write`  | upsert the given years (others kept); every CII is republished (audited `reduction_factor.update`)                                                       |
+| `DELETE` | `/reduction-factors/:year`                                        | `reference:write`  | `204` for an unused first or last year (below; audited `reduction_factor.delete`)                                                                        |
+| `GET`    | `/seemp/measures`                                                 | `seemp:read`       | the 12 legacy measures with their models                                                                                                                 |
+| `GET`    | `/seemp/vessels/:mmsi/recommendations?year&targetYear&includeAll` | `seemp:read`       | legacy `calculateSEEMPbyMMSI` output (A–C after, cheapest first); `includeAll=true` lists every measure with `recommended`; `vessel`, `baselineCo2Ton`   |
+| `POST`   | `/seemp/vessels/:mmsi/simulate`                                   | `seemp:simulate`   | body `{ measureCodes[], year?, targetYear? }` (null years: 400); `co2AvoidedTon`, `costPerTonneUsd`, `baselineCo2Ton`, `vessel`                          |
+| `GET`    | `/seemp/scenarios?mmsi&search&sort&page&pageSize`                 | `seemp:read`       | saved simulations of the organization (super_admin: all) with `vesselName`, newest first by default                                                      |
+| `POST`   | `/seemp/scenarios`                                                | `seemp:simulate`   | `{ mmsi, name, measureCodes[], year?, targetYear? }` → `201` (audited `seemp_scenario.create`)                                                           |
+| `GET`    | `/seemp/scenarios/:id`                                            | `seemp:read`       | 404 for other organizations                                                                                                                              |
+| `PATCH`  | `/seemp/scenarios/:id`                                            | `seemp:simulate`   | `{ name }` (1–120 characters) → the renamed scenario (audited `seemp_scenario.update`)                                                                   |
+| `DELETE` | `/seemp/scenarios/:id`                                            | `seemp:simulate`   | `204` (audited `seemp_scenario.delete`)                                                                                                                  |
+| `GET`    | `/emission/vessels/:mmsi/dcs?year=`                               | `cii:read`         | JSON, or CSV with `Accept: text/csv`                                                                                                                     |
+| `GET`    | `/emission/fleet/dcs?year&orgId`                                  | `cii:read`         | every vessel of the fleet: JSON (`items`, `withoutData`) or one CSV (`Accept: text/csv`) for the annual submission                                       |
+| `GET`    | `/emission/methodology`                                           | any signed-in user | methods (formula LaTeX, variables, constants, references), active Z, vessel types of the FLEET projection                                                |
 
 Outside the prefix: `GET /health/live`, `GET /health/ready` (database, NATS, Valkey),
 `GET /metrics`, `GET /docs`, `GET /openapi.json`. The committed [`openapi.json`](openapi.json) is
-generated with `pnpm openapi` (no connection needed).
+generated with `pnpm openapi` (no connection needed); it documents the page maximum of 1 000 000,
+the path parameter schemas (`mmsi` = nine digits, `id` = UUID, `year` = 2000–2200) and
+`x-required-roles: ["super_admin"]` on the recomputation routes.
+
+Path parameters are validated per segment by the kit (`@MmsiParam()`, `@IntParam()`,
+`@UuidParam()`): `0525005223`, `1e5` or a malformed UUID are `400 VALIDATION_FAILED` with the
+parameter as `field`. Routes reserved to platform administrators use `@RequirePlatformAdmin()`.
+
+**Additions of 0.2.0 in detail**
+
+- **Fleet summary** — `grade` (comma-separated A–E, e.g. `D,E`), `search` (name substring, or MMSI
+  / IMO prefix of digits) and `sort` (`mmsi` default, `name`, `grade`, `rating`, `attained`; a
+  leading `-` sorts descending; vessels without CII data last in both directions; ties by MMSI)
+  select and order `items` and `meta.total`. `vessels`, `grades` and `notAvailable` always describe
+  the whole fleet. Each item carries `typeCode`, `imo`, `required`, `zPercent` and `previousYear`
+  `{ source, rating, grade } | null` (year − 1 of the same vessel, so trends no longer depend on the
+  page contents of two requests).
+- **Fleet fuel** — `GET /cii/fleet/fuel` answers `{ year, month, vessels, orgId, methodIds }`, both
+  periods with `from`, `to`, `fuelMeTon`, `fuelAeTon`, `totalFuelTon`, `co2Ton`, `vesselsWithData`,
+  `manualVessels` and `methods`. Per vessel the counted segments of the period (`cii_annual`,
+  `cii_daily`); for the year a vessel without counted segments contributes its manual record (CO2
+  from its current fuel when the record has none, as the DCS summary); the month counts segments
+  only. Default `year` = current UTC year, `month` = current UTC month.
+- **CSV exports** (`Accept: text/csv`, RFC 4180, formula-like text neutralized): the segments of a
+  range (every matching segment, oldest first, at most 50 000 rows; `X-Truncated: true` when the
+  range holds more — narrow `from` / `to`) and the fleet DCS (the per-vessel layout with one header).
+  `Content-Disposition` and `X-Truncated` are exposed to cross-origin browsers (`src/cors.ts`). The
+  negotiated routes (segments, vessel and fleet DCS) answer `Vary: Origin, Accept` in both
+  representations (`addVary` keeps the CORS hook's `Origin`), and OpenAPI documents the CSV body
+  as a `text/csv` string with its `Content-Disposition` (and `X-Truncated`) header, apart from the
+  JSON schema (`ApiJsonOrCsvResponse`).
+- **Reduction factors** — `DELETE /reduction-factors/:year` removes a year only while no vessel has
+  CII data for it (segments or a manual record; `409 REDUCTION_FACTOR_IN_USE` — correct the value
+  with `PUT` instead) and only the first or the last year of the table
+  (`409 REDUCTION_FACTOR_TABLE_GAP`: the SEEMP cost model needs a Z for every year up to the last
+  one). Nothing is republished (no figure used the year when it was checked). The check and the
+  delete lock `reduction_factors` only: a segment or manual record of that year written at the same
+  moment is not blocked, and removing a year that is about to receive data (the next calendar year
+  at New Year) leaves its figures without Z — `422 REDUCTION_FACTOR_MISSING` until the year is
+  added again with `PUT` (Known limitations).
+- **SEEMP** — `includeAll=true` keeps the measures whose grade after is D or E (`recommended:
+false`), in the same cost order, so a D/E vessel sees which measures are not enough on their own.
+  `baselineCo2Ton` is the baseline year's CO2 (a manual record without CO2: its fuel × C_F of the
+  current fuel). A simulation adds `co2AvoidedTon` = `baselineCo2Ton × reductionPercent / 100` (the
+  model keeps the baseline distance and capacity, so CO2 scales like the attained CII; negative when
+  the attained CII rises) and `costPerTonneUsd` = `costUsdPerYear / co2AvoidedTon` (`null` when
+  nothing is avoided). Scenarios carry the vessel's current `vesselName` (`null` once the vessel is
+  gone), the list takes `search` (scenario or vessel name, MMSI prefix) and `sort` (`-createdAt`
+  default, `createdAt`, `name`, `vesselName`, `mmsi`, signed like the fleet), and `PATCH` renames.
+  A scenario's `result` is the simulation response at creation time, stored as it was and never
+  recomputed (`SeempScenarioResultDto`): scenarios saved before 0.2.0 lack `vessel`,
+  `baselineCo2Ton`, `co2AvoidedTon` and `costPerTonneUsd` (optional there, not backfilled).
+- **Vessel identity** — `CiiSummaryDto`, `AnnualCiiDto` and the SEEMP recommendation / simulation
+  responses embed `vessel { vesselId, mmsi, imo, name, flag, typeCode, typeName }` from the FLEET
+  projection (shared identity data, spec §8.5), so pages need no `GET /vessels` for their header.
+- **Recomputation jobs** — `GET /cii/recompute-jobs?mmsi&status&cursor&limit` lists the jobs of
+  every administrator and replica (the job behind `409 RECOMPUTE_IN_PROGRESS` after a reload).
 
 Error codes: `VESSEL_NOT_FOUND` (404), `CII_NOT_AVAILABLE` (404), `CII_ANNUAL_MANUAL_NOT_FOUND`
-(404), `SEEMP_SCENARIO_NOT_FOUND` (404), `RECOMPUTE_JOB_NOT_FOUND` (404), `REDUCTION_FACTOR_MISSING`
-(422), `SEEMP_MEASURE_UNKNOWN` (422), `SEEMP_MEASURES_INCOMPATIBLE` (422), `RECOMPUTE_RANGE_INVALID`
-(400), `RECOMPUTE_IN_PROGRESS` (409), `SUPER_ADMIN_REQUIRED` (403), `FORBIDDEN` (403, other tenant
-or missing permission), `VALIDATION_FAILED` (400), `UNAUTHORIZED` (401).
+(404), `SEEMP_SCENARIO_NOT_FOUND` (404), `RECOMPUTE_JOB_NOT_FOUND` (404),
+`REDUCTION_FACTOR_NOT_FOUND` (404), `REDUCTION_FACTOR_MISSING` (422), `SEEMP_MEASURE_UNKNOWN`
+(422), `SEEMP_MEASURES_INCOMPATIBLE` (422), `RECOMPUTE_RANGE_INVALID` (400), `RECOMPUTE_IN_PROGRESS`
+(409), `REDUCTION_FACTOR_IN_USE` (409), `REDUCTION_FACTOR_TABLE_GAP` (409),
+`PLATFORM_ADMIN_REQUIRED` (403, recomputation routes; was `SUPER_ADMIN_REQUIRED` in 0.1),
+`FORBIDDEN` (403, other tenant or missing permission), `VALIDATION_FAILED` (400), `UNAUTHORIZED`
+(401).
 
 ## Events
 
@@ -310,53 +379,55 @@ or missing permission), `VALIDATION_FAILED` (400), `UNAUTHORIZED` (401).
 | consumed  | `FLEET`        | `fleet.vessel.v1.<vesselId>`         | `fleet.vessel.upserted.v1` / `fleet.vessel.deleted.v1` | durable `emission-fleet`; newest `updatedAt` wins; a re-assigned MMSI moves to the newer claim (a stale snapshot changes nothing) |
 | replayed  | `AIS_POSITION` | `ais.position.v1.<p>.<mmsi>`         | `ais.position.recorded.v1`                             | ephemeral consumer (`StreamReplayer`) of `POST …/recompute`                                                                       |
 | published | `EMISSION`     | `emission.cii.v1.<mmsi>`             | `emission.cii.updated.v1` (`CiiUpdatedV1`)             | year-to-date CII of the year of the latest segment, at most every `CII_PUBLISH_INTERVAL_S` per vessel                             |
-| published | `AUDIT`        | `audit.v1.emission`                  | `audit.recorded.v1`                                    | `cii_annual_manual.update`, `reduction_factor.update`, `seemp_scenario.create/delete`, `cii.recompute`                            |
+| published | `AUDIT`        | `audit.v1.emission`                  | `audit.recorded.v1`                                    | `cii_annual_manual.update/delete`, `reduction_factor.update/delete`, `seemp_scenario.create/update/delete`, `cii.recompute`       |
 
-The service ensures `EMISSION` and `AUDIT` as producer; consumed streams are only created when
-missing. Invalid messages are terminated and counted; failures are retried with backoff and
+The consumers are the contracts `CONSUMERS` entries (`positionFeedConsumer`,
+`fleetProjectionConsumer`), whose literal event types make `ConsumerEnvelope<'emission-…'>` exact:
+the handlers switch exhaustively without runtime type checks. The service ensures `EMISSION` and
+`AUDIT` as producer; consumed streams are only created when missing. Invalid messages are terminated and counted; failures are retried with backoff and
 dead-lettered after 10 deliveries (kit).
 
 ## Configuration
 
 Every variable is validated at boot (zod); see [`.env.example`](.env.example).
 
-| Variable                        | Default                                                      | Notes                                                              |
-| ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `NODE_ENV`                      | `development`                                                | `development` \| `test` \| `production`                            |
-| `SERVICE_NAME`                  | `emission`                                                   | logs, metrics, event `source`, `audit.v1.emission`                 |
-| `SERVICE_VERSION`               | `package.json` version                                       |                                                                    |
-| `HOST` / `PORT`                 | `0.0.0.0` / `3006`                                           |                                                                    |
-| `LOG_LEVEL` / `LOG_PRETTY`      | `info` / `true` in development                               | pino                                                               |
-| `SHUTDOWN_TIMEOUT_MS`           | `30000`                                                      | graceful shutdown deadline                                         |
-| `TRUSTED_PROXIES`               | empty                                                        | proxies whose `X-Forwarded-*` are trusted                          |
-| `DATABASE_URL`                  | `postgres://emission_svc:emission_svc@localhost:5432/aisits` |                                                                    |
-| `DATABASE_SCHEMA`               | `emission`                                                   | `search_path=emission,public`                                      |
-| `DATABASE_POOL_MAX`             | `10`                                                         |                                                                    |
-| `DATABASE_STATEMENT_TIMEOUT_MS` | `30000`                                                      |                                                                    |
-| `DB_MIGRATE_ON_BOOT`            | `true`                                                       | also `pnpm migrate`                                                |
-| `NATS_URL`                      | `nats://localhost:4222`                                      | comma separated list allowed                                       |
-| `NATS_DURABLE_PREFIX`           | empty                                                        | prefix of durable names (test suites only)                         |
-| `REDIS_URL`                     | `redis://localhost:6379`                                     | Valkey (weather cache)                                             |
-| `AUTH_JWKS_URL`                 | `http://localhost:3001/.well-known/jwks.json`                | access token verification (cached JWKS)                            |
-| `AUTH_ISSUER` / `AUTH_AUDIENCE` | `ais-its-auth` / `ais-its-api`                               |                                                                    |
-| `AUTH_INTERNAL_URL`             | `http://localhost:3001`                                      | API-key introspection (kit; no API-key route here)                 |
-| `INTERNAL_TOKEN`                | `dev-internal-token-change-me`                               | ≥ 16 chars and not the default in production                       |
-| `CORS_ORIGINS`                  | `http://localhost:5173,http://localhost:8000`                |                                                                    |
-| `PUBLIC_BASE_URL`               | `http://localhost:8000`                                      |                                                                    |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`   | unset                                                        | OTLP/HTTP tracing when set                                         |
-| `SEGMENT_MAX_GAP_MIN`           | `360`                                                        | longest window of a counted segment, minutes                       |
-| `TELEMETRY_ACTIVE_WINDOW_MIN`   | `10`                                                         | active window of instantaneous readings, minutes                   |
-| `TELEMETRY_MAX_PERIOD_H`        | `24` (1–744)                                                 | longest reading period; ≥ the telemetry service's value            |
-| `CII_PUBLISH_INTERVAL_S`        | `60`                                                         | minimum interval between two `emission.cii.updated.v1` of a vessel |
-| `CII_PUBLISH_POLL_MS`           | `5000`                                                       | how often due publications are checked                             |
-| `CII_AGGREGATE_REFRESH_MS`      | `30000`                                                      | longest delay before late changes reach the aggregates             |
-| `RECOMPUTE_MAX_DAYS`            | `7`                                                          | longest recomputation range (1–7)                                  |
-| `WEATHER_API_URL`               | `https://api.open-meteo.com`                                 | forecast API base (`/v1/forecast`)                                 |
-| `WEATHER_ENABLED`               | `true`                                                       | `false` = calm weather + flag, no requests                         |
-| `WEATHER_TIMEOUT_MS`            | `3000`                                                       | per request                                                        |
-| `WEATHER_CACHE_TTL_S`           | `604800`                                                     | Valkey lifetime of a cell-hour                                     |
-| `WEATHER_BREAKER_THRESHOLD`     | `5`                                                          | consecutive failures that open the breaker                         |
-| `WEATHER_BREAKER_COOLDOWN_MS`   | `60000`                                                      | open time before a trial request                                   |
+| Variable                        | Default                                                      | Notes                                                                                                                                 |
+| ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                      | `development`                                                | `development` \| `test` \| `production`                                                                                               |
+| `SERVICE_NAME`                  | `emission`                                                   | logs, metrics, event `source`, `audit.v1.emission`                                                                                    |
+| `SERVICE_VERSION`               | `package.json` version                                       |                                                                                                                                       |
+| `HOST` / `PORT`                 | `0.0.0.0` / `3006`                                           |                                                                                                                                       |
+| `LOG_LEVEL` / `LOG_PRETTY`      | `info` / `true` in development                               | pino                                                                                                                                  |
+| `SHUTDOWN_TIMEOUT_MS`           | `30000`                                                      | graceful shutdown deadline                                                                                                            |
+| `TRUSTED_PROXIES`               | `loopback,linklocal,uniquelocal`                             | proxies whose `X-Forwarded-For` is trusted; production: the gateway's address/CIDR only (boot warning while the default is in effect) |
+| `DATABASE_URL`                  | `postgres://emission_svc:emission_svc@localhost:5432/aisits` |                                                                                                                                       |
+| `DATABASE_SCHEMA`               | `emission`                                                   | `search_path=emission,public`                                                                                                         |
+| `DATABASE_POOL_MAX`             | `10`                                                         |                                                                                                                                       |
+| `DATABASE_STATEMENT_TIMEOUT_MS` | `30000`                                                      |                                                                                                                                       |
+| `DB_MIGRATE_ON_BOOT`            | `true`                                                       | also `pnpm migrate`                                                                                                                   |
+| `NATS_URL`                      | `nats://localhost:4222`                                      | comma separated list allowed                                                                                                          |
+| `NATS_DURABLE_PREFIX`           | empty                                                        | prefix of durable names (test suites only)                                                                                            |
+| `REDIS_URL`                     | `redis://localhost:6379`                                     | Valkey (weather cache)                                                                                                                |
+| `AUTH_JWKS_URL`                 | `http://localhost:3001/.well-known/jwks.json`                | access token verification (cached JWKS)                                                                                               |
+| `AUTH_ISSUER` / `AUTH_AUDIENCE` | `ais-its-auth` / `ais-its-api`                               |                                                                                                                                       |
+| `AUTH_INTERNAL_URL`             | `http://localhost:3001`                                      | API-key introspection (kit; no API-key route here)                                                                                    |
+| `INTERNAL_TOKEN`                | `dev-internal-token-change-me`                               | ≥ 16 chars and not the default in production                                                                                          |
+| `CORS_ORIGINS`                  | `http://localhost:5173,http://localhost:8000`                | exposes the kit's headers plus `Content-Disposition`, `X-Truncated`                                                                   |
+| `PUBLIC_BASE_URL`               | `http://localhost:8000`                                      |                                                                                                                                       |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`   | unset                                                        | OTLP/HTTP traces when set (traces only; `OTEL_TRACES_SAMPLER*`)                                                                       |
+| `SEGMENT_MAX_GAP_MIN`           | `360`                                                        | longest window of a counted segment, minutes                                                                                          |
+| `TELEMETRY_ACTIVE_WINDOW_MIN`   | `10`                                                         | active window of instantaneous readings, minutes                                                                                      |
+| `TELEMETRY_MAX_PERIOD_H`        | `24` (1–744)                                                 | longest reading period; ≥ the telemetry service's value                                                                               |
+| `CII_PUBLISH_INTERVAL_S`        | `60`                                                         | minimum interval between two `emission.cii.updated.v1` of a vessel                                                                    |
+| `CII_PUBLISH_POLL_MS`           | `5000`                                                       | how often due publications are checked                                                                                                |
+| `CII_AGGREGATE_REFRESH_MS`      | `30000`                                                      | longest delay before late changes reach the aggregates                                                                                |
+| `RECOMPUTE_MAX_DAYS`            | `7`                                                          | longest recomputation range (1–7)                                                                                                     |
+| `WEATHER_API_URL`               | `https://api.open-meteo.com`                                 | forecast API base (`/v1/forecast`)                                                                                                    |
+| `WEATHER_ENABLED`               | `true`                                                       | `false` = calm weather + flag, no requests                                                                                            |
+| `WEATHER_TIMEOUT_MS`            | `3000`                                                       | per request                                                                                                                           |
+| `WEATHER_CACHE_TTL_S`           | `604800`                                                     | Valkey lifetime of a cell-hour                                                                                                        |
+| `WEATHER_BREAKER_THRESHOLD`     | `5`                                                          | consecutive failures that open the breaker                                                                                            |
+| `WEATHER_BREAKER_COOLDOWN_MS`   | `60000`                                                      | open time before a trial request                                                                                                      |
 
 ## Local development
 
@@ -394,9 +465,15 @@ Other scripts: `pnpm build`, `pnpm start`, `pnpm migrate`, `pnpm openapi` (regen
   | `cii.json`           | `calculateCIIRequired` (Z 2023–2030), `calculateCII` accumulation, `assignGradeBasedOnDdVector(New)`                                                            |
   | `seemp.json`         | the 12 measure functions, `calculateSemp`, `calculateSEEMPbyMMSI` (7 scenarios), `calculatedYear`, `calculateCostPerYear`, `calculateCostbyPower`, `formatCost` |
 
-  Further unit tests cover the safe evaluator (bit-identical to JavaScript, refusals), the
-  telemetry rule, the simulation combination model, the weather client against a local fake
-  Open-Meteo, the circuit breaker, the DCS CSV and the configuration.
+  Further unit tests cover the contracts fuel formula grammar this service evaluates
+  (`fuel-formula.spec.ts`: bit-identical to JavaScript, refusals with their messages and
+  positions, the 500-character / depth-32 limits), the telemetry rule, the simulation combination
+  model, the CO2 avoided and cost per tonne, the recommender with `includeAll`, the fleet item
+  filters and signed sorts, the query DTOs (comma lists, strict booleans, null years), the
+  weather client against a local fake Open-Meteo, the circuit breaker, the DCS and segment CSVs,
+  `addVary` (keeps the CORS `Vary: Origin`), the catalogued method ids and the configuration.
+  `src/docs.spec.ts` checks the statements of this handbook and the CHANGELOG that operators act
+  on (rolling update to 0.2.0, scenarios saved before 0.2.0, the reduction factor removal race).
 
 - **Integration tests** (`pnpm test:int`, Docker): `test/*.int.test.ts` boot the real `AppModule`
   against `timescale/timescaledb-ha:pg17`, `nats:2.11-alpine` and `valkey/valkey:8-alpine` started
@@ -412,6 +489,15 @@ Other scripts: `pnpm build`, `pnpm start`, `pnpm migrate`, `pnpm openapi` (regen
   MMSI re-use across organizations and MMSI changes, live segments written during a
   recomputation, a replay without positions, stale job heartbeats, the bounded overlap search on a
   compressed history (`EXPLAIN`) and a shutdown in the middle of a recomputation.
+  `test/api-gaps.int.test.ts` covers the 0.2.0 additions end to end: fleet summary filters, sorts
+  and previous-year trend, fleet fuel with the manual fallback, embedded vessel identity, segment
+  filters and the CSV export (with the exposed CORS headers), the fleet DCS (JSON and CSV),
+  `Vary: Origin, Accept` of the JSON / CSV routes, the manual record and reduction factor removal
+  rules with their audit records, the recomputation job list (`PLATFORM_ADMIN_REQUIRED`, cursor
+  pages), `includeAll`, the CO2 figures of a simulation, the scenario search, sorts and rename
+  across organizations, and a scenario stored as 0.1.x saved it, checked against the served
+  OpenAPI schema. `test/app.int.test.ts` also checks that OpenAPI documents the CSV bodies as
+  `text/csv` strings with their headers.
   `test/migrations-upgrade.int.test.ts` upgrades a 0.1.0 database (0001–0003, in a database of its
   own) holding segments, chunks compressed under the old settings and manual records to the
   vessel-scoped history (0004–0005): identical sums per vessel, materialized history, manual
@@ -441,20 +527,54 @@ Other scripts: `pnpm build`, `pnpm start`, `pnpm migrate`, `pnpm openapi` (regen
   `aisits_weather_cache_hits_total`, `aisits_weather_requests_total{outcome}` (`ok`, `error`,
   `breaker_open`, `disabled`).
 - Logs: pino JSON (`service`, `version`, `requestId`, `traceId`, `principal`).
+- **Replicas**: any number. The durables `emission-positions`, `emission-fuel` and
+  `emission-fleet` are shared (an event reaches one replica; the in-memory directory of the others
+  re-reads `vessel_profiles` every 30 s), segment writes and the telemetry attribution are
+  serialized per vessel (advisory lock), the publication throttle (`cii_publication`) and the
+  recomputation jobs (heartbeat, `409 RECOMPUTE_IN_PROGRESS`) live in the database, and aggregate
+  refreshes of several replicas that overlap are retried (`55P03`).
+- **Rolling update to 0.2.0** — what replicas of both versions do side by side depends on the
+  schema the older ones run on:
+  - From a build that already applied `0005_cii_aggregates_per_vessel` (the `main` builds after
+    0.1.0, which still report version `0.1.0`; `schema_migrations` of the service schema holds
+    version 5): no migration, and both versions share the tables, subjects and durables, so the
+    consumers, the publication and the recomputations run on mixed replicas, and a rollback is
+    safe (roll back a web app that uses the new API first). Only 0.2.0 replicas answer the new API. An older replica answers the new query parameters
+    (`grade`, `search` and `sort` of the fleet summary, `search` and `sort` of the scenario list,
+    `method` and `flag` of the segments, `includeAll`) with `400 VALIDATION_FAILED` (unknown
+    properties are refused), the new routes (`GET /cii/fleet/fuel`, `GET /emission/fleet/dcs`,
+    `GET /cii/recompute-jobs`, `DELETE /cii/vessels/:mmsi/annual-manual/:year`,
+    `DELETE /reduction-factors/:year`, `PATCH /seemp/scenarios/:id`) with `404 NOT_FOUND`, and
+    `Accept: text/csv` on the segments with the JSON page; its responses lack the fields 0.2.0
+    added, and the scenarios it saves lack the 0.2.0 simulation fields for good (API notes). Finish
+    the emission rollout before deploying a web app that uses the new parameters and routes; until
+    then the web app must map both `403 SUPER_ADMIN_REQUIRED` (older replicas) and
+    `403 PLATFORM_ADMIN_REQUIRED` (0.2.0) of the recomputation routes to "platform administrator
+    required".
+  - From the **0.1.0 release** (migrations 0001–0003): the first 0.2.0 replica applies `0004` and
+    `0005` at boot (`DB_MIGRATE_ON_BOOT`; its port opens only once `0005` has materialized the whole
+    history, allow for it in the startup probe), and from then on 0.1.0 replicas fail: they read
+    `cii_daily` / `cii_annual` by `mmsi` (now grouped by `vessel_id`:
+    `column "mmsi" does not exist`) and upsert manual records on `(mmsi, year)` (now keyed by
+    `(vessel_id, year)`). Stop every 0.1.0 replica before the first 0.2.0 replica starts
+    (`strategy: Recreate`, or scale to zero). The migrator is forward-only: going back to 0.1.0
+    needs the database backup taken before the upgrade.
 - Troubleshooting:
 
-  | Symptom                                | Check                                                                                                                                                                                                                                                                                                                                 |
-  | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | No segments for a vessel               | the vessel exists in `vessel_profiles` (FLEET projection) — `aisits_emission_positions_total{outcome="unknown_vessel"}` grows otherwise; positions carry `previous`                                                                                                                                                                   |
-  | Segments with `method = 'none'`        | `flags`: `gap` (Δt > `SEGMENT_MAX_GAP_MIN`), `no_fuel_model` (no telemetry, formula or main engine), `fuel_not_finite` / `fuel_negative` (legacy weather model breakdown)                                                                                                                                                             |
-  | Many `weather_unavailable` flags       | `aisits_weather_requests_total{outcome}`; egress to `WEATHER_API_URL`; breaker cooldown                                                                                                                                                                                                                                               |
-  | `404 CII_NOT_AVAILABLE`                | no counted segments and no manual record for the year (expected: no default CII)                                                                                                                                                                                                                                                      |
-  | `422 REDUCTION_FACTOR_MISSING`         | add the year with `PUT /api/v2/reduction-factors`                                                                                                                                                                                                                                                                                     |
-  | CII of an older day lags               | late changes reach the aggregates within `CII_AGGREGATE_REFRESH_MS`; `CALL refresh_continuous_aggregate('cii_daily', NULL, NULL)` forces it                                                                                                                                                                                           |
-  | `CII aggregate refresh failed` warning | TimescaleDB rejects a refresh overlapping one in progress (`55P03` "due to a concurrent refresh": a policy job, another replica); the refresher retries for about 4 s, then keeps the change pending for the next tick — harmless unless it repeats on every tick                                                                     |
-  | Wrong figures after a fleet change     | `POST /api/v2/cii/vessels/:mmsi/recompute?from&to` (last 7 days) rebuilds the segments with the current profile                                                                                                                                                                                                                       |
-  | Recomputation `failed`                 | `error`: `INTERRUPTED` (instance stopped; no heartbeat for 60 s also fails a job), `REPLAY_INCOMPLETE` (the replay ended before the subject's last message), `NO_POSITIONS` (the stream has no position of the range while segments exist), `VESSEL_CHANGED` (MMSI re-assigned during the job) — nothing was deleted; start a new job |
-  | `409 RECOMPUTE_IN_PROGRESS`            | a job of the MMSI is running (heartbeat < 60 s); `GET /api/v2/cii/recompute-jobs/:id`                                                                                                                                                                                                                                                 |
+  | Symptom                                | Check                                                                                                                                                                                                                                                                                                                                                                                     |
+  | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | No segments for a vessel               | the vessel exists in `vessel_profiles` (FLEET projection) — `aisits_emission_positions_total{outcome="unknown_vessel"}` grows otherwise; positions carry `previous`                                                                                                                                                                                                                       |
+  | Segments with `method = 'none'`        | `flags`: `gap` (Δt > `SEGMENT_MAX_GAP_MIN`), `no_fuel_model` (no telemetry, formula or main engine), `fuel_not_finite` / `fuel_negative` (legacy weather model breakdown)                                                                                                                                                                                                                 |
+  | Many `weather_unavailable` flags       | `aisits_weather_requests_total{outcome}`; egress to `WEATHER_API_URL`; breaker cooldown                                                                                                                                                                                                                                                                                                   |
+  | `404 CII_NOT_AVAILABLE`                | no counted segments and no manual record for the year (expected: no default CII)                                                                                                                                                                                                                                                                                                          |
+  | `422 REDUCTION_FACTOR_MISSING`         | add the year with `PUT /api/v2/reduction-factors`                                                                                                                                                                                                                                                                                                                                         |
+  | CII of an older day lags               | late changes reach the aggregates within `CII_AGGREGATE_REFRESH_MS`; `CALL refresh_continuous_aggregate('cii_daily', NULL, NULL)` forces it                                                                                                                                                                                                                                               |
+  | `CII aggregate refresh failed` warning | TimescaleDB rejects a refresh overlapping one in progress (`55P03` "due to a concurrent refresh": a policy job, another replica); the kit's `refreshContinuousAggregate` retries with jittered backoff (no statement timeout: the 400-day window may outlast `DATABASE_STATEMENT_TIMEOUT_MS`), then the change stays pending for the next tick — harmless unless it repeats on every tick |
+  | Wrong figures after a fleet change     | `POST /api/v2/cii/vessels/:mmsi/recompute?from&to` (last 7 days) rebuilds the segments with the current profile                                                                                                                                                                                                                                                                           |
+  | Recomputation `failed`                 | `error`: `INTERRUPTED` (instance stopped; no heartbeat for 60 s also fails a job), `REPLAY_INCOMPLETE` (the kit reported a partial replay, `endedBy: closed`: the connection closed or drained), `NO_POSITIONS` (the stream has no position of the range while segments exist), `VESSEL_CHANGED` (MMSI re-assigned during the job) — nothing was deleted; start a new job                 |
+  | `409 RECOMPUTE_IN_PROGRESS`            | a job of the MMSI is running (heartbeat < 60 s); `GET /api/v2/cii/recompute-jobs?mmsi=<mmsi>&status=running` shows it                                                                                                                                                                                                                                                                     |
+  | Warning `max_payload … below 4 MiB`    | set `max_payload: 4MB` on the NATS server (compose and `infra/nats/nats.conf` do; Helm/external servers too)                                                                                                                                                                                                                                                                              |
+  | Warning on `TRUSTED_PROXIES` at boot   | production still trusts every private network: set it to the gateway's address or CIDR (Helm, compose)                                                                                                                                                                                                                                                                                    |
 
 - Release: move the `Unreleased` entries of [CHANGELOG.md](CHANGELOG.md) under the new version,
   bump `package.json`, tag `v<version>`.
@@ -484,11 +604,22 @@ Other scripts: `pnpm build`, `pnpm start`, `pnpm migrate`, `pnpm openapi` (regen
 - Segments longer than `SEGMENT_MAX_GAP_MIN` are gaps; the overlap search of a fuel reading relies
   on it (`time_start ≥ from − SEGMENT_MAX_GAP_MIN`). After lowering the variable, older segments
   longer than the new value are no longer re-attributed by late readings.
-- The Docker image is about 476 MB: the `node:24-alpine` base (about 150 MB) and about 200 MB of
-  production `node_modules`, mostly runtime dependencies of the kit (the OpenTelemetry Node SDK
-  with every exporter, gRPC included; Swagger UI; drizzle; class-validator). The kit's test-only
-  optional peers (`testcontainers` with `dockerode` and `ssh2`, `@nestjs/testing`) and the
-  compile-time peer `typescript` are kept out of the production graph by `.pnpmfile.cjs`.
+- `DELETE /reduction-factors/:year` checks that no vessel has CII data for the year and deletes it
+  under `LOCK TABLE reduction_factors IN EXCLUSIVE MODE`, which does not block segment or manual
+  record writes: one of that year committed at the same moment (or after the delete, for a year
+  that is about to receive data, such as the next calendar year at New Year) leaves the year's
+  figures without Z, and its CII answers `422 REDUCTION_FACTOR_MISSING` (the fleet summary counts
+  the vessel as not available, the publisher skips it) until the year is added again with `PUT`,
+  which republishes every CII. Remove only years outside the data: a past first year or a far last
+  year.
+- The Docker image is about 455 MB: the `node:24-alpine` base (about 150 MB) and about 178 MB of
+  production `node_modules` (largest: `es-toolkit`, drizzle, `libphonenumber-js` of
+  class-validator, Swagger UI, rxjs). Kit 0.3 no longer pulls the OpenTelemetry Node SDK with every
+  exporter, and declares no test peers; `.pnpmfile.cjs` keeps the compile-time peer `typescript`
+  (`@nestjs/swagger`) and the gRPC peers of `@nestjs/terminus` (which `dockerode` of the dev tree
+  would satisfy) out of the production graph, so the image holds none of `testcontainers`,
+  `dockerode`, `ssh2`, `@nestjs/testing`, `pino-pretty`, `@grpc/*`, `protobufjs` or
+  `@opentelemetry/sdk-node` (checked by the boot test of the image).
 
 ## Legacy parity notes
 

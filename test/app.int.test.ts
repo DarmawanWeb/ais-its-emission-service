@@ -1,6 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { csvDocument } from '../src/common/csv.js';
+import { DCS_CSV_COLUMNS } from '../src/domain/dcs.js';
 import { LEGACY_SEEMP_MEASURES } from '../src/domain/seemp/measures.js';
+import { SEGMENT_CSV_COLUMNS } from '../src/modules/cii/segment-csv.js';
 import { IMPLEMENTED_METHOD_IDS } from '../src/modules/methodology/implemented-methods.js';
 import { SERVICE } from '../src/service.js';
 import { startTestService, type TestService } from './support/test-service.js';
@@ -176,17 +179,23 @@ describe(`${SERVICE.packageName} platform behaviour`, () => {
     );
     expect(attained).toMatchObject({ catalogued: true });
     expect(attained?.references.length).toBeGreaterThan(0);
+    // Contracts 0.4.0 catalogues the four ids proposed by 0.1 (CTR-8): every
+    // method of the service now has its catalog details.
     expect(
       body.methods
         .filter((method) => !method.catalogued)
-        .map((method) => method.id)
-        .sort(),
-    ).toEqual([
+        .map((method) => method.id),
+    ).toEqual([]);
+    for (const id of [
       'cii.year_end_projection',
       'emission.dcs_summary',
       'emission.segment_window',
       'seemp.simulation_combination',
-    ]);
+    ])
+      expect(
+        body.methods.find((method) => method.id === id),
+        id,
+      ).toMatchObject({ catalogued: true });
     expect(
       body.reductionFactors.find((factor) => factor.year === 2026)?.source,
     ).toContain('MEPC.338(76)');
@@ -208,15 +217,80 @@ describe(`${SERVICE.packageName} platform behaviour`, () => {
         '/api/v2/cii/fleet/summary',
         '/api/v2/cii/vessels/{mmsi}/annual-manual/{year}',
         '/api/v2/cii/vessels/{mmsi}/recompute',
+        '/api/v2/cii/fleet/fuel',
+        '/api/v2/cii/recompute-jobs',
+        '/api/v2/cii/recompute-jobs/{id}',
         '/api/v2/reduction-factors',
+        '/api/v2/reduction-factors/{year}',
         '/api/v2/seemp/measures',
         '/api/v2/seemp/vessels/{mmsi}/recommendations',
         '/api/v2/seemp/vessels/{mmsi}/simulate',
         '/api/v2/seemp/scenarios',
         '/api/v2/seemp/scenarios/{id}',
         '/api/v2/emission/vessels/{mmsi}/dcs',
+        '/api/v2/emission/fleet/dcs',
       ]),
     );
+  });
+
+  // `@ApiProduces('application/json', 'text/csv')` with a typed response put
+  // the JSON schema under text/csv too: generated clients typed the CSV
+  // download as the JSON object, and its headers were not documented.
+  it('documents the CSV representations as text with their headers', async () => {
+    interface OkResponse {
+      content: Record<string, { schema: unknown; example?: unknown }>;
+      headers?: Record<string, unknown>;
+    }
+    const { paths } = (
+      await service.request({ url: '/openapi.json', as: null })
+    ).json<{
+      paths: Record<string, { get: { responses: Record<string, OkResponse> } }>;
+    }>();
+    const routes = [
+      {
+        path: '/api/v2/cii/vessels/{mmsi}/segments',
+        json: {
+          type: 'object',
+          required: ['data', 'page'],
+          properties: {
+            data: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/SegmentDto' },
+            },
+            page: { $ref: '#/components/schemas/CursorPageInfoDto' },
+          },
+        },
+        header: csvDocument(SEGMENT_CSV_COLUMNS, []),
+        headers: ['Content-Disposition', 'X-Truncated'],
+      },
+      {
+        path: '/api/v2/emission/vessels/{mmsi}/dcs',
+        json: { $ref: '#/components/schemas/DcsSummaryDto' },
+        header: csvDocument(DCS_CSV_COLUMNS, []),
+        headers: ['Content-Disposition'],
+      },
+      {
+        path: '/api/v2/emission/fleet/dcs',
+        json: { $ref: '#/components/schemas/FleetDcsDto' },
+        header: csvDocument(DCS_CSV_COLUMNS, []),
+        headers: ['Content-Disposition'],
+      },
+    ];
+    for (const route of routes) {
+      const ok = paths[route.path]?.get.responses['200'];
+      expect(Object.keys(ok?.content ?? {}), route.path).toEqual([
+        'application/json',
+        'text/csv',
+      ]);
+      expect(ok?.content['application/json']?.schema, route.path).toEqual(
+        route.json,
+      );
+      expect(ok?.content['text/csv'], route.path).toEqual({
+        schema: { type: 'string' },
+        example: route.header,
+      });
+      expect(Object.keys(ok?.headers ?? {}), route.path).toEqual(route.headers);
+    }
   });
 
   it('exposes Prometheus metrics, including the domain metrics', async () => {

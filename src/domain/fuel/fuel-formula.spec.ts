@@ -1,16 +1,27 @@
+import {
+  evaluateFuelFormula,
+  FUEL_FORMULA_LIMITS,
+  FuelFormulaSyntaxError,
+  parseFuelFormula,
+  validateFuelFormula,
+} from '@darmawanweb/ais-its-contracts/domain';
 import { describe, expect, it } from 'vitest';
 
-import {
-  compileFormula,
-  FormulaSyntaxError,
-  formulaSyntaxError,
-  MAX_FORMULA_LENGTH,
-} from './evaluator.js';
-
+/**
+ * Regression tests of the first fuel formula grammar this service evaluates
+ * (contracts `parseFuelFormula` / `evaluateFuelFormula`, which replaced the
+ * service's own evaluator in 0.2.0 with bit-identical values).
+ */
 const evaluate = (source: string, speedKnot: number): number =>
-  compileFormula(source).evaluate({ speedKnot });
+  evaluateFuelFormula(parseFuelFormula(source), { speedKnot });
 
-describe('safe formula evaluator (spec §13.5 grammar)', () => {
+/** The message of a refused formula, `<reason> at position <n>`. */
+const messageOf = (source: string): string | undefined => {
+  const result = validateFuelFormula(source);
+  return result.valid ? undefined : result.errors[0].message;
+};
+
+describe('first fuel formula grammar (contracts, spec §13.5)', () => {
   const speeds = [0, 0.5, 7.25, 12.979254311241013, 30];
 
   /** Valid JavaScript formulas and the same expression written in TypeScript: results must be bit-identical. */
@@ -72,31 +83,35 @@ describe('safe formula evaluator (spec §13.5 grammar)', () => {
     ['Math.PI * speedKnot', 'Unknown identifier "Math.PI"'],
     ['constructor', 'Unknown identifier "constructor"'],
     ['toString(1)', 'Unknown identifier "toString"'],
-    ['pow(2)', 'Wrong number of arguments for pow'],
-    ['(1 + 2', 'Expected ")"'],
-    ['1 + 2)', 'Unexpected token'],
-    ['speedKnot; 1', 'Unexpected character ";"'],
-    ['`${1}`', 'Unexpected character "`"'],
-    ['speedKnot = 1', 'Unexpected character "="'],
-    ['', 'Unexpected end of formula'],
+    ['pow(2)', 'pow() takes 2 arguments, got 1 at position 0'],
+    ['(1 + 2', 'Expected ")" at position 6'],
+    ['1 + 2)', 'Unexpected ")" at position 5'],
+    ['speedKnot; 1', 'Unexpected character ";" at position 9'],
+    ['`${1}`', 'Unexpected character "`" at position 0'],
+    ['speedKnot = 1', 'Unexpected character "=" at position 10'],
+    ['', 'Empty formula at position 0'],
+    ['   ', 'Empty formula at position 0'],
+    ['1e999 * speedKnot', 'Number 1e999 is out of range at position 0'],
   ])('refuses %j', (source, message) => {
-    expect(() => compileFormula(source)).toThrow(FormulaSyntaxError);
-    expect(formulaSyntaxError(source)?.message).toContain(message);
+    expect(() => parseFuelFormula(source)).toThrow(FuelFormulaSyntaxError);
+    expect(messageOf(source)).toContain(message);
   });
 
-  it('limits the length and the nesting depth', () => {
-    expect(
-      formulaSyntaxError('1'.repeat(MAX_FORMULA_LENGTH + 1))?.message,
-    ).toContain('longer than');
-    expect(
-      formulaSyntaxError(`${'('.repeat(100)}1${')'.repeat(100)}`)?.message,
-    ).toContain('nested too deeply');
-    expect(formulaSyntaxError(`${'-'.repeat(100)}1`)?.message).toContain(
-      'nested too deeply',
+  it('limits the length to 500 characters and the nesting depth to 32', () => {
+    expect(FUEL_FORMULA_LIMITS).toMatchObject({ maxLength: 500, maxDepth: 32 });
+    expect(messageOf('1'.repeat(FUEL_FORMULA_LIMITS.maxLength + 1))).toBe(
+      'Longer than 500 characters at position 500',
+    );
+    expect(messageOf(`${'('.repeat(100)}1${')'.repeat(100)}`)).toBe(
+      'Nested deeper than 32 levels at position 33',
+    );
+    expect(messageOf(`${'-'.repeat(100)}1`)).toBe(
+      'Nested deeper than 32 levels at position 33',
     );
   });
 
   it('reports the position of the problem', () => {
-    expect(formulaSyntaxError('1 + foo')?.position).toBe(4);
+    const result = validateFuelFormula('1 + foo');
+    expect(result.valid ? undefined : result.errors[0].position).toBe(4);
   });
 });

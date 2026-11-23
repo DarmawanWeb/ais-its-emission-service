@@ -2,18 +2,25 @@ import {
   CII_GRADES,
   type CiiGrade,
 } from '@darmawanweb/ais-its-contracts/domain';
-import { PageMetaDto, PageQueryDto } from '@darmawanweb/ais-its-nest/http';
+import {
+  IsOptionalNotNull,
+  PageMetaDto,
+  PageQueryDto,
+} from '@darmawanweb/ais-its-nest/http';
 import {
   ApiProperty,
   ApiPropertyOptional,
   type ApiPropertyOptions,
+  OmitType,
 } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayMinSize,
   ArrayUnique,
   IsArray,
+  IsBoolean,
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
@@ -23,12 +30,23 @@ import {
   Min,
 } from 'class-validator';
 
+import { VesselIdentityDto } from '../../../common/dto.js';
 import {
-  toLegacyRecommendation,
+  booleanQuery,
+  signedSortKeys,
+  trimString,
+} from '../../../common/query.js';
+import {
+  isRecommended,
   type MeasureEvaluation,
+  toLegacyRecommendation,
 } from '../../../domain/seemp/recommendations.js';
 import type { StoredSeempMeasure } from '../seemp-measures.repository.js';
-import type { SeempScenario } from '../seemp-scenarios.repository.js';
+import {
+  SCENARIO_SORT_KEYS,
+  type ScenarioSort,
+  type SeempScenario,
+} from '../seemp-scenarios.repository.js';
 import type {
   SeempRecommendations,
   SeempSimulation,
@@ -47,7 +65,8 @@ export class SeempYearsQuery {
     description:
       'Baseline year (default: previous year, else the latest year with data)',
   })
-  @IsOptional()
+  // Never null: also a body (simulate), where null would mean no year.
+  @IsOptionalNotNull()
   @Type(() => Number)
   @IsInt()
   @Min(2000)
@@ -59,12 +78,27 @@ export class SeempYearsQuery {
     maximum: 2200,
     description: 'Year the measures are rated in (default: current year)',
   })
-  @IsOptional()
+  // Never null: also a body (simulate), where null would mean no year.
+  @IsOptionalNotNull()
   @Type(() => Number)
   @IsInt()
   @Min(2000)
   @Max(2200)
   readonly targetYear?: number;
+}
+
+/** `GET /seemp/vessels/:mmsi/recommendations?year&targetYear&includeAll`. */
+export class SeempRecommendationsQuery extends SeempYearsQuery {
+  @ApiPropertyOptional({
+    type: Boolean,
+    default: false,
+    description:
+      'Also list the measures whose grade after is D or E (not enough on their own); `recommended` tells them apart. Default: only grades A–C (legacy filter)',
+  })
+  @IsOptional()
+  @Transform(booleanQuery)
+  @IsBoolean()
+  readonly includeAll?: boolean;
 }
 
 /** `POST /seemp/vessels/:mmsi/simulate` body. */
@@ -102,7 +136,9 @@ export class CreateScenarioDto extends SimulateDto {
   readonly name!: string;
 }
 
-/** `GET /seemp/scenarios?mmsi&page&pageSize`. */
+const SCENARIO_SORTS = signedSortKeys(SCENARIO_SORT_KEYS);
+
+/** `GET /seemp/scenarios?mmsi&search&sort&page&pageSize`. */
 export class ListScenariosQuery extends PageQueryDto {
   @ApiPropertyOptional({ example: 525005223 })
   @IsOptional()
@@ -111,6 +147,39 @@ export class ListScenariosQuery extends PageQueryDto {
   @Min(100_000_000)
   @Max(999_999_999)
   readonly mmsi?: number;
+
+  @ApiPropertyOptional({
+    maxLength: 120,
+    description:
+      'Scenario or vessel name (case-insensitive substring), or MMSI (prefix of digits)',
+  })
+  @IsOptional()
+  @Transform(trimString)
+  @IsString()
+  @Length(1, 120)
+  readonly search?: string;
+
+  @ApiPropertyOptional({
+    enum: SCENARIO_SORTS,
+    default: '-createdAt',
+    description:
+      'Order; a leading `-` sorts descending (default newest first); ties newest first. Scenarios of vessels no longer known come last by vesselName',
+  })
+  @IsOptional()
+  @IsIn(SCENARIO_SORTS)
+  readonly sort: ScenarioSort = '-createdAt';
+}
+
+/** `PATCH /seemp/scenarios/:id` body. */
+export class RenameScenarioDto {
+  @ApiProperty({
+    minLength: 1,
+    maxLength: 120,
+    example: 'Hull coating + solar 2026 (revised)',
+  })
+  @IsString()
+  @Length(1, 120)
+  readonly name!: string;
 }
 
 /** A measure of the catalog. */
@@ -207,6 +276,11 @@ export class SeempRecommendationDto {
     description: 'Years until grade D/E used to spread the investment',
   })
   readonly yearsUntilInferior: number;
+  @ApiProperty({
+    description:
+      'Grade after is A–C (the legacy recommendation); false only with includeAll=true',
+  })
+  readonly recommended: boolean;
   @ApiProperty(METHOD_IDS_PROPERTY) readonly methodIds: string[];
 
   constructor(
@@ -225,6 +299,7 @@ export class SeempRecommendationDto {
     this.costRangeUsdPerYear = new CostRangeDto(evaluation.costRange);
     this.ciiAttainedAfter = evaluation.ciiAttainedAfter;
     this.yearsUntilInferior = evaluation.yearsUntilInferior;
+    this.recommended = isRecommended(evaluation);
     this.methodIds = [...evaluation.methodIds];
   }
 }
@@ -233,6 +308,11 @@ export class SeempRecommendationDto {
 abstract class SeempSettingDto {
   @ApiProperty() readonly mmsi: number;
   @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
+  @ApiProperty({
+    type: VesselIdentityDto,
+    description: 'Identity of the vessel (FLEET projection)',
+  })
+  readonly vessel: VesselIdentityDto;
   @ApiProperty({ description: 'Year of the baseline CII figures' })
   readonly baselineYear: number;
   @ApiProperty({ enum: ['segments', 'manual'] }) readonly baselineSource:
@@ -247,10 +327,17 @@ abstract class SeempSettingDto {
     number | null;
   @ApiProperty({ enum: CII_GRADES, nullable: true })
   readonly ciiGradeBefore: CiiGrade | null;
+  @ApiProperty({
+    description:
+      'CO2 of the baseline year, t (a manual record without CO2: its fuel × C_F of the current fuel)',
+  })
+  readonly baselineCo2Ton: number;
 
   protected constructor(setting: SeempRecommendations | SeempSimulation) {
     this.mmsi = setting.profile.mmsi;
     this.vesselId = setting.profile.vesselId;
+    this.vessel = new VesselIdentityDto(setting.profile);
+    this.baselineCo2Ton = setting.baselineCo2Ton;
     this.baselineYear = setting.baseline.year;
     this.baselineSource = setting.baseline.source;
     this.targetYear = setting.context.currentYear;
@@ -265,13 +352,17 @@ abstract class SeempSettingDto {
 export class SeempRecommendationsDto extends SeempSettingDto {
   @ApiProperty({
     type: [SeempRecommendationDto],
-    description: 'Measures with grade A–C after, cheapest first',
+    description:
+      'Measures with grade A–C after (with includeAll: every measure), cheapest first',
   })
   readonly recommendations: SeempRecommendationDto[];
+  @ApiProperty({ description: 'Whether includeAll was requested' })
+  readonly includeAll: boolean;
   @ApiProperty(METHOD_IDS_PROPERTY) readonly methodIds: string[];
 
   constructor(result: SeempRecommendations) {
     super(result);
+    this.includeAll = result.includeAll;
     this.recommendations = result.recommendations.map(
       (evaluation) => new SeempRecommendationDto(evaluation, result.before),
     );
@@ -334,6 +425,18 @@ export class SeempSimulationDto extends SeempSettingDto {
   @ApiProperty({ type: CostRangeDto })
   readonly costRangeUsdPerYear: CostRangeDto;
   @ApiProperty({ example: '$154,040' }) readonly cost: string;
+  @ApiProperty({
+    description:
+      'CO2 avoided per year at the baseline distance, t: baselineCo2Ton × reductionPercent / 100 (negative when the attained CII rises)',
+  })
+  readonly co2AvoidedTon: number;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description:
+      'costUsdPerYear / co2AvoidedTon, USD per tonne of CO2 avoided; null when nothing is avoided',
+  })
+  readonly costPerTonneUsd: number | null;
   @ApiProperty(METHOD_IDS_PROPERTY) readonly methodIds: string[];
 
   constructor(simulation: SeempSimulation) {
@@ -348,10 +451,53 @@ export class SeempSimulationDto extends SeempSettingDto {
     this.costUsdPerYear = result.costUsdPerYear;
     this.costRangeUsdPerYear = new CostRangeDto(result.costRange);
     this.cost = result.costDisplay;
+    this.co2AvoidedTon = simulation.co2.avoidedTon;
+    this.costPerTonneUsd = simulation.co2.costPerTonneUsd;
     this.methodIds = [
       ...new Set([...simulation.baseline.methodIds, ...result.methodIds]),
     ];
   }
+}
+
+/** Fields of {@link SeempSimulationDto} added in 0.2.0. */
+const SIMULATION_FIELDS_SINCE_0_2 = [
+  'vessel',
+  'baselineCo2Ton',
+  'co2AvoidedTon',
+  'costPerTonneUsd',
+] as const;
+/** Note of the fields a scenario saved before 0.2.0 does not have. */
+const ABSENT_BEFORE_0_2 = 'absent in scenarios saved before 0.2.0';
+
+/**
+ * `result` of a saved scenario: the simulation response at creation time,
+ * stored as it was and never recomputed. Scenarios saved by 0.1.x lack the
+ * fields added in 0.2.0, so these are optional here (they are present in
+ * every scenario saved since).
+ */
+export class SeempScenarioResultDto extends OmitType(
+  SeempSimulationDto,
+  SIMULATION_FIELDS_SINCE_0_2,
+) {
+  @ApiPropertyOptional({
+    type: VesselIdentityDto,
+    description: `Identity of the vessel at creation time (FLEET projection); ${ABSENT_BEFORE_0_2}`,
+  })
+  readonly vessel?: VesselIdentityDto;
+  @ApiPropertyOptional({
+    description: `CO2 of the baseline year, t; ${ABSENT_BEFORE_0_2}`,
+  })
+  readonly baselineCo2Ton?: number;
+  @ApiPropertyOptional({
+    description: `CO2 avoided per year at the baseline distance, t; ${ABSENT_BEFORE_0_2}`,
+  })
+  readonly co2AvoidedTon?: number;
+  @ApiPropertyOptional({
+    type: Number,
+    nullable: true,
+    description: `USD per tonne of CO2 avoided (null when nothing is avoided); ${ABSENT_BEFORE_0_2}`,
+  })
+  readonly costPerTonneUsd?: number | null;
 }
 
 /** A saved simulation. */
@@ -359,22 +505,36 @@ export class SeempScenarioDto {
   @ApiProperty({ format: 'uuid' }) readonly id: string;
   @ApiProperty() readonly mmsi: number;
   @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description:
+      'Current name of the vessel (FLEET projection); null once the vessel is no longer known',
+  })
+  readonly vesselName: string | null;
   @ApiProperty() readonly name: string;
   @ApiProperty({ type: [String] }) readonly measureCodes: string[];
   @ApiProperty() readonly baselineYear: number;
   @ApiProperty() readonly targetYear: number;
   @ApiProperty({
-    type: SeempSimulationDto,
-    description: 'Simulation result at creation time',
+    type: SeempScenarioResultDto,
+    description:
+      'The simulation response at creation time, stored as it was (not recomputed): scenarios saved before 0.2.0 lack vessel, baselineCo2Ton, co2AvoidedTon and costPerTonneUsd',
   })
   readonly result: Record<string, unknown>;
   @ApiProperty({ format: 'uuid' }) readonly createdBy: string;
   @ApiProperty({ format: 'date-time' }) readonly createdAt: string;
+  @ApiProperty({
+    format: 'date-time',
+    description: 'Last change (creation or rename)',
+  })
+  readonly updatedAt: string;
 
   constructor(scenario: SeempScenario) {
     this.id = scenario.id;
     this.mmsi = scenario.mmsi;
     this.vesselId = scenario.vesselId;
+    this.vesselName = scenario.vesselName;
     this.name = scenario.name;
     this.measureCodes = scenario.measureCodes;
     this.baselineYear = scenario.baselineYear;
@@ -382,6 +542,7 @@ export class SeempScenarioDto {
     this.result = scenario.result;
     this.createdBy = scenario.createdBy;
     this.createdAt = scenario.createdAt.toISOString();
+    this.updatedAt = scenario.updatedAt.toISOString();
   }
 }
 

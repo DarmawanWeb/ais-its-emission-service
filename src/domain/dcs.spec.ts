@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { wantsCsv } from '../modules/dcs/dcs.controller.js';
-import { dcsCsv, type DcsSummary } from './dcs.js';
+import { wantsCsv } from '../common/csv.js';
+import { dcsSummaryOf } from '../modules/dcs/dcs.service.js';
+import { dcsCsv, type DcsSummary, fleetDcsCsv } from './dcs.js';
 
 const mgo = {
   fuelCode: 'mgo',
@@ -72,5 +73,88 @@ describe('wantsCsv (content negotiation of GET …/dcs)', () => {
     ['*/*', false],
   ] as const)('%s → %s', (accept, csv) => {
     expect(wantsCsv(accept)).toBe(csv);
+  });
+});
+
+describe('fleetDcsCsv', () => {
+  it('writes one header and the rows of every vessel in the per-vessel layout', () => {
+    const other: DcsSummary = {
+      ...summary,
+      mmsi: 525100001,
+      imo: null,
+      vesselName: 'KM Kedua',
+      source: 'manual',
+      hoursUnderWay: null,
+    };
+    const lines = fleetDcsCsv([summary, other]).split('\r\n');
+    const single = dcsCsv(summary).split('\r\n');
+    expect(lines[0]).toBe(single[0]);
+    expect(lines.slice(1, single.length - 1)).toEqual(single.slice(1, -1));
+    expect(
+      lines.filter((line) => line.startsWith('2026,525100001,')),
+    ).toHaveLength(summary.fuel.length);
+    expect(lines.at(-1)).toBe('');
+    expect(fleetDcsCsv([])).toBe(`${single[0] ?? ''}\r\n`);
+  });
+});
+
+describe('dcsSummaryOf', () => {
+  const vessel = {
+    mmsi: 525005223,
+    imo: '9037941',
+    name: 'Dharma Ferry VIII',
+    fuel: { code: 'mgo', name: 'Diesel/Gas Oil', conversionFactor: 3.206 },
+  };
+  const record = {
+    vesselId: '0190d5c0-0000-7000-8000-000000000001',
+    mmsi: 525005223,
+    year: 2024,
+    attained: 10,
+    required: null,
+    rating: null,
+    grade: null,
+    distanceNm: 1000,
+    fuelMeTon: 100,
+    fuelAeTon: 20,
+    co2Ton: null,
+    note: null,
+    updatedBy: null,
+    updatedAt: new Date(0),
+  };
+
+  it('sums the segments per fuel, else falls back to the manual record, else nothing', () => {
+    const fromSegments = dcsSummaryOf(
+      vessel,
+      2026,
+      [
+        {
+          fuelCode: 'mgo',
+          conversionFactor: 3.206,
+          fuelMeTon: 1.5,
+          fuelAeTon: 0.25,
+          co2Ton: 5.6105,
+          distanceNm: 40,
+          hours: 5,
+          hoursUnderWay: 4,
+          segments: 10,
+        },
+      ],
+      record,
+    );
+    expect(fromSegments).toMatchObject({
+      source: 'segments',
+      distanceNm: 40,
+      hoursUnderWay: 4,
+      fuel: [{ fuelName: 'Diesel/Gas Oil', totalTon: 1.75 }],
+    });
+    const fromManual = dcsSummaryOf(vessel, 2024, [], record);
+    expect(fromManual).toMatchObject({
+      source: 'manual',
+      hoursUnderWay: null,
+      distanceNm: 1000,
+      fuel: [{ fuelCode: 'mgo', totalTon: 120 }],
+    });
+    expect(fromManual?.co2Ton).toBeCloseTo(120 * 3.206, 10);
+    expect(dcsSummaryOf(vessel, 2023, [], undefined)).toBeUndefined();
   });
 });

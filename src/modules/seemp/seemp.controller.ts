@@ -5,8 +5,10 @@ import {
 } from '@darmawanweb/ais-its-nest/auth';
 import {
   ApiPageResponse,
+  MmsiParam,
   pageOffsetOf,
   paginate,
+  UuidParam,
 } from '@darmawanweb/ais-its-nest/http';
 import {
   Body,
@@ -15,8 +17,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
-  ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -31,16 +32,16 @@ import {
 import type { FastifyRequest } from 'fastify';
 import { instanceToPlain } from 'class-transformer';
 
-import { ParseMmsiPipe } from '../../common/pipes.js';
 import {
   CreateScenarioDto,
   ListScenariosQuery,
+  RenameScenarioDto,
   SeempMeasureListDto,
   SeempRecommendationsDto,
+  SeempRecommendationsQuery,
   SeempScenarioDto,
   SeempScenarioPageDto,
   SeempSimulationDto,
-  SeempYearsQuery,
   SimulateDto,
 } from './dto/seemp.dto.js';
 import { SeempService } from './seemp.service.js';
@@ -65,12 +66,12 @@ export class SeempController {
   @RequirePermissions('seemp:read')
   @ApiOperation({
     summary:
-      'SEEMP recommendations: measures with grade A–C after, cheapest first (legacy calculateSEEMPbyMMSI)',
+      'SEEMP recommendations: measures with grade A–C after, cheapest first (legacy calculateSEEMPbyMMSI); includeAll=true lists every measure',
   })
   @ApiOkResponse({ type: SeempRecommendationsDto })
   async recommendations(
-    @Param('mmsi', ParseMmsiPipe) mmsi: number,
-    @Query() query: SeempYearsQuery,
+    @MmsiParam() mmsi: number,
+    @Query() query: SeempRecommendationsQuery,
     @CurrentPrincipal() principal: Principal,
   ): Promise<SeempRecommendationsDto> {
     return new SeempRecommendationsDto(
@@ -84,7 +85,7 @@ export class SeempController {
   @ApiOperation({ summary: 'What-if simulation of a combination of measures' })
   @ApiOkResponse({ type: SeempSimulationDto })
   async simulate(
-    @Param('mmsi', ParseMmsiPipe) mmsi: number,
+    @MmsiParam() mmsi: number,
     @Body() body: SimulateDto,
     @CurrentPrincipal() principal: Principal,
   ): Promise<SeempSimulationDto> {
@@ -96,7 +97,8 @@ export class SeempController {
   @Get('scenarios')
   @RequirePermissions('seemp:read')
   @ApiOperation({
-    summary: 'Saved simulations of the organization, newest first',
+    summary:
+      'Saved simulations of the organization (super_admin: all), newest first by default',
   })
   @ApiPageResponse(SeempScenarioDto)
   async listScenarios(
@@ -104,7 +106,7 @@ export class SeempController {
     @CurrentPrincipal() principal: Principal,
   ): Promise<SeempScenarioPageDto> {
     const { rows, total } = await this.seemp.listScenarios(
-      query.mmsi,
+      { mmsi: query.mmsi, search: query.search, sort: query.sort },
       { offset: pageOffsetOf(query), limit: query.pageSize },
       principal,
     );
@@ -139,10 +141,27 @@ export class SeempController {
   @ApiOperation({ summary: 'A saved scenario' })
   @ApiOkResponse({ type: SeempScenarioDto })
   async getScenario(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @UuidParam() id: string,
     @CurrentPrincipal() principal: Principal,
   ): Promise<SeempScenarioDto> {
     return new SeempScenarioDto(await this.seemp.getScenario(id, principal));
+  }
+
+  @Patch('scenarios/:id')
+  @RequirePermissions('seemp:simulate')
+  @ApiOperation({
+    summary: 'Rename a saved scenario (audited as seemp_scenario.update)',
+  })
+  @ApiOkResponse({ type: SeempScenarioDto })
+  async renameScenario(
+    @UuidParam() id: string,
+    @Body() body: RenameScenarioDto,
+    @CurrentPrincipal() principal: Principal,
+    @Req() request: FastifyRequest,
+  ): Promise<SeempScenarioDto> {
+    return new SeempScenarioDto(
+      await this.seemp.renameScenario(id, body.name, principal, request),
+    );
   }
 
   @Delete('scenarios/:id')
@@ -151,7 +170,7 @@ export class SeempController {
   @ApiOperation({ summary: 'Delete a saved scenario' })
   @ApiNoContentResponse()
   async deleteScenario(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @UuidParam() id: string,
     @CurrentPrincipal() principal: Principal,
     @Req() request: FastifyRequest,
   ): Promise<void> {

@@ -5,10 +5,26 @@ import {
   type Pool,
 } from '@darmawanweb/ais-its-nest/db';
 import { Injectable } from '@nestjs/common';
-import { and, desc, eq, gte, lt, lte, ne, not, sql } from 'drizzle-orm';
+import {
+  and,
+  arrayContains,
+  asc,
+  desc,
+  eq,
+  gte,
+  inArray,
+  lt,
+  lte,
+  ne,
+  not,
+  type SQL,
+  sql,
+} from 'drizzle-orm';
 
 import type { Executor } from '../../db/executor.js';
 import * as schema from '../../db/schema.js';
+import type { SegmentMethod } from '../../db/schema.js';
+import type { SegmentFlag } from '../../domain/segment-fuel.js';
 
 const { segments } = schema;
 
@@ -36,6 +52,19 @@ export interface FuelTotalsRow {
   readonly hours: number;
   readonly hoursUnderWay: number;
   readonly segments: number;
+}
+
+/** {@link FuelTotalsRow} of one vessel (fleet-wide DCS). */
+export interface VesselFuelTotalsRow extends FuelTotalsRow {
+  readonly vesselId: string;
+}
+
+/** Filters of the segment reads of a vessel. */
+export interface SegmentFilters {
+  /** Only these fuel methods. */
+  readonly methods?: readonly SegmentMethod[] | undefined;
+  /** Only segments carrying this flag. */
+  readonly flag?: SegmentFlag | undefined;
 }
 
 /** The most recent counted segment of a vessel. */
@@ -233,13 +262,17 @@ export class SegmentsRepository {
     return result.rowCount ?? 0;
   }
 
-  /** One page of a vessel's segments in `[from, to)`, newest first, older than `before`. */
+  /**
+   * One page of a vessel's segments in `[from, to)` matching the filters,
+   * newest first, older than `before`.
+   */
   async page(
     vesselId: string,
     from: Date,
     to: Date,
     before: Date | undefined,
     limit: number,
+    filters: SegmentFilters = {},
   ): Promise<SegmentRow[]> {
     return this.db
       .select()
@@ -254,9 +287,36 @@ export class SegmentsRepository {
               ? to
               : new Date(Math.min(before.getTime(), to.getTime())),
           ),
+          ...filterConditions(filters),
         ),
       )
       .orderBy(desc(segments.timeStart))
+      .limit(limit);
+  }
+
+  /**
+   * A vessel's segments in `[from, to)` matching the filters, oldest first,
+   * at most `limit` (CSV export).
+   */
+  async range(
+    vesselId: string,
+    from: Date,
+    to: Date,
+    limit: number,
+    filters: SegmentFilters = {},
+  ): Promise<SegmentRow[]> {
+    return this.db
+      .select()
+      .from(segments)
+      .where(
+        and(
+          eq(segments.vesselId, vesselId),
+          gte(segments.timeStart, from),
+          lt(segments.timeStart, to),
+          ...filterConditions(filters),
+        ),
+      )
+      .orderBy(asc(segments.timeStart))
       .limit(limit);
   }
 
@@ -308,6 +368,37 @@ export class SegmentsRepository {
     );
     return result.rows;
   }
+
+  /**
+   * {@link fuelTotals} of several vessels at once (fleet-wide DCS): one row
+   * per vessel and fuel, ordered by vessel and fuel code.
+   */
+  async fleetFuelTotals(
+    vesselIds: readonly string[],
+    from: Date,
+    to: Date,
+    underWayMinSpeedKn: number,
+  ): Promise<VesselFuelTotalsRow[]> {
+    if (vesselIds.length === 0) return [];
+    const result = await this.pool.query<VesselFuelTotalsRow>(
+      `SELECT vessel_id AS "vesselId",
+              fuel_code AS "fuelCode",
+              max(conversion_factor)::double precision AS "conversionFactor",
+              sum(fuel_me_ton)::double precision AS "fuelMeTon",
+              sum(fuel_ae_ton)::double precision AS "fuelAeTon",
+              sum(co2_ton)::double precision AS "co2Ton",
+              sum(distance_nm)::double precision AS "distanceNm",
+              (sum(extract(epoch FROM time_end - time_start)) / 3600)::double precision AS "hours",
+              coalesce(sum(extract(epoch FROM time_end - time_start)) FILTER (WHERE speed_kn >= $4) / 3600, 0)::double precision AS "hoursUnderWay",
+              count(*)::int AS "segments"
+         FROM segments
+        WHERE vessel_id = ANY($1::uuid[]) AND time_start >= $2 AND time_start < $3 AND method <> 'none'
+        GROUP BY vessel_id, fuel_code
+        ORDER BY vessel_id, fuel_code`,
+      [[...vesselIds], from, to, underWayMinSpeedKn],
+    );
+    return result.rows;
+  }
 }
 
 function staleCondition(range: StaleSegmentsRange) {
@@ -318,6 +409,18 @@ function staleCondition(range: StaleSegmentsRange) {
     lte(segments.timeStart, range.to),
     lt(segments.computedAt, range.computedBefore),
   );
+}
+
+/** Conditions of {@link SegmentFilters}. */
+function filterConditions(filters: SegmentFilters): (SQL | undefined)[] {
+  return [
+    filters.methods === undefined
+      ? undefined
+      : inArray(segments.method, [...filters.methods]),
+    filters.flag === undefined
+      ? undefined
+      : arrayContains(segments.flags, [filters.flag]),
+  ];
 }
 
 const toTextArray = (values: readonly string[]) =>

@@ -100,6 +100,8 @@ export interface SnapshotOverrides {
   readonly id?: string;
   readonly orgId?: string | null;
   readonly mmsi?: number;
+  /** Vessel name (default: the legacy ship's). */
+  readonly name?: string;
   readonly updatedAt?: string;
   /** `false` removes the first fuel formula (Holtrop path). */
   readonly firstFuelFormula?: boolean;
@@ -125,7 +127,7 @@ export function snapshotOfLegacyShip(
     orgId: overrides.orgId === undefined ? testUuid(9000) : overrides.orgId,
     mmsi: overrides.mmsi ?? Number(ship.mmsi),
     imo: ship.generalData.imoNumber,
-    name: ship.generalData.name,
+    name: overrides.name ?? ship.generalData.name,
     flag: ship.generalData.flag,
     builtYear: 1990,
     status: 'active',

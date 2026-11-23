@@ -1,8 +1,10 @@
 import { InjectConfig } from '@darmawanweb/ais-its-nest';
-import { MetricsService } from '@darmawanweb/ais-its-nest/metrics';
+import {
+  type Counter,
+  MetricsService,
+} from '@darmawanweb/ais-its-nest/metrics';
 import { InjectRedis, type Redis } from '@darmawanweb/ais-its-nest/redis';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Counter } from 'prom-client';
 import * as z from 'zod';
 
 import type { Config } from '../../config.js';

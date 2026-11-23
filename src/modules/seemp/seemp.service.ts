@@ -20,6 +20,11 @@ import {
   referenceCii,
   requiredCii,
 } from '../../domain/cii.js';
+import {
+  baselineCo2Ton,
+  co2AvoidedTon,
+  costPerTonneUsd,
+} from '../../domain/seemp/co2.js';
 import { MissingReductionFactorError } from '../../domain/seemp/cost.js';
 import {
   type MeasureEvaluation,
@@ -44,6 +49,7 @@ import {
   SeempMeasuresRepository,
 } from './seemp-measures.repository.js';
 import {
+  type ScenarioListFilter,
   type SeempScenario,
   SeempScenariosRepository,
 } from './seemp-scenarios.repository.js';
@@ -55,16 +61,29 @@ export interface SeempSetting {
   readonly baseline: YearFigures;
   /** Rating and grade of the year before the target year (legacy `ciiRatingBefore`). */
   readonly before: { readonly rating: number; readonly grade: CiiGrade } | null;
+  /** CO2 of the baseline year, t ({@link baselineCo2Ton}). */
+  readonly baselineCo2Ton: number;
 }
 
 /** Recommendations of a vessel. */
 export interface SeempRecommendations extends SeempSetting {
   readonly recommendations: MeasureEvaluation[];
+  /** Whether measures that do not reach grade C on their own are listed. */
+  readonly includeAll: boolean;
+}
+
+/** CO2 effect of a simulated combination at the baseline activity. */
+export interface SimulationCo2 {
+  /** CO2 avoided per year, t (negative when the attained CII rises). */
+  readonly avoidedTon: number;
+  /** Yearly cost per tonne avoided, USD/t; `null` when nothing is avoided. */
+  readonly costPerTonneUsd: number | null;
 }
 
 /** A simulation of a vessel. */
 export interface SeempSimulation extends SeempSetting {
   readonly result: SimulationResult;
+  readonly co2: SimulationCo2;
 }
 
 /** Years of a SEEMP evaluation. */
@@ -95,19 +114,25 @@ export class SeempService {
     return this.measures.list();
   }
 
-  /** `GET /seemp/vessels/:mmsi/recommendations` (legacy `calculateSEEMPbyMMSI`). */
+  /**
+   * `GET /seemp/vessels/:mmsi/recommendations` (legacy
+   * `calculateSEEMPbyMMSI`); `includeAll` keeps the measures whose grade
+   * after is D or E too.
+   */
   async recommendations(
     mmsi: number,
-    years: SeempYears,
+    years: SeempYears & { readonly includeAll?: boolean | undefined },
     principal: Principal,
   ): Promise<SeempRecommendations> {
     const profile = await this.access.accessible(mmsi, principal);
     const setting = await this.setting(profile, years);
     const catalog = await this.measures.list();
+    const includeAll = years.includeAll === true;
     return {
       ...setting,
+      includeAll,
       recommendations: translate(() =>
-        recommendMeasures(catalog, setting.context),
+        recommendMeasures(catalog, setting.context, { includeAll }),
       ),
     };
   }
@@ -140,18 +165,21 @@ export class SeempService {
       input.measureCodes,
       input,
     );
-    const scenario = await this.scenarios.insert({
-      id: newId(),
-      orgId: profile.orgId,
-      mmsi: profile.mmsi,
-      vesselId: profile.vesselId,
-      name: input.name,
-      measureCodes: simulation.result.measures.map((measure) => measure.code),
-      baselineYear: simulation.baseline.year,
-      targetYear: simulation.context.currentYear,
-      result: toResult(simulation),
-      createdBy: principal.id,
-    });
+    const scenario = await this.scenarios.insert(
+      {
+        id: newId(),
+        orgId: profile.orgId,
+        mmsi: profile.mmsi,
+        vesselId: profile.vesselId,
+        name: input.name,
+        measureCodes: simulation.result.measures.map((measure) => measure.code),
+        baselineYear: simulation.baseline.year,
+        targetYear: simulation.context.currentYear,
+        result: toResult(simulation),
+        createdBy: principal.id,
+      },
+      profile.snapshot.name,
+    );
     await this.audit.record(
       {
         action: 'seemp_scenario.create',
@@ -167,11 +195,38 @@ export class SeempService {
   }
 
   async listScenarios(
-    mmsi: number | undefined,
+    filter: ScenarioListFilter,
     page: { readonly offset: number; readonly limit: number },
     principal: Principal,
   ): Promise<{ rows: SeempScenario[]; total: number }> {
-    return this.scenarios.list(orgScopeOf(principal), mmsi, page);
+    return this.scenarios.list(orgScopeOf(principal), filter, page);
+  }
+
+  /** `PATCH /seemp/scenarios/:id` — renames a scenario of the principal's scope (audited). */
+  async renameScenario(
+    id: string,
+    name: string,
+    principal: Principal,
+    request?: FastifyRequest,
+  ): Promise<SeempScenario> {
+    const scenario = await this.scenarios.rename(
+      id,
+      name,
+      orgScopeOf(principal),
+    );
+    if (scenario === undefined) throw new SeempScenarioNotFoundError(id);
+    await this.audit.record(
+      {
+        action: 'seemp_scenario.update',
+        targetType: 'seemp_scenario',
+        targetId: id,
+        orgId: scenario.orgId,
+        meta: { mmsi: scenario.mmsi, name },
+      },
+      principal,
+      request,
+    );
+    return scenario;
   }
 
   async getScenario(id: string, principal: Principal): Promise<SeempScenario> {
@@ -214,9 +269,19 @@ export class SeempService {
       return measure === undefined ? [] : [measure];
     });
     const setting = await this.setting(profile, years);
+    const result = translate(() => simulateMeasures(selected, setting.context));
+    const avoidedTon = co2AvoidedTon(
+      setting.baselineCo2Ton,
+      result.before.attained,
+      result.after.attained,
+    );
     return {
       ...setting,
-      result: translate(() => simulateMeasures(selected, setting.context)),
+      result,
+      co2: {
+        avoidedTon,
+        costPerTonneUsd: costPerTonneUsd(result.costUsdPerYear, avoidedTon),
+      },
     };
   }
 
@@ -248,6 +313,10 @@ export class SeempService {
     return {
       profile,
       baseline,
+      baselineCo2Ton: baselineCo2Ton(
+        baseline,
+        profile.snapshot.fuel.conversionFactor,
+      ),
       before:
         previous === undefined ||
         previous.rating === null ||

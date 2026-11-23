@@ -3,8 +3,12 @@ import { EVENT_TYPES, subjects } from '@darmawanweb/ais-its-contracts/events';
 import { InjectConfig } from '@darmawanweb/ais-its-nest';
 import { AuditService } from '@darmawanweb/ais-its-nest/audit';
 import type { Principal } from '@darmawanweb/ais-its-nest/auth';
-import { type Database, InjectDb } from '@darmawanweb/ais-its-nest/db';
-import { NatsClient, StreamReplayer } from '@darmawanweb/ais-its-nest/nats';
+import {
+  type Database,
+  InjectDb,
+  sanitizeError,
+} from '@darmawanweb/ais-its-nest/db';
+import { StreamReplayer } from '@darmawanweb/ais-its-nest/nats';
 import {
   type BeforeApplicationShutdown,
   Injectable,
@@ -18,7 +22,6 @@ import {
   RecomputeJobNotFoundError,
   RecomputeRangeError,
 } from '../../common/errors.js';
-import { assertPlatformAdmin } from '../../common/tenancy.js';
 import type { Config } from '../../config.js';
 import { lockVesselSegments } from '../../db/executor.js';
 import type * as schema from '../../db/schema.js';
@@ -32,7 +35,6 @@ import {
   type RecomputeJob,
   RecomputeJobsRepository,
 } from './recompute-jobs.repository.js';
-import { isReplayComplete, type ReplayEnd } from './replay-completeness.js';
 
 const DAY_MS = 86_400_000;
 /** Retention of the AIS_POSITION stream (spec §7.2). */
@@ -72,16 +74,17 @@ interface RunningJob {
  * `[from, to)` is rebuilt from the replayed events by the live builder in
  * `replace` mode (current profile, readings and weather; same vessel lock).
  *
- * Only a complete replay deletes anything: when the replay ran through the
- * subject's last message at start or past the range ({@link isReplayComplete}),
- * the segments of the vessel under the replayed MMSI that the replay did not
+ * Only a complete replay deletes anything: when the kit reports the replay
+ * `completed` (it read up to the subject's last message at start or past the
+ * range, `endedBy` `end_of_stream`, `to` or `empty`), the segments of the
+ * vessel under the replayed MMSI that the replay did not
  * produce again — computed before the job started, between the first and the
  * last rebuilt segment — are deleted. Rows written meanwhile by the live
  * consumers (later `computed_at`) and rows of the previous holder of a
  * re-assigned MMSI are never deleted; a replay that finds no position while
- * segments exist deletes nothing and fails. A cancelled, interrupted or
- * incomplete run fails and leaves every segment in place (rebuilt ones are
- * just recomputed). Then the aggregates are refreshed and the CII is marked
+ * segments exist deletes nothing and fails. A partial replay (`endedBy`
+ * `aborted` at shutdown, `closed` when the connection ended) fails and leaves
+ * every segment in place (rebuilt ones are just recomputed). Then the aggregates are refreshed and the CII is marked
  * for publication.
  *
  * A running job writes a heartbeat; running jobs without one for
@@ -105,7 +108,6 @@ export class RecomputeService
     private readonly segments: SegmentsRepository,
     private readonly builder: SegmentBuilderService,
     private readonly replayer: StreamReplayer,
-    private readonly nats: NatsClient,
     private readonly refresher: AggregateRefresher,
     private readonly publication: CiiPublicationRepository,
     private readonly audit: AuditService,
@@ -130,7 +132,7 @@ export class RecomputeService
     request?: FastifyRequest,
     now = new Date(),
   ): Promise<RecomputeJob> {
-    assertPlatformAdmin(principal);
+    // Platform administrators only: @RequirePlatformAdmin() on the route.
     if (
       range.to !== undefined &&
       range.to.getTime() > now.getTime() + MAX_FUTURE_SKEW_MS
@@ -189,12 +191,29 @@ export class RecomputeService
     return job;
   }
 
-  /** A job by id (platform administrators only). */
-  async get(id: string, principal: Principal): Promise<RecomputeJob> {
-    assertPlatformAdmin(principal);
+  /** A job by id (platform administrators only: @RequirePlatformAdmin() on the route). */
+  async get(id: string): Promise<RecomputeJob> {
     const job = await this.jobs.find(id);
     if (job === undefined) throw new RecomputeJobNotFoundError(id);
     return job;
+  }
+
+  /**
+   * Jobs newest first, optionally of one MMSI and status, after a cursor
+   * position (platform administrators only: @RequirePlatformAdmin() on the
+   * route). Stale running jobs are failed first, so that a job whose
+   * instance stopped never shows as running.
+   */
+  async list(
+    filter: {
+      readonly mmsi?: number | undefined;
+      readonly status?: RecomputeJob['status'] | undefined;
+    },
+    before: { readonly createdAt: Date; readonly id: string } | undefined,
+    limit: number,
+  ): Promise<RecomputeJob[]> {
+    await this.failStaleJobs();
+    return this.jobs.list(filter, before, limit);
   }
 
   private async failStaleJobs(): Promise<void> {
@@ -216,37 +235,33 @@ export class RecomputeService
     const to = job.toTime.getTime();
     const subject = subjects.aisPosition(job.mmsi);
     const windowStart = new Date(from - REPLAY_SLACK_MS);
-    const windowEnd = to + REPLAY_SLACK_MS;
-    const stop = new AbortController();
+    const windowEnd = new Date(to + REPLAY_SLACK_MS);
     let replayed = 0;
     let rebuilt = 0;
     let deleted = 0;
     let first: number | undefined;
     let last: number | undefined;
-    let passedWindow = false;
     const heartbeat = setInterval(() => {
       this.jobs.heartbeat(job.id).catch((error: unknown) => {
         this.logger.warn(
-          { err: error, jobId: job.id },
+          { err: sanitizeError(error), jobId: job.id },
           'recomputation heartbeat failed',
         );
       });
     }, RECOMPUTE_HEARTBEAT_MS);
     heartbeat.unref();
     try {
-      const end = await this.lastMessageOf(subject);
+      // Stream time window: the kit stops at the first message stored after
+      // `to` (`endedBy: 'to'`) or at the subject's last message at start.
       const report = await this.replayer.replay({
         stream: 'AIS_POSITION',
         filterSubjects: [subject],
         from: windowStart,
+        to: windowEnd,
         eventTypes: [EVENT_TYPES.AIS_POSITION_RECORDED],
-        signal: AbortSignal.any([shutdown, stop.signal]),
-        handler: async (event, context) => {
-          if (context.storedAt.getTime() > windowEnd) {
-            passedWindow = true;
-            stop.abort();
-            return;
-          }
+        signal: shutdown,
+        handler: async (event) => {
+          // The replay handler receives any envelope type (no consumer key).
           if (event.type !== EVENT_TYPES.AIS_POSITION_RECORDED) return;
           const previous = event.data.previous;
           if (previous === null || event.data.mmsi !== job.mmsi) return;
@@ -269,21 +284,17 @@ export class RecomputeService
           last = Math.max(last ?? start, start);
         },
       });
-      if (shutdown.aborted)
-        throw new RecomputeStopped(
-          'INTERRUPTED',
-          'the service stopped during the replay; no segment was deleted',
-        );
-      if (
-        !isReplayComplete(end, windowStart, {
-          passedWindow,
-          lastSequence: report.lastSequence,
-        })
-      )
-        throw new RecomputeStopped(
-          'REPLAY_INCOMPLETE',
-          `the replay ended at stream sequence ${String(report.lastSequence)} before ${String(end?.seq)}; no segment was deleted`,
-        );
+      // Results replace stored segments only after a complete replay.
+      if (!report.completed)
+        throw report.endedBy === 'aborted'
+          ? new RecomputeStopped(
+              'INTERRUPTED',
+              'the service stopped during the replay; no segment was deleted',
+            )
+          : new RecomputeStopped(
+              'REPLAY_INCOMPLETE',
+              `the replay ended early (${report.endedBy}) after stream sequence ${String(report.lastSequence)}; no segment was deleted`,
+            );
       if (first !== undefined && last !== undefined) {
         const range = {
           mmsi: job.mmsi,
@@ -314,7 +325,7 @@ export class RecomputeService
       // (the change stays pending for the next tick; the policy catches up).
       await this.refresher.refreshNow().catch((error: unknown) => {
         this.logger.warn(
-          { err: error, jobId: job.id },
+          { err: sanitizeError(error), jobId: job.id },
           'aggregate refresh after the recomputation failed (retried at the next tick)',
         );
       });
@@ -327,7 +338,14 @@ export class RecomputeService
         error: null,
       });
       this.logger.log(
-        { jobId: job.id, mmsi: job.mmsi, replayed, rebuilt, deleted },
+        {
+          jobId: job.id,
+          mmsi: job.mmsi,
+          endedBy: report.endedBy,
+          replayed,
+          rebuilt,
+          deleted,
+        },
         'recomputation finished',
       );
     } catch (error) {
@@ -343,7 +361,7 @@ export class RecomputeService
         );
       else
         this.logger.error(
-          { err: error, jobId: job.id, mmsi: job.mmsi },
+          { err: sanitizeError(error), jobId: job.id, mmsi: job.mmsi },
           'recomputation failed',
         );
       // Rebuilt segments changed the figures even when nothing was deleted.
@@ -359,23 +377,12 @@ export class RecomputeService
         })
         .catch((finishError: unknown) => {
           this.logger.error(
-            { err: finishError, jobId: job.id },
+            { err: sanitizeError(finishError), jobId: job.id },
             'could not record the failed recomputation',
           );
         });
     } finally {
       clearInterval(heartbeat);
     }
-  }
-
-  /** The last message of a subject of AIS_POSITION, if any. */
-  private async lastMessageOf(subject: string): Promise<ReplayEnd | undefined> {
-    const { manager } = await this.nats.ready();
-    const message = await manager.streams.getMessage('AIS_POSITION', {
-      last_by_subj: subject,
-    });
-    return message === null
-      ? undefined
-      : { seq: message.seq, storedAt: message.time };
   }
 }

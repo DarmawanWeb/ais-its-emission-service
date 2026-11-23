@@ -1,21 +1,21 @@
 'use strict';
 
 /**
- * pnpm hook (read automatically by `pnpm install`): keeps compile-time and
- * test-time optional peers out of the production dependency graph. pnpm
- * resolves an optional peer to a matching dev dependency and records it as a
- * dependency of the declaring package, so `pnpm install --prod` (Docker
- * image) installs it although no production code loads it:
- * - `@nestjs/swagger` declares `typescript` for its CLI plugin, which this
- *   service does not use (TypeScript, about 24 MB);
- * - `@darmawanweb/ais-its-nest` declares `testcontainers` and
- *   `@nestjs/testing` for its `./testing` subpath, which only the tests
- *   import (testcontainers with dockerode, ssh2 and their native addons).
- * The tests still resolve both from this repository's dev dependencies.
+ * pnpm hook (read automatically by `pnpm install`): keeps optional peers that
+ * only the dev tree satisfies out of the production install (Docker image,
+ * `pnpm install --prod`). pnpm links an optional peer to whatever package of
+ * the whole tree provides it, so without this hook:
+ * - `@nestjs/swagger` (CLI plugin, unused here) gets the dev dependency
+ *   `typescript` (about 24 MB);
+ * - `@nestjs/terminus` (gRPC health checks, unused here) gets `@grpc/grpc-js`
+ *   and `@grpc/proto-loader`, which testcontainers' Docker client `dockerode`
+ *   brings into the dev tree (about 11 MB with `protobufjs`).
+ * The kit (`@darmawanweb/ais-its-nest` >= 0.3) declares no test packages as
+ * peers, so `testcontainers` and `@nestjs/testing` stay devDependencies only.
  */
-const UNUSED_OPTIONAL_PEERS = {
+const DEV_ONLY_PEERS = {
   '@nestjs/swagger': ['typescript'],
-  '@darmawanweb/ais-its-nest': ['testcontainers', '@nestjs/testing'],
+  '@nestjs/terminus': ['@grpc/grpc-js', '@grpc/proto-loader'],
 };
 
 /** `record` without the keys in `names`. */
@@ -27,7 +27,7 @@ function without(record, names) {
 }
 
 function readPackage(manifest) {
-  const peers = UNUSED_OPTIONAL_PEERS[manifest.name];
+  const peers = DEV_ONLY_PEERS[manifest.name];
   if (peers === undefined) return manifest;
   return {
     ...manifest,

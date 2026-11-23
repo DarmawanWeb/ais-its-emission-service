@@ -31,10 +31,15 @@ export interface FleetRatingRow {
   readonly mmsi: number;
   readonly orgId: string | null;
   readonly name: string;
-  /** `snapshot.type` (reference line, d-vector, fixed capacity). */
+  readonly imo: string | null;
+  /** `snapshot.type` (code, reference line, d-vector, fixed capacity). */
   readonly type: VesselSnapshotV1['type'];
   /** `snapshot.dimensions.capacity`. */
   readonly capacity: number;
+  /** `snapshot.fuel.code` and C_F of the vessel's current fuel. */
+  readonly fuelCode: string;
+  readonly fuelName: string;
+  readonly fuelConversionFactor: number;
 }
 
 /** Drizzle access to `vessel_profiles` (FLEET projection). */
@@ -141,9 +146,9 @@ export class VesselProfilesRepository {
   }
 
   /**
-   * The vessels visible in a scope with the snapshot fields the CII rating
-   * needs (fleet summary), ordered by MMSI; the snapshots themselves are not
-   * loaded.
+   * The vessels visible in a scope with the snapshot fields the fleet-wide
+   * reads need (identity, CII rating inputs, current fuel), ordered by MMSI;
+   * the snapshots themselves are not loaded.
    */
   async ratingRows(scope: OrgScope, orgId?: string): Promise<FleetRatingRow[]> {
     const conditions: (SQL | undefined)[] = [
@@ -160,8 +165,12 @@ export class VesselProfilesRepository {
         mmsi: vesselProfiles.mmsi,
         orgId: vesselProfiles.orgId,
         name: sql<string>`${vesselProfiles.snapshot}->>'name'`,
+        imo: sql<string | null>`${vesselProfiles.snapshot}->>'imo'`,
         type: sql<VesselSnapshotV1['type']>`${vesselProfiles.snapshot}->'type'`,
         capacity: sql<number>`(${vesselProfiles.snapshot}->'dimensions'->>'capacity')::double precision`,
+        fuelCode: sql<string>`${vesselProfiles.snapshot}->'fuel'->>'code'`,
+        fuelName: sql<string>`${vesselProfiles.snapshot}->'fuel'->>'name'`,
+        fuelConversionFactor: sql<number>`(${vesselProfiles.snapshot}->'fuel'->>'conversionFactor')::double precision`,
       })
       .from(vesselProfiles)
       .where(and(...conditions))

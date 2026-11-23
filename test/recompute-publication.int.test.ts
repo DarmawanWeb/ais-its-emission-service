@@ -223,8 +223,9 @@ describe('emission.cii.updated.v1 publication and recomputation by replay', () =
         as: MANAGER,
       });
       expect(asManager.statusCode).toBe(403);
+      // The kit's @RequirePlatformAdmin() guard (spec §5).
       expect(asManager.json<{ code: string }>().code).toBe(
-        'SUPER_ADMIN_REQUIRED',
+        'PLATFORM_ADMIN_REQUIRED',
       );
       const tooOld = await service.request({
         method: 'POST',

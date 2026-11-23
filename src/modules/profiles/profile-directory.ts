@@ -1,3 +1,4 @@
+import { sanitizeError } from '@darmawanweb/ais-its-nest/db';
 import {
   Injectable,
   Logger,
@@ -44,7 +45,7 @@ export class ProfileDirectory
     this.timer = setInterval(() => {
       void this.sync().catch((error: unknown) => {
         this.logger.warn(
-          { err: error },
+          { err: sanitizeError(error) },
           'vessel profile directory sync failed',
         );
       });

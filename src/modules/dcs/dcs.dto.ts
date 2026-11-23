@@ -58,3 +58,59 @@ export class DcsSummaryDto {
     this.methodIds = methodIds;
   }
 }
+
+/** A vessel of the fleet without DCS data for the year. */
+export class FleetDcsMissingDto {
+  @ApiProperty() readonly mmsi: number;
+  @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
+  @ApiProperty() readonly vesselName: string;
+
+  constructor(vessel: { mmsi: number; vesselId: string; name: string }) {
+    this.mmsi = vessel.mmsi;
+    this.vesselId = vessel.vesselId;
+    this.vesselName = vessel.name;
+  }
+}
+
+/** `GET /emission/fleet/dcs` — the DCS summaries of a fleet for a year. */
+export class FleetDcsDto {
+  @ApiProperty() readonly year: number;
+  @ApiProperty({
+    type: String,
+    format: 'uuid',
+    nullable: true,
+    description: 'null = every organization (super_admin)',
+  })
+  readonly orgId: string | null;
+  @ApiProperty({ description: 'Vessels of the fleet' })
+  readonly vessels: number;
+  @ApiProperty({
+    type: [DcsSummaryDto],
+    description: 'Summaries of the vessels with data for the year, by MMSI',
+  })
+  readonly items: DcsSummaryDto[];
+  @ApiProperty({
+    type: [FleetDcsMissingDto],
+    description: 'Vessels without segments or a manual record for the year',
+  })
+  readonly withoutData: FleetDcsMissingDto[];
+  @ApiProperty({ type: [String] }) readonly methodIds: string[];
+
+  constructor(
+    fleet: {
+      readonly year: number;
+      readonly orgId: string | null;
+      readonly vessels: number;
+    },
+    items: DcsSummaryDto[],
+    withoutData: FleetDcsMissingDto[],
+    methodIds: string[],
+  ) {
+    this.year = fleet.year;
+    this.orgId = fleet.orgId;
+    this.vessels = fleet.vessels;
+    this.items = items;
+    this.withoutData = withoutData;
+    this.methodIds = methodIds;
+  }
+}

@@ -1,15 +1,12 @@
 import type { Principal } from '@darmawanweb/ais-its-nest/auth';
 
-import { SuperAdminRequiredError } from './errors.js';
-
-/** `true` for a user with the platform role `super_admin`. */
+/**
+ * `true` for a user with the platform role `super_admin`. Routes reserved
+ * to platform administrators use the kit's `@RequirePlatformAdmin()`
+ * (`403 PLATFORM_ADMIN_REQUIRED`); this only widens the read scope.
+ */
 export function isPlatformAdmin(principal: Principal): boolean {
   return principal.kind === 'user' && principal.isPlatformAdmin;
-}
-
-/** Throws `403 SUPER_ADMIN_REQUIRED` unless the principal is a platform administrator. */
-export function assertPlatformAdmin(principal: Principal): void {
-  if (!isPlatformAdmin(principal)) throw new SuperAdminRequiredError();
 }
 
 /** Organizations a principal may read records of: all (platform admins) or the active one. */

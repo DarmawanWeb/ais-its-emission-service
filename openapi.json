@@ -6,14 +6,6 @@
         "operationId": "CiiController_current",
         "parameters": [
           {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
             "name": "year",
             "required": false,
             "in": "query",
@@ -23,6 +15,17 @@
               "maximum": 2200,
               "example": 2026,
               "type": "number"
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -62,14 +65,6 @@
         "operationId": "CiiController_daily",
         "parameters": [
           {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
             "name": "from",
             "required": false,
             "in": "query",
@@ -87,6 +82,17 @@
             "schema": {
               "format": "date-time",
               "type": "string"
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -129,8 +135,11 @@
             "name": "mmsi",
             "required": true,
             "in": "path",
+            "description": "MMSI: exactly nine digits",
             "schema": {
-              "type": "number"
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -167,16 +176,9 @@
     },
     "/api/v2/cii/vessels/{mmsi}/segments": {
       "get": {
+        "description": "With `Accept: text/csv` the response is a CSV of every matching segment of the range, oldest first, without cursor paging; at most 50,000 rows, and `X-Truncated: true` when the range holds more (narrow `from`/`to`).",
         "operationId": "CiiController_segments",
         "parameters": [
-          {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
           {
             "name": "cursor",
             "required": false,
@@ -217,11 +219,50 @@
               "format": "date-time",
               "type": "string"
             }
+          },
+          {
+            "name": "method",
+            "required": false,
+            "in": "query",
+            "description": "Only segments of these fuel methods (comma-separated: telemetry, first_formula, holtrop, none)",
+            "schema": {
+              "example": "first_formula,holtrop",
+              "type": "string"
+            }
+          },
+          {
+            "name": "flag",
+            "required": false,
+            "in": "query",
+            "description": "Only segments carrying this flag",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gap",
+                "no_fuel_model",
+                "fuel_not_finite",
+                "fuel_negative",
+                "formula_error",
+                "weather_unavailable",
+                "telemetry_reattributed"
+              ]
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "One page of the time-ordered list",
+            "description": "One page of the time-ordered list (JSON), or the CSV of the range (Accept: text/csv)",
             "content": {
               "application/json": {
                 "schema": {
@@ -242,6 +283,30 @@
                     }
                   }
                 }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "time_start,time_end,mmsi,vessel_id,distance_nm,speed_kn,fuel_me_t,fuel_ae_t,co2_t,method,navstatus,fuel_code,conversion_factor,weather_source,wind_speed_kn,wind_direction_deg,beaufort_number,encounter_angle_deg,flags\r\n"
+              }
+            },
+            "headers": {
+              "Content-Disposition": {
+                "description": "CSV only: `attachment; filename=\"segments-<mmsi>-<YYYY-MM-DD of from>.csv\"`",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Truncated": {
+                "description": "CSV only: `true` when the range holds more than 50,000 matching segments (the CSV holds the oldest 50,000), else `false`",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
               }
             }
           },
@@ -256,7 +321,7 @@
             }
           }
         },
-        "summary": "Voyage segments of a vessel, newest first (default: the last 24 h, at most 31 days)",
+        "summary": "Voyage segments of a vessel, newest first (default: the last 24 h, at most 31 days); Accept: text/csv exports the range",
         "tags": [
           "cii"
         ],
@@ -267,6 +332,7 @@
     },
     "/api/v2/cii/fleet/summary": {
       "get": {
+        "description": "`grade`, `search` and `sort` select and order `items` (and `meta.total`); `vessels`, `grades` and `notAvailable` always describe the whole fleet. Each item carries the previous year's rating and grade for the trend.",
         "operationId": "CiiController_fleetSummary",
         "parameters": [
           {
@@ -282,11 +348,22 @@
             }
           },
           {
+            "name": "orgId",
+            "required": false,
+            "in": "query",
+            "description": "Organization (super_admin only; others always see their active organization)",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
             "schema": {
               "minimum": 1,
+              "maximum": 1000000,
               "default": 1,
               "type": "integer"
             }
@@ -303,13 +380,45 @@
             }
           },
           {
-            "name": "orgId",
+            "name": "grade",
             "required": false,
             "in": "query",
-            "description": "Organization (super_admin only; others always see their active organization)",
+            "description": "Only items with one of these grades of the year (comma-separated A–E); vessels without CII data never match",
             "schema": {
-              "format": "uuid",
+              "example": "D,E",
               "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Name (case-insensitive substring), MMSI or IMO number (prefix of digits)",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Order of `items`; a leading `-` sorts descending. grade A→E, rating and attained ascending = best first; vessels without CII data come last in both directions; ties by MMSI",
+            "schema": {
+              "default": "mmsi",
+              "type": "string",
+              "enum": [
+                "mmsi",
+                "-mmsi",
+                "name",
+                "-name",
+                "grade",
+                "-grade",
+                "rating",
+                "-rating",
+                "attained",
+                "-attained"
+              ]
             }
           }
         ],
@@ -344,24 +453,101 @@
         ]
       }
     },
+    "/api/v2/cii/fleet/fuel": {
+      "get": {
+        "description": "Per vessel, the counted segments of the period. For the year, a vessel without counted segments contributes its manual annual record (CO2 from its current fuel when the record has none); the month counts segments only. Fleet of the active organization (super_admin: all or ?orgId).",
+        "operationId": "CiiController_fleetFuel",
+        "parameters": [
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Calendar year (UTC); default the current year",
+            "schema": {
+              "minimum": 2000,
+              "maximum": 2200,
+              "example": 2026,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": false,
+            "in": "query",
+            "description": "Organization (super_admin only; others always see their active organization)",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "required": false,
+            "in": "query",
+            "description": "Month of `year` (1–12) for the monthly totals; default the current UTC month",
+            "schema": {
+              "minimum": 1,
+              "maximum": 12,
+              "example": 11,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FleetFuelDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Fuel (ME, AE, total) and CO2 of the fleet in a calendar year and one of its months (UTC)",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
     "/api/v2/cii/vessels/{mmsi}/annual-manual/{year}": {
       "get": {
         "operationId": "CiiController_getManual",
         "parameters": [
           {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
             "name": "year",
             "required": true,
             "in": "path",
+            "description": "Calendar year 2000–2200",
             "schema": {
-              "type": "number"
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2200
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -399,19 +585,25 @@
         "operationId": "CiiController_putManual",
         "parameters": [
           {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
             "name": "year",
             "required": true,
             "in": "path",
+            "description": "Calendar year 2000–2200",
             "schema": {
-              "type": "number"
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2200
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -454,20 +646,65 @@
         "x-required-permissions": [
           "vessel:write"
         ]
+      },
+      "delete": {
+        "description": "The year falls back to its segments (or answers 404 CII_NOT_AVAILABLE without any). Audited as cii_annual_manual.delete.",
+        "operationId": "CiiController_deleteManual",
+        "parameters": [
+          {
+            "name": "year",
+            "required": true,
+            "in": "path",
+            "description": "Calendar year 2000–2200",
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2200
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed"
+          },
+          "404": {
+            "description": "VESSEL_NOT_FOUND or CII_ANNUAL_MANUAL_NOT_FOUND"
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Remove the manual / imported annual CII record of a vessel-year",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "vessel:write"
+        ]
       }
     },
     "/api/v2/cii/vessels/{mmsi}/recompute": {
       "post": {
         "operationId": "CiiController_startRecompute",
         "parameters": [
-          {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
           {
             "name": "from",
             "required": false,
@@ -486,6 +723,17 @@
             "schema": {
               "format": "date-time",
               "type": "string"
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -511,12 +759,114 @@
             }
           }
         },
-        "summary": "Recompute the segments of a range by replaying AIS_POSITION (super_admin, ≤ 7 days)",
+        "summary": "Recompute the segments of a range by replaying AIS_POSITION (≤ 7 days)",
         "tags": [
           "cii"
         ],
         "x-required-permissions": [
           "cii:read"
+        ],
+        "x-required-roles": [
+          "super_admin"
+        ],
+        "description": "Requires a platform administrator (super_admin); other users and API keys get 403 PLATFORM_ADMIN_REQUIRED."
+      }
+    },
+    "/api/v2/cii/recompute-jobs": {
+      "get": {
+        "description": "Shows the jobs started by any administrator or instance (e.g. the running job behind 409 RECOMPUTE_IN_PROGRESS); running jobs of a stopped instance are failed first.\n\nRequires a platform administrator (super_admin); other users and API keys get 403 PLATFORM_ADMIN_REQUIRED.",
+        "operationId": "CiiController_recomputeJobs",
+        "parameters": [
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "Opaque cursor from `page.nextCursor` of the previous page",
+            "schema": {
+              "maxLength": 1024,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 525005223,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "running",
+                "succeeded",
+                "failed"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page of the time-ordered list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "page"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RecomputeJobDto"
+                      }
+                    },
+                    "page": {
+                      "$ref": "#/components/schemas/CursorPageInfoDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Recomputation jobs, newest first, optionally of one vessel and status",
+        "tags": [
+          "cii"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ],
+        "x-required-roles": [
+          "super_admin"
         ]
       }
     },
@@ -528,8 +878,10 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "UUID",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -555,13 +907,17 @@
             }
           }
         },
-        "summary": "Status of a recomputation (super_admin)",
+        "summary": "Status of a recomputation",
         "tags": [
           "cii"
         ],
         "x-required-permissions": [
           "cii:read"
-        ]
+        ],
+        "x-required-roles": [
+          "super_admin"
+        ],
+        "description": "Requires a platform administrator (super_admin); other users and API keys get 403 PLATFORM_ADMIN_REQUIRED."
       }
     },
     "/api/v2/reduction-factors": {
@@ -642,6 +998,53 @@
         ]
       }
     },
+    "/api/v2/reduction-factors/{year}": {
+      "delete": {
+        "description": "Only the first or the last year of the table can be removed (409 REDUCTION_FACTOR_TABLE_GAP otherwise: the SEEMP cost model needs Z for every year up to the last one), and only while no vessel has CII data (segments or a manual record) for the year (409 REDUCTION_FACTOR_IN_USE: correct the value with PUT instead). Audited as reduction_factor.delete.",
+        "operationId": "ReductionFactorsController_remove",
+        "parameters": [
+          {
+            "name": "year",
+            "required": true,
+            "in": "path",
+            "description": "Calendar year 2000–2200",
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2200
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed"
+          },
+          "404": {
+            "description": "REDUCTION_FACTOR_NOT_FOUND"
+          },
+          "409": {
+            "description": "REDUCTION_FACTOR_IN_USE or REDUCTION_FACTOR_TABLE_GAP"
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Remove the reduction factor of a year that no CII figure uses",
+        "tags": [
+          "reduction-factors"
+        ],
+        "x-required-permissions": [
+          "reference:write"
+        ]
+      }
+    },
     "/api/v2/seemp/measures": {
       "get": {
         "operationId": "SeempController_measures",
@@ -682,14 +1085,6 @@
         "operationId": "SeempController_recommendations",
         "parameters": [
           {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
             "name": "year",
             "required": false,
             "in": "query",
@@ -709,6 +1104,27 @@
               "minimum": 2000,
               "maximum": 2200,
               "type": "number"
+            }
+          },
+          {
+            "name": "includeAll",
+            "required": false,
+            "in": "query",
+            "description": "Also list the measures whose grade after is D or E (not enough on their own); `recommended` tells them apart. Default: only grades A–C (legacy filter)",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -734,7 +1150,7 @@
             }
           }
         },
-        "summary": "SEEMP recommendations: measures with grade A–C after, cheapest first (legacy calculateSEEMPbyMMSI)",
+        "summary": "SEEMP recommendations: measures with grade A–C after, cheapest first (legacy calculateSEEMPbyMMSI); includeAll=true lists every measure",
         "tags": [
           "seemp"
         ],
@@ -751,8 +1167,11 @@
             "name": "mmsi",
             "required": true,
             "in": "path",
+            "description": "MMSI: exactly nine digits",
             "schema": {
-              "type": "number"
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
             }
           }
         ],
@@ -807,6 +1226,7 @@
             "in": "query",
             "schema": {
               "minimum": 1,
+              "maximum": 1000000,
               "default": 1,
               "type": "integer"
             }
@@ -829,6 +1249,36 @@
             "schema": {
               "example": 525005223,
               "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Scenario or vessel name (case-insensitive substring), or MMSI (prefix of digits)",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Order; a leading `-` sorts descending (default newest first); ties newest first. Scenarios of vessels no longer known come last by vesselName",
+            "schema": {
+              "default": "-createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "-createdAt",
+                "name",
+                "-name",
+                "vesselName",
+                "-vesselName",
+                "mmsi",
+                "-mmsi"
+              ]
             }
           }
         ],
@@ -869,7 +1319,7 @@
             }
           }
         },
-        "summary": "Saved simulations of the organization, newest first",
+        "summary": "Saved simulations of the organization (super_admin: all), newest first by default",
         "tags": [
           "seemp"
         ],
@@ -929,8 +1379,10 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "UUID",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -964,6 +1416,60 @@
           "seemp:read"
         ]
       },
+      "patch": {
+        "operationId": "SeempController_renameScenario",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameScenarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeempScenarioDto"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Rename a saved scenario (audited as seemp_scenario.update)",
+        "tags": [
+          "seemp"
+        ],
+        "x-required-permissions": [
+          "seemp:simulate"
+        ]
+      },
       "delete": {
         "operationId": "SeempController_deleteScenario",
         "parameters": [
@@ -971,8 +1477,10 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "UUID",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -1005,14 +1513,6 @@
         "operationId": "DcsController_summary",
         "parameters": [
           {
-            "name": "mmsi",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
             "name": "year",
             "required": false,
             "in": "query",
@@ -1023,11 +1523,22 @@
               "example": 2026,
               "type": "number"
             }
+          },
+          {
+            "name": "mmsi",
+            "required": true,
+            "in": "path",
+            "description": "MMSI: exactly nine digits",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{9}$",
+              "example": "525005223"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "DCS summary of the vessel-year (JSON), or its CSV with one row per fuel type (Accept: text/csv)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1036,7 +1547,16 @@
               },
               "text/csv": {
                 "schema": {
-                  "$ref": "#/components/schemas/DcsSummaryDto"
+                  "type": "string"
+                },
+                "example": "year,mmsi,imo,vessel_name,source,fuel_code,fuel_name,conversion_factor,fuel_me_t,fuel_ae_t,fuel_total_t,co2_t,distance_nm,hours_under_way,total_co2_t\r\n"
+              }
+            },
+            "headers": {
+              "Content-Disposition": {
+                "description": "CSV only: `attachment; filename=\"dcs-<mmsi>-<year>.csv\"`",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -1053,6 +1573,79 @@
           }
         },
         "summary": "Annual fuel by type, distance, hours under way and CO2 (Accept: text/csv for CSV; default: current year)",
+        "tags": [
+          "emission"
+        ],
+        "x-required-permissions": [
+          "cii:read"
+        ]
+      }
+    },
+    "/api/v2/emission/fleet/dcs": {
+      "get": {
+        "description": "Fleet of the active organization (super_admin: all or ?orgId), by MMSI. Each vessel as GET /emission/vessels/{mmsi}/dcs; vessels without segments or a manual record for the year are listed in `withoutData` (and left out of the CSV, which has the per-vessel layout with one header).",
+        "operationId": "DcsController_fleet",
+        "parameters": [
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Calendar year (UTC); default the current year",
+            "schema": {
+              "minimum": 2000,
+              "maximum": 2200,
+              "example": 2026,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": false,
+            "in": "query",
+            "description": "Organization (super_admin only; others always see their active organization)",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "DCS summaries of the fleet (JSON), or one CSV of every vessel with data in the per-vessel layout (Accept: text/csv)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FleetDcsDto"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "year,mmsi,imo,vessel_name,source,fuel_code,fuel_name,conversion_factor,fuel_me_t,fuel_ae_t,fuel_total_t,co2_t,distance_nm,hours_under_way,total_co2_t\r\n"
+              }
+            },
+            "headers": {
+              "Content-Disposition": {
+                "description": "CSV only: `attachment; filename=\"dcs-fleet-<orgId or all>-<year>.csv\"`",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Problem details (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "summary": "DCS-style annual summaries of every vessel of the fleet (an organization's annual submission; Accept: text/csv for one CSV)",
         "tags": [
           "emission"
         ],
@@ -1097,7 +1690,7 @@
   "info": {
     "title": "AIS Maritime Intelligence — AIS ITS Emission Service",
     "description": "Fuel and CO2 per voyage segment, IMO CII (daily/annual, rating A-E), reduction factors, SEEMP recommendations and what-if simulation, IMO DCS summary",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "contact": {}
   },
   "tags": [
@@ -1189,6 +1782,52 @@
           "d2",
           "d3",
           "d4"
+        ]
+      },
+      "VesselIdentityDto": {
+        "type": "object",
+        "properties": {
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "mmsi": {
+            "type": "number",
+            "example": 525005223
+          },
+          "imo": {
+            "type": "string",
+            "nullable": true,
+            "example": "9234567"
+          },
+          "name": {
+            "type": "string",
+            "example": "KM Nusantara Jaya"
+          },
+          "flag": {
+            "type": "string",
+            "nullable": true,
+            "example": "ID",
+            "description": "Flag state as registered in fleet"
+          },
+          "typeCode": {
+            "type": "string",
+            "example": "bulk_carrier",
+            "description": "Ship type code"
+          },
+          "typeName": {
+            "type": "string",
+            "example": "Bulk carrier"
+          }
+        },
+        "required": [
+          "vesselId",
+          "mmsi",
+          "imo",
+          "name",
+          "flag",
+          "typeCode",
+          "typeName"
         ]
       },
       "CiiProjectionDto": {
@@ -1358,6 +1997,14 @@
             "type": "string",
             "format": "uuid"
           },
+          "vessel": {
+            "description": "Identity of the vessel (FLEET projection)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VesselIdentityDto"
+              }
+            ]
+          },
           "capacity": {
             "type": "number",
             "description": "CII capacity (type.capacityFixed ?? dimensions.capacity)"
@@ -1402,6 +2049,7 @@
           "methodIds",
           "mmsi",
           "vesselId",
+          "vessel",
           "capacity",
           "lastMethod",
           "projection"
@@ -1660,6 +2308,14 @@
             "type": "string",
             "format": "uuid"
           },
+          "vessel": {
+            "description": "Identity of the vessel (FLEET projection)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VesselIdentityDto"
+              }
+            ]
+          },
           "dVector": {
             "description": "d-vector of the ship type (relative)",
             "allOf": [
@@ -1678,6 +2334,7 @@
         "required": [
           "mmsi",
           "vesselId",
+          "vessel",
           "dVector",
           "years"
         ]
@@ -1874,6 +2531,38 @@
           "E"
         ]
       },
+      "PreviousYearCiiDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ]
+          },
+          "rating": {
+            "type": "number",
+            "nullable": true
+          },
+          "grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "source",
+          "rating",
+          "grade"
+        ]
+      },
       "FleetVesselCiiDto": {
         "type": "object",
         "properties": {
@@ -1886,6 +2575,15 @@
           },
           "name": {
             "type": "string"
+          },
+          "imo": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeCode": {
+            "type": "string",
+            "example": "bulk_carrier",
+            "description": "Ship type code"
           },
           "grade": {
             "type": "string",
@@ -1900,11 +2598,23 @@
           },
           "rating": {
             "type": "number",
-            "nullable": true
+            "nullable": true,
+            "description": "attained / required"
           },
           "attained": {
             "type": "number",
-            "nullable": true
+            "nullable": true,
+            "description": "Attained CII, g CO2 / (capacity · nm)"
+          },
+          "required": {
+            "type": "number",
+            "nullable": true,
+            "description": "Required CII of the year, g CO2 / (capacity · nm)"
+          },
+          "zPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Reduction factor Z of the year, %"
           },
           "source": {
             "type": "string",
@@ -1913,16 +2623,31 @@
               "manual"
             ],
             "nullable": true
+          },
+          "previousYear": {
+            "nullable": true,
+            "description": "Rating and grade of year − 1 (null without CII data then), for the trend",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PreviousYearCiiDto"
+              }
+            ]
           }
         },
         "required": [
           "mmsi",
           "vesselId",
           "name",
+          "imo",
+          "typeCode",
           "grade",
           "rating",
           "attained",
-          "source"
+          "required",
+          "zPercent",
+          "source",
+          "previousYear"
         ]
       },
       "PageMetaDto": {
@@ -1930,7 +2655,8 @@
         "properties": {
           "page": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "maximum": 1000000
           },
           "pageSize": {
             "type": "integer",
@@ -1963,7 +2689,7 @@
           },
           "vessels": {
             "type": "number",
-            "description": "Vessels of the fleet (all pages)"
+            "description": "Vessels of the fleet (all pages, before the filters)"
           },
           "grades": {
             "description": "Grade distribution of the whole fleet",
@@ -1978,14 +2704,14 @@
             "description": "Vessels without CII data for the year"
           },
           "items": {
-            "description": "One page of the vessels (`page`, `pageSize` ≤ 100), ordered by MMSI",
+            "description": "One page (`page`, `pageSize` ≤ 100) of the vessels matching `grade` and `search`, in the order of `sort` (default MMSI)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/FleetVesselCiiDto"
             }
           },
           "meta": {
-            "description": "Page of `items`",
+            "description": "Page of `items`; `total` counts the matching vessels",
             "allOf": [
               {
                 "$ref": "#/components/schemas/PageMetaDto"
@@ -2014,6 +2740,115 @@
           "notAvailable",
           "items",
           "meta",
+          "methodIds"
+        ]
+      },
+      "FleetFuelPeriodDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start (UTC)"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End (UTC, exclusive)"
+          },
+          "fuelMeTon": {
+            "type": "number",
+            "description": "Main engine fuel, t"
+          },
+          "fuelAeTon": {
+            "type": "number",
+            "description": "Auxiliary engine fuel, t"
+          },
+          "totalFuelTon": {
+            "type": "number",
+            "description": "fuelMeTon + fuelAeTon, t"
+          },
+          "co2Ton": {
+            "type": "number",
+            "description": "CO2, t"
+          },
+          "vesselsWithData": {
+            "type": "number",
+            "description": "Vessels with counted segments in the period (for the year, also those counted from their manual record)"
+          },
+          "manualVessels": {
+            "type": "number",
+            "description": "Vessels counted from their manual annual record (year only: a vessel without segments in the year)"
+          },
+          "methods": {
+            "description": "Counted segments per fuel method",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MethodCountsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "fuelMeTon",
+          "fuelAeTon",
+          "totalFuelTon",
+          "co2Ton",
+          "vesselsWithData",
+          "manualVessels",
+          "methods"
+        ]
+      },
+      "FleetFuelDto": {
+        "type": "object",
+        "properties": {
+          "orgId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "null = every organization (super_admin)"
+          },
+          "vessels": {
+            "type": "number",
+            "description": "Vessels of the fleet"
+          },
+          "year": {
+            "description": "Totals of the calendar year (`from` = 1 January, UTC)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FleetFuelPeriodDto"
+              }
+            ]
+          },
+          "month": {
+            "description": "Totals of the month of that year (`from` = its first day, UTC)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FleetFuelPeriodDto"
+              }
+            ]
+          },
+          "methodIds": {
+            "example": [
+              "fuel.first_formula",
+              "cii.attained_accumulation",
+              "cii.required",
+              "cii.rating_grade"
+            ],
+            "description": "Methodology catalog ids behind the figure (GET /api/v2/emission/methodology)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "orgId",
+          "vessels",
+          "year",
+          "month",
           "methodIds"
         ]
       },
@@ -2461,6 +3296,10 @@
             "type": "number",
             "description": "Years until grade D/E used to spread the investment"
           },
+          "recommended": {
+            "type": "boolean",
+            "description": "Grade after is A–C (the legacy recommendation); false only with includeAll=true"
+          },
           "methodIds": {
             "description": "Methodology catalog ids behind the figure",
             "type": "array",
@@ -2481,6 +3320,7 @@
           "costRangeUsdPerYear",
           "ciiAttainedAfter",
           "yearsUntilInferior",
+          "recommended",
           "methodIds"
         ]
       },
@@ -2493,6 +3333,14 @@
           "vesselId": {
             "type": "string",
             "format": "uuid"
+          },
+          "vessel": {
+            "description": "Identity of the vessel (FLEET projection)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VesselIdentityDto"
+              }
+            ]
           },
           "baselineYear": {
             "type": "number",
@@ -2532,12 +3380,20 @@
             ],
             "nullable": true
           },
+          "baselineCo2Ton": {
+            "type": "number",
+            "description": "CO2 of the baseline year, t (a manual record without CO2: its fuel × C_F of the current fuel)"
+          },
           "recommendations": {
-            "description": "Measures with grade A–C after, cheapest first",
+            "description": "Measures with grade A–C after (with includeAll: every measure), cheapest first",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SeempRecommendationDto"
             }
+          },
+          "includeAll": {
+            "type": "boolean",
+            "description": "Whether includeAll was requested"
           },
           "methodIds": {
             "description": "Methodology catalog ids behind the figure",
@@ -2550,6 +3406,7 @@
         "required": [
           "mmsi",
           "vesselId",
+          "vessel",
           "baselineYear",
           "baselineSource",
           "targetYear",
@@ -2557,7 +3414,9 @@
           "ciiAttained",
           "ciiRatingBefore",
           "ciiGradeBefore",
+          "baselineCo2Ton",
           "recommendations",
+          "includeAll",
           "methodIds"
         ]
       },
@@ -2651,6 +3510,143 @@
             "type": "string",
             "format": "uuid"
           },
+          "vessel": {
+            "description": "Identity of the vessel (FLEET projection)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VesselIdentityDto"
+              }
+            ]
+          },
+          "baselineYear": {
+            "type": "number",
+            "description": "Year of the baseline CII figures"
+          },
+          "baselineSource": {
+            "type": "string",
+            "enum": [
+              "segments",
+              "manual"
+            ]
+          },
+          "targetYear": {
+            "type": "number",
+            "description": "Year the measures are rated in"
+          },
+          "ciiRequired": {
+            "type": "number",
+            "description": "Required CII of the target year"
+          },
+          "ciiAttained": {
+            "type": "number",
+            "description": "Baseline attained CII"
+          },
+          "ciiRatingBefore": {
+            "type": "number",
+            "nullable": true
+          },
+          "ciiGradeBefore": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "nullable": true
+          },
+          "baselineCo2Ton": {
+            "type": "number",
+            "description": "CO2 of the baseline year, t (a manual record without CO2: its fuel × C_F of the current fuel)"
+          },
+          "measureCodes": {
+            "description": "Measures applied, in legacy order",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "before": {
+            "$ref": "#/components/schemas/RatedCiiDto"
+          },
+          "after": {
+            "$ref": "#/components/schemas/RatedCiiDto"
+          },
+          "reductionPercent": {
+            "type": "number",
+            "description": "1 − after / before, percent"
+          },
+          "fuelAfter": {
+            "$ref": "#/components/schemas/FuelAfterDto"
+          },
+          "yearsUntilInferior": {
+            "type": "number"
+          },
+          "costUsdPerYear": {
+            "type": "number",
+            "description": "Total cost per year of the measures, USD"
+          },
+          "costRangeUsdPerYear": {
+            "$ref": "#/components/schemas/CostRangeDto"
+          },
+          "cost": {
+            "type": "string",
+            "example": "$154,040"
+          },
+          "co2AvoidedTon": {
+            "type": "number",
+            "description": "CO2 avoided per year at the baseline distance, t: baselineCo2Ton × reductionPercent / 100 (negative when the attained CII rises)"
+          },
+          "costPerTonneUsd": {
+            "type": "number",
+            "nullable": true,
+            "description": "costUsdPerYear / co2AvoidedTon, USD per tonne of CO2 avoided; null when nothing is avoided"
+          },
+          "methodIds": {
+            "description": "Methodology catalog ids behind the figure",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "mmsi",
+          "vesselId",
+          "vessel",
+          "baselineYear",
+          "baselineSource",
+          "targetYear",
+          "ciiRequired",
+          "ciiAttained",
+          "ciiRatingBefore",
+          "ciiGradeBefore",
+          "baselineCo2Ton",
+          "measureCodes",
+          "before",
+          "after",
+          "reductionPercent",
+          "fuelAfter",
+          "yearsUntilInferior",
+          "costUsdPerYear",
+          "costRangeUsdPerYear",
+          "cost",
+          "co2AvoidedTon",
+          "costPerTonneUsd",
+          "methodIds"
+        ]
+      },
+      "SeempScenarioResultDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "baselineYear": {
             "type": "number",
             "description": "Year of the baseline CII figures"
@@ -2729,6 +3725,27 @@
             "items": {
               "type": "string"
             }
+          },
+          "vessel": {
+            "description": "Identity of the vessel at creation time (FLEET projection); absent in scenarios saved before 0.2.0",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VesselIdentityDto"
+              }
+            ]
+          },
+          "baselineCo2Ton": {
+            "type": "number",
+            "description": "CO2 of the baseline year, t; absent in scenarios saved before 0.2.0"
+          },
+          "co2AvoidedTon": {
+            "type": "number",
+            "description": "CO2 avoided per year at the baseline distance, t; absent in scenarios saved before 0.2.0"
+          },
+          "costPerTonneUsd": {
+            "type": "number",
+            "nullable": true,
+            "description": "USD per tonne of CO2 avoided (null when nothing is avoided); absent in scenarios saved before 0.2.0"
           }
         },
         "required": [
@@ -2767,6 +3784,11 @@
             "type": "string",
             "format": "uuid"
           },
+          "vesselName": {
+            "type": "string",
+            "nullable": true,
+            "description": "Current name of the vessel (FLEET projection); null once the vessel is no longer known"
+          },
           "name": {
             "type": "string"
           },
@@ -2783,10 +3805,10 @@
             "type": "number"
           },
           "result": {
-            "description": "Simulation result at creation time",
+            "description": "The simulation response at creation time, stored as it was (not recomputed): scenarios saved before 0.2.0 lack vessel, baselineCo2Ton, co2AvoidedTon and costPerTonneUsd",
             "allOf": [
               {
-                "$ref": "#/components/schemas/SeempSimulationDto"
+                "$ref": "#/components/schemas/SeempScenarioResultDto"
               }
             ]
           },
@@ -2797,19 +3819,26 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last change (creation or rename)"
           }
         },
         "required": [
           "id",
           "mmsi",
           "vesselId",
+          "vesselName",
           "name",
           "measureCodes",
           "baselineYear",
           "targetYear",
           "result",
           "createdBy",
-          "createdAt"
+          "createdAt",
+          "updatedAt"
         ]
       },
       "CreateScenarioDto": {
@@ -2853,6 +3882,20 @@
         "required": [
           "measureCodes",
           "mmsi",
+          "name"
+        ]
+      },
+      "RenameScenarioDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "example": "Hull coating + solar 2026 (revised)"
+          }
+        },
+        "required": [
           "name"
         ]
       },
@@ -2962,6 +4005,72 @@
           "distanceNm",
           "hoursUnderWay",
           "co2Ton",
+          "methodIds"
+        ]
+      },
+      "FleetDcsMissingDto": {
+        "type": "object",
+        "properties": {
+          "mmsi": {
+            "type": "number"
+          },
+          "vesselId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "vesselName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mmsi",
+          "vesselId",
+          "vesselName"
+        ]
+      },
+      "FleetDcsDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number"
+          },
+          "orgId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "null = every organization (super_admin)"
+          },
+          "vessels": {
+            "type": "number",
+            "description": "Vessels of the fleet"
+          },
+          "items": {
+            "description": "Summaries of the vessels with data for the year, by MMSI",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcsSummaryDto"
+            }
+          },
+          "withoutData": {
+            "description": "Vessels without segments or a manual record for the year",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FleetDcsMissingDto"
+            }
+          },
+          "methodIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "year",
+          "orgId",
+          "vessels",
+          "items",
+          "withoutData",
           "methodIds"
         ]
       },
@@ -3090,7 +4199,9 @@
               "telemetry",
               "geo",
               "safety",
-              "surveillance"
+              "surveillance",
+              "notification",
+              "security"
             ],
             "nullable": true
           },
@@ -3108,6 +4219,7 @@
             "enum": [
               "implemented",
               "planned",
+              "not_implemented",
               "deprecated"
             ],
             "nullable": true

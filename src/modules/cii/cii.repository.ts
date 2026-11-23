@@ -87,6 +87,40 @@ export class CiiRepository {
   }
 
   /**
+   * Totals of the counted segments of several vessels over the UTC days in
+   * `[from, to)` (`cii_daily`; e.g. a calendar month), one row per vessel
+   * with counted segments.
+   */
+  async periodTotals(
+    vesselIds: readonly string[],
+    from: Date,
+    to: Date,
+  ): Promise<(PeriodTotals & { readonly vesselId: string })[]> {
+    if (vesselIds.length === 0) return [];
+    const result = await this.pool.query<
+      PeriodTotals & { readonly vesselId: string }
+    >(
+      `SELECT vessel_id AS "vesselId",
+              sum(distance_nm)::double precision AS "distanceNm",
+              sum(fuel_me_ton)::double precision AS "fuelMeTon",
+              sum(fuel_ae_ton)::double precision AS "fuelAeTon",
+              sum(co2_ton)::double precision AS "co2Ton",
+              sum(segments)::int AS "segments",
+              sum(telemetry_segments)::int AS "telemetrySegments",
+              sum(first_formula_segments)::int AS "firstFormulaSegments",
+              sum(holtrop_segments)::int AS "holtropSegments",
+              sum(excluded_segments)::int AS "excludedSegments",
+              max(last_time) AS "lastTime"
+         FROM cii_daily
+        WHERE vessel_id = ANY($1::uuid[]) AND day >= $2 AND day < $3
+        GROUP BY vessel_id
+       HAVING sum(segments) > 0`,
+      [[...vesselIds], from, to],
+    );
+    return result.rows;
+  }
+
+  /**
    * Daily totals of a vessel for days in `[from, to)` with year-to-date sums
    * (the sums restart on 1 January, UTC).
    */

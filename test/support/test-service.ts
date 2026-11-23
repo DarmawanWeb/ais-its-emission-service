@@ -18,13 +18,14 @@ import { inject } from 'vitest';
 
 import { AppModule } from '../../src/app.module.js';
 import { type Config, configSchema } from '../../src/config.js';
+import { EMISSION_CORS } from '../../src/cors.js';
 import { OPENAPI } from '../../src/openapi.options.js';
 import { SERVICE } from '../../src/service.js';
 import { FakeOpenMeteo } from './fake-open-meteo.js';
 
 /** A request through `app.inject()` with an optional signed access token. */
 export interface TestRequest {
-  readonly method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  readonly method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   readonly url: string;
   /** Claims of the access token; `null` sends no token. */
   readonly as?: TestTokenClaims | null;
@@ -90,6 +91,7 @@ export async function startTestService(
   const app = await buildTestApp(AppModule, {
     config,
     openapi: OPENAPI,
+    cors: EMISSION_CORS,
     overrides: [
       { provide: ACCESS_TOKEN_KEY_RESOLVER, useValue: jwt.keyResolver },
     ],

@@ -2,15 +2,15 @@
  * Ids of the methodology catalog methods this service implements
  * (docs/references/methods.json, docs/PLATFORM_SPEC.md §17). Keep it in sync
  * with the `@method` TSDoc tags of the implementing functions and with the
- * README section "Methodology & references". Ids marked "v2" are not in the
- * shipped catalog yet (proposed ids, reported for a catalog release).
+ * README section "Methodology & references". Every id is catalogued in
+ * contracts 0.4.0 (`implemented-methods.spec.ts` keeps it so).
  */
 export const IMPLEMENTED_METHOD_IDS: readonly string[] = [
   // Segments (src/domain/segment.ts)
   'geo.haversine_distance',
   'geo.speed_from_positions',
   'geo.rhumb_line_course',
-  'emission.segment_window', // v2
+  'emission.segment_window',
   // Fuel (src/domain/fuel/*)
   'fuel.method_selection',
   'telemetry.fuel_reading_usage',
@@ -55,7 +55,7 @@ export const IMPLEMENTED_METHOD_IDS: readonly string[] = [
   'cii.rating_grade',
   'cii.dd_vector_boundaries',
   'cii.annual_manual',
-  'cii.year_end_projection', // v2
+  'cii.year_end_projection',
   // SEEMP (src/domain/seemp/*)
   'seemp.reduction_type1_operational_share',
   'seemp.reduction_type2_fuel_switch',
@@ -75,9 +75,9 @@ export const IMPLEMENTED_METHOD_IDS: readonly string[] = [
   'seemp.measure.wind',
   'seemp.measure.cold_ironing',
   'seemp.measure.fuel_cells',
-  'seemp.simulation_combination', // v2
+  'seemp.simulation_combination',
   // DCS (src/domain/dcs.ts)
-  'emission.dcs_summary', // v2
+  'emission.dcs_summary',
 ];
 
 /**

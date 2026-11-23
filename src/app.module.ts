@@ -11,6 +11,7 @@ import { CiiModule } from './modules/cii/cii.module.js';
 import { DcsModule } from './modules/dcs/dcs.module.js';
 import { MethodologyModule } from './modules/methodology/methodology.module.js';
 import { SeempModule } from './modules/seemp/seemp.module.js';
+import { MIGRATIONS_DIR } from './service.js';
 
 /**
  * Root module. `bootstrapService()` wraps it in the kit's platform root module
@@ -20,8 +21,9 @@ import { SeempModule } from './modules/seemp/seemp.module.js';
  */
 @Module({
   imports: [
-    // pg pool + drizzle (search_path=<DATABASE_SCHEMA>,public); migrations on boot.
-    DatabaseModule.forRoot({ schema }),
+    // pg pool + drizzle (search_path=<DATABASE_SCHEMA>,public); migrations on boot
+    // from this package's migrations/ (not the working directory).
+    DatabaseModule.forRoot({ schema, migrationsDir: MIGRATIONS_DIR }),
     // Streams this service PRODUCES to (created / widened at boot): EMISSION
     // (emission.cii.updated.v1) and AUDIT (audit.recorded.v1). Consumed streams
     // (AIS_POSITION, FUEL, FLEET) are only created when missing.

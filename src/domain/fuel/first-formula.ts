@@ -1,8 +1,10 @@
 import {
-  type CompiledFormula,
-  compileFormula,
-  FormulaSyntaxError,
-} from '../expression/evaluator.js';
+  evaluateFuelFormula,
+  type FuelFormulaNode,
+  FuelFormulaSyntaxError,
+  parseFuelFormula,
+} from '@darmawanweb/ais-its-contracts/domain';
+
 import type { FuelConsumption } from './types.js';
 import { getFuelByNavStatus } from './navstatus-multipliers.js';
 import { litresToTonnes } from './units.js';
@@ -11,21 +13,29 @@ import { litresToTonnes } from './units.js';
 // SOURCE: thesis — needs citation (minimum flow of the MVP, also applied at 0 kn)
 export const MIN_FUEL_FLOW_L_PER_MIN = 0.5;
 
-/** A fuel flow formula, compiled when valid. */
+/**
+ * A fuel flow formula, parsed once when valid: the contracts grammar of the
+ * first fuel formula (`parseFuelFormula`, the same one fleet validates
+ * with, spec §13.5 and §15.4), evaluated without `new Function`.
+ */
 export type FuelFlowFormula =
-  | { readonly valid: true; readonly formula: CompiledFormula }
+  | {
+      readonly valid: true;
+      readonly source: string;
+      readonly ast: FuelFormulaNode;
+    }
   | {
       readonly valid: false;
       readonly source: string;
-      readonly error: FormulaSyntaxError;
+      readonly error: FuelFormulaSyntaxError;
     };
 
-/** Compiles a formula string; an invalid one is kept with its error. */
+/** Parses a formula string once; an invalid one is kept with its error. */
 export function prepareFuelFlowFormula(source: string): FuelFlowFormula {
   try {
-    return { valid: true, formula: compileFormula(source) };
+    return { valid: true, source, ast: parseFuelFormula(source) };
   } catch (error) {
-    if (error instanceof FormulaSyntaxError)
+    if (error instanceof FuelFormulaSyntaxError)
       return { valid: false, source, error };
     throw error;
   }
@@ -35,6 +45,8 @@ export function prepareFuelFlowFormula(source: string): FuelFlowFormula {
  * Fuel flow of a formula at `speedKnot`, L/min: `max(f(V), 0.5)`; an invalid
  * formula yields 0.5 (legacy `evaluateFormula` returns 0.5 when evaluation
  * throws). As in the legacy, `NaN` is **not** clamped (`Math.max(NaN, 0.5)`).
+ * The contracts evaluator is bit-identical to the formula evaluated as
+ * JavaScript.
  *
  * @method fuel.first_formula
  * @param speedKnot segment speed, kn.
@@ -45,7 +57,7 @@ export function evaluateFuelFlow(
 ): number {
   if (!formula.valid) return MIN_FUEL_FLOW_L_PER_MIN;
   return Math.max(
-    formula.formula.evaluate({ speedKnot }),
+    evaluateFuelFormula(formula.ast, { speedKnot }),
     MIN_FUEL_FLOW_L_PER_MIN,
   );
 }
@@ -75,7 +87,7 @@ export interface FirstFormulaInput {
  * `ρ / 1000` to get tonnes; the total is `(q*_ME + q*_AE) × Δt × ρ / 1000`.
  *
  * Port of `calculateFirstFormulaFuel` (`be-legacy/src/utils/cii/fuel-calculation.ts`)
- * with the safe evaluator instead of `new Function` (spec §15.4).
+ * with the contracts' safe evaluator instead of `new Function` (spec §15.4).
  *
  * @method fuel.first_formula
  * @method fuel.navstatus_multipliers

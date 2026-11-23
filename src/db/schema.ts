@@ -69,6 +69,17 @@ export interface SegmentWeather {
   readonly hour: string;
 }
 
+/** Fuel methods of a stored segment (`none` = not counted, see its flags). */
+export const SEGMENT_METHODS = [
+  'telemetry',
+  'first_formula',
+  'holtrop',
+  'none',
+] as const;
+
+/** A fuel method of a stored segment. */
+export type SegmentMethod = (typeof SEGMENT_METHODS)[number];
+
 /** Voyage segments hypertable (`0001_init.sql`, vessel index `0004_vessel_scoped_history.sql`). */
 export const segments = serviceSchema.table(
   'segments',
@@ -82,11 +93,7 @@ export const segments = serviceSchema.table(
     fuelMeTon: pg.doublePrecision('fuel_me_ton').notNull(),
     fuelAeTon: pg.doublePrecision('fuel_ae_ton').notNull(),
     co2Ton: pg.doublePrecision('co2_ton').notNull(),
-    method: pg
-      .text('method', {
-        enum: ['telemetry', 'first_formula', 'holtrop', 'none'],
-      })
-      .notNull(),
+    method: pg.text('method', { enum: SEGMENT_METHODS }).notNull(),
     navstatus: pg.smallint('navstatus').notNull(),
     fuelCode: pg.text('fuel_code').notNull(),
     conversionFactor: pg.doublePrecision('conversion_factor').notNull(),

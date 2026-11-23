@@ -1,11 +1,12 @@
-import { EVENT_TYPES } from '@darmawanweb/ais-its-contracts/events';
-import { MetricsService } from '@darmawanweb/ais-its-nest/metrics';
+import {
+  type Counter,
+  MetricsService,
+} from '@darmawanweb/ais-its-nest/metrics';
 import {
   type ConsumerEnvelope,
   EventHandler,
 } from '@darmawanweb/ais-its-nest/nats';
 import { Injectable } from '@nestjs/common';
-import type { Counter } from 'prom-client';
 
 import {
   type PositionOutcome,
@@ -37,10 +38,8 @@ export class PositionsConsumer {
   async onPosition(
     event: ConsumerEnvelope<'emission-positions'>,
   ): Promise<void> {
-    // WORKAROUND (platform issue): contracts `positionFeed()` widens the consumer
-    // definition, so the envelope type is the union of every event; the runtime
-    // only delivers `ais.position.recorded.v1` here (the kit skips other types).
-    if (event.type !== EVENT_TYPES.AIS_POSITION_RECORDED) return;
+    // The contracts entry keeps its literal event types, so the envelope is
+    // exactly `ais.position.recorded.v1`: no runtime type check is needed.
     const outcome: PositionOutcome = await this.builder.handlePosition(
       event.data,
     );

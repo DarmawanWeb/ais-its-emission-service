@@ -22,6 +22,7 @@ import {
 } from './cost.js';
 import { LEGACY_SEEMP_MEASURES, type SeempMeasure } from './measures.js';
 import {
+  isRecommended,
   evaluateMeasure,
   recommendMeasures,
   toLegacyRecommendation,
@@ -444,4 +445,24 @@ describe('what-if simulation (sequential multiplicative combination)', () => {
       simulateMeasures([measure('solar'), measure('solar')], context).measures,
     ).toHaveLength(1);
   });
+});
+
+describe('recommendMeasures with includeAll (D/E vessels see every measure)', () => {
+  for (const scenario of SEEMP.scenarios) {
+    it(`${scenario.name}: lists every measure by cost; the legacy output is its A–C subset`, () => {
+      const context = contextOf(scenario);
+      const legacy = recommendMeasures(LEGACY_SEEMP_MEASURES, context);
+      const all = recommendMeasures(LEGACY_SEEMP_MEASURES, context, {
+        includeAll: true,
+      });
+      expect(all).toHaveLength(LEGACY_SEEMP_MEASURES.length);
+      const costs = all.map((evaluation) => evaluation.cost);
+      expect(costs).toEqual([...costs].sort((a, b) => a - b));
+      expect(all.filter(isRecommended)).toEqual(legacy);
+      for (const evaluation of all)
+        expect(isRecommended(evaluation)).toBe(
+          ['A', 'B', 'C'].includes(evaluation.ciiGradeAfter),
+        );
+    });
+  }
 });

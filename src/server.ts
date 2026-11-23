@@ -4,6 +4,7 @@ import { bootstrapService, loadConfig } from '@darmawanweb/ais-its-nest';
 
 import { AppModule } from './app.module.js';
 import { configSchema } from './config.js';
+import { EMISSION_CORS } from './cors.js';
 import { OPENAPI } from './openapi.options.js';
 
 // Connect, migrate and ensure streams (onModuleInit) → restore state and start
@@ -13,4 +14,5 @@ await bootstrapService({
   appModule: AppModule,
   config: loadConfig(configSchema),
   openapi: OPENAPI,
+  cors: EMISSION_CORS,
 });

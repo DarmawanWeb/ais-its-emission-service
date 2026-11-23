@@ -6,16 +6,24 @@ import type { PageMeta } from '@darmawanweb/ais-its-contracts/api';
 import { CursorPageInfoDto, PageMetaDto } from '@darmawanweb/ais-its-nest/http';
 import { ApiProperty, type ApiPropertyOptions } from '@nestjs/swagger';
 
-import { DdVectorDto, isoOrNull } from '../../../common/dto.js';
+import {
+  DdVectorDto,
+  isoOrNull,
+  VesselIdentityDto,
+} from '../../../common/dto.js';
 import type { SegmentWeather } from '../../../db/schema.js';
 import type { MethodCounts } from '../../methodology/method-ids.js';
+import type { VesselProfile } from '../../profiles/vessel-profile.js';
 import type { SegmentRow } from '../../segments/segments.repository.js';
 import type {
   CiiProjection,
   CiiSummary,
   DailyCiiPoint,
+  FleetFuel,
+  FleetFuelPeriod,
   FleetSummary,
   FleetSummaryItem,
+  RatedYear,
 } from '../cii.service.js';
 import type { YearFigures } from '../cii-figures.js';
 
@@ -171,6 +179,11 @@ export class CiiSummaryDto extends CiiYearDto {
   @ApiProperty({ example: 525005223 }) readonly mmsi: number;
   @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
   @ApiProperty({
+    type: VesselIdentityDto,
+    description: 'Identity of the vessel (FLEET projection)',
+  })
+  readonly vessel: VesselIdentityDto;
+  @ApiProperty({
     description: 'CII capacity (type.capacityFixed ?? dimensions.capacity)',
   })
   readonly capacity: number;
@@ -191,6 +204,7 @@ export class CiiSummaryDto extends CiiYearDto {
     super(summary.figures, summary.methodIds);
     this.mmsi = summary.profile.mmsi;
     this.vesselId = summary.profile.vesselId;
+    this.vessel = new VesselIdentityDto(summary.profile);
     this.capacity = summary.capacity;
     this.lastMethod = summary.lastMethod;
     this.projection =
@@ -281,6 +295,11 @@ export class AnnualCiiDto {
   @ApiProperty() readonly mmsi: number;
   @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
   @ApiProperty({
+    type: VesselIdentityDto,
+    description: 'Identity of the vessel (FLEET projection)',
+  })
+  readonly vessel: VesselIdentityDto;
+  @ApiProperty({
     type: DdVectorDto,
     description: 'd-vector of the ship type (relative)',
   })
@@ -288,13 +307,13 @@ export class AnnualCiiDto {
   @ApiProperty({ type: [CiiYearDto] }) readonly years: CiiYearDto[];
 
   constructor(
-    mmsi: number,
-    vesselId: string,
+    profile: VesselProfile,
     dVector: DdVectorDto,
     years: CiiYearDto[],
   ) {
-    this.mmsi = mmsi;
-    this.vesselId = vesselId;
+    this.mmsi = profile.mmsi;
+    this.vesselId = profile.vesselId;
+    this.vessel = new VesselIdentityDto(profile);
     this.dVector = dVector;
     this.years = years;
   }
@@ -398,27 +417,81 @@ export class GradeCountsDto {
   }
 }
 
+/** Rating and grade of the previous year of a fleet item. */
+export class PreviousYearCiiDto {
+  @ApiProperty({ enum: ['segments', 'manual'] }) readonly source:
+    'segments' | 'manual';
+  @ApiProperty({ type: Number, nullable: true }) readonly rating: number | null;
+  @ApiProperty({ enum: CII_GRADES, nullable: true })
+  readonly grade: CiiGrade | null;
+
+  constructor(year: RatedYear) {
+    this.source = year.source;
+    this.rating = year.rating;
+    this.grade = year.grade;
+  }
+}
+
 /** A vessel of the fleet summary. */
 export class FleetVesselCiiDto {
   @ApiProperty() readonly mmsi: number;
   @ApiProperty({ format: 'uuid' }) readonly vesselId: string;
   @ApiProperty() readonly name: string;
+  @ApiProperty({ type: String, nullable: true }) readonly imo: string | null;
+  @ApiProperty({ example: 'bulk_carrier', description: 'Ship type code' })
+  readonly typeCode: string;
   @ApiProperty({ enum: CII_GRADES, nullable: true })
   readonly grade: CiiGrade | null;
-  @ApiProperty({ type: Number, nullable: true }) readonly rating: number | null;
-  @ApiProperty({ type: Number, nullable: true }) readonly attained:
-    number | null;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'attained / required',
+  })
+  readonly rating: number | null;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Attained CII, g CO2 / (capacity · nm)',
+  })
+  readonly attained: number | null;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Required CII of the year, g CO2 / (capacity · nm)',
+  })
+  readonly required: number | null;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Reduction factor Z of the year, %',
+  })
+  readonly zPercent: number | null;
   @ApiProperty({ enum: ['segments', 'manual'], nullable: true })
   readonly source: 'segments' | 'manual' | null;
+  @ApiProperty({
+    type: PreviousYearCiiDto,
+    nullable: true,
+    description:
+      'Rating and grade of year − 1 (null without CII data then), for the trend',
+  })
+  readonly previousYear: PreviousYearCiiDto | null;
 
   constructor(item: FleetSummaryItem) {
     this.mmsi = item.vessel.mmsi;
     this.vesselId = item.vessel.vesselId;
     this.name = item.vessel.name;
+    this.imo = item.vessel.imo;
+    this.typeCode = item.vessel.type.code;
     this.grade = item.figures?.grade ?? null;
     this.rating = item.figures?.rating ?? null;
     this.attained = item.figures?.attained ?? null;
+    this.required = item.figures?.required ?? null;
+    this.zPercent = item.figures?.zPercent ?? null;
     this.source = item.figures?.source ?? null;
+    this.previousYear =
+      item.previousYear === null
+        ? null
+        : new PreviousYearCiiDto(item.previousYear);
   }
 }
 
@@ -432,7 +505,9 @@ export class FleetSummaryDto {
     description: 'null = every organization (super_admin)',
   })
   readonly orgId: string | null;
-  @ApiProperty({ description: 'Vessels of the fleet (all pages)' })
+  @ApiProperty({
+    description: 'Vessels of the fleet (all pages, before the filters)',
+  })
   readonly vessels: number;
   @ApiProperty({
     type: GradeCountsDto,
@@ -444,10 +519,13 @@ export class FleetSummaryDto {
   @ApiProperty({
     type: [FleetVesselCiiDto],
     description:
-      'One page of the vessels (`page`, `pageSize` ≤ 100), ordered by MMSI',
+      'One page (`page`, `pageSize` ≤ 100) of the vessels matching `grade` and `search`, in the order of `sort` (default MMSI)',
   })
   readonly items: FleetVesselCiiDto[];
-  @ApiProperty({ type: PageMetaDto, description: 'Page of `items`' })
+  @ApiProperty({
+    type: PageMetaDto,
+    description: 'Page of `items`; `total` counts the matching vessels',
+  })
   readonly meta: PageMeta;
   @ApiProperty(METHOD_IDS_PROPERTY) readonly methodIds: string[];
 
@@ -461,8 +539,83 @@ export class FleetSummaryDto {
     this.meta = {
       page: summary.page,
       pageSize: summary.pageSize,
-      total: summary.vessels,
+      total: summary.matched,
     };
     this.methodIds = methodIds;
+  }
+}
+
+/** Fuel and CO2 of the fleet over a period. */
+export class FleetFuelPeriodDto {
+  @ApiProperty({ format: 'date-time', description: 'Start (UTC)' })
+  readonly from: string;
+  @ApiProperty({ format: 'date-time', description: 'End (UTC, exclusive)' })
+  readonly to: string;
+  @ApiProperty({ description: 'Main engine fuel, t' })
+  readonly fuelMeTon: number;
+  @ApiProperty({ description: 'Auxiliary engine fuel, t' })
+  readonly fuelAeTon: number;
+  @ApiProperty({ description: 'fuelMeTon + fuelAeTon, t' })
+  readonly totalFuelTon: number;
+  @ApiProperty({ description: 'CO2, t' }) readonly co2Ton: number;
+  @ApiProperty({
+    description:
+      'Vessels with counted segments in the period (for the year, also those counted from their manual record)',
+  })
+  readonly vesselsWithData: number;
+  @ApiProperty({
+    description:
+      'Vessels counted from their manual annual record (year only: a vessel without segments in the year)',
+  })
+  readonly manualVessels: number;
+  @ApiProperty({
+    type: MethodCountsDto,
+    description: 'Counted segments per fuel method',
+  })
+  readonly methods: MethodCountsDto;
+
+  constructor(period: FleetFuelPeriod) {
+    this.from = period.from.toISOString();
+    this.to = period.to.toISOString();
+    this.fuelMeTon = period.fuelMeTon;
+    this.fuelAeTon = period.fuelAeTon;
+    this.totalFuelTon = period.fuelMeTon + period.fuelAeTon;
+    this.co2Ton = period.co2Ton;
+    this.vesselsWithData = period.vesselsWithData;
+    this.manualVessels = period.manualVessels;
+    this.methods = new MethodCountsDto(period.methods);
+  }
+}
+
+/** `GET /cii/fleet/fuel`. */
+export class FleetFuelDto {
+  @ApiProperty({
+    type: String,
+    format: 'uuid',
+    nullable: true,
+    description: 'null = every organization (super_admin)',
+  })
+  readonly orgId: string | null;
+  @ApiProperty({ description: 'Vessels of the fleet' })
+  readonly vessels: number;
+  @ApiProperty({
+    type: FleetFuelPeriodDto,
+    description: 'Totals of the calendar year (`from` = 1 January, UTC)',
+  })
+  readonly year: FleetFuelPeriodDto;
+  @ApiProperty({
+    type: FleetFuelPeriodDto,
+    description:
+      'Totals of the month of that year (`from` = its first day, UTC)',
+  })
+  readonly month: FleetFuelPeriodDto;
+  @ApiProperty(METHOD_IDS_PROPERTY) readonly methodIds: string[];
+
+  constructor(fuel: FleetFuel) {
+    this.orgId = fuel.orgId;
+    this.vessels = fuel.vessels;
+    this.year = new FleetFuelPeriodDto(fuel.yearTotals);
+    this.month = new FleetFuelPeriodDto(fuel.monthTotals);
+    this.methodIds = [...fuel.methodIds];
   }
 }

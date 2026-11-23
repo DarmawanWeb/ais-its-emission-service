@@ -1,3 +1,4 @@
+import { CursorPageInfoDto } from '@darmawanweb/ais-its-nest/http';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { isoOrNull } from '../../../common/dto.js';
@@ -56,5 +57,16 @@ export class RecomputeJobDto {
     this.createdAt = job.createdAt.toISOString();
     this.heartbeatAt = job.heartbeatAt.toISOString();
     this.finishedAt = isoOrNull(job.finishedAt);
+  }
+}
+
+/** `GET /cii/recompute-jobs` — cursor page, newest first. */
+export class RecomputeJobPageDto {
+  @ApiProperty({ type: [RecomputeJobDto] }) readonly data: RecomputeJobDto[];
+  @ApiProperty({ type: CursorPageInfoDto }) readonly page: CursorPageInfoDto;
+
+  constructor(data: RecomputeJobDto[], page: CursorPageInfoDto) {
+    this.data = data;
+    this.page = page;
   }
 }

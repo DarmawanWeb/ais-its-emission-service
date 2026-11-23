@@ -57,6 +57,23 @@ export class AnnualManualRepository {
     return row === undefined ? undefined : toRecord(row);
   }
 
+  /** Removes the record of a vessel-year; `undefined` when there was none. */
+  async delete(
+    vesselId: string,
+    year: number,
+  ): Promise<AnnualManualRecord | undefined> {
+    const [row] = await this.db
+      .delete(ciiAnnualManual)
+      .where(
+        and(
+          eq(ciiAnnualManual.vesselId, vesselId),
+          eq(ciiAnnualManual.year, year),
+        ),
+      )
+      .returning();
+    return row === undefined ? undefined : toRecord(row);
+  }
+
   async listByVessel(vesselId: string): Promise<AnnualManualRecord[]> {
     const rows = await this.db
       .select()

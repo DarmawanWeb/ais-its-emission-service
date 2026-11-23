@@ -1,9 +1,11 @@
 import type { AisPositionRecordedV1 } from '@darmawanweb/ais-its-contracts/events';
 import { InjectConfig } from '@darmawanweb/ais-its-nest';
 import { type Database, InjectDb } from '@darmawanweb/ais-its-nest/db';
-import { MetricsService } from '@darmawanweb/ais-its-nest/metrics';
+import {
+  type Counter,
+  MetricsService,
+} from '@darmawanweb/ais-its-nest/metrics';
 import { Injectable } from '@nestjs/common';
-import type { Counter } from 'prom-client';
 
 import type { Config } from '../../config.js';
 import { type Executor, lockVesselSegments } from '../../db/executor.js';

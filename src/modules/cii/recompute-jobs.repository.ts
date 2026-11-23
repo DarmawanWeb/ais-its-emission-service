@@ -1,8 +1,11 @@
-import { type Database, InjectDb } from '@darmawanweb/ais-its-nest/db';
+import {
+  type Database,
+  InjectDb,
+  isUniqueViolation,
+} from '@darmawanweb/ais-its-nest/db';
 import { Injectable } from '@nestjs/common';
-import { and, eq, lt, sql } from 'drizzle-orm';
+import { and, desc, eq, lt, sql } from 'drizzle-orm';
 
-import { isUniqueViolation } from '../../db/errors.js';
 import * as schema from '../../db/schema.js';
 
 const { recomputeJobs } = schema;
@@ -75,6 +78,41 @@ export class RecomputeJobsRepository {
       .where(eq(recomputeJobs.id, id))
       .limit(1);
     return row;
+  }
+
+  /**
+   * Jobs newest first, optionally of one MMSI and status, strictly after the
+   * `before` position of the previous page. The order is `created_at`
+   * truncated to milliseconds (the precision of the cursor), then the id,
+   * so that pages never skip or repeat a job.
+   */
+  async list(
+    filter: {
+      readonly mmsi?: number | undefined;
+      readonly status?: RecomputeJob['status'] | undefined;
+    },
+    before: { readonly createdAt: Date; readonly id: string } | undefined,
+    limit: number,
+  ): Promise<RecomputeJob[]> {
+    const createdAtMs = sql`date_trunc('milliseconds', ${recomputeJobs.createdAt})`;
+    return this.db
+      .select()
+      .from(recomputeJobs)
+      .where(
+        and(
+          filter.mmsi === undefined
+            ? undefined
+            : eq(recomputeJobs.mmsi, filter.mmsi),
+          filter.status === undefined
+            ? undefined
+            : eq(recomputeJobs.status, filter.status),
+          before === undefined
+            ? undefined
+            : sql`(${createdAtMs}, ${recomputeJobs.id}) < (${before.createdAt}::timestamptz, ${before.id}::uuid)`,
+        ),
+      )
+      .orderBy(desc(createdAtMs), desc(recomputeJobs.id))
+      .limit(limit);
   }
 
   /**

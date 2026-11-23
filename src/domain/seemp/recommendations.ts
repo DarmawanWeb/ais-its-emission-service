@@ -141,10 +141,17 @@ export function evaluateMeasure(
 /** Grades kept by the recommender (legacy filter). */
 export const RECOMMENDED_GRADES: readonly CiiGrade[] = ['A', 'B', 'C'];
 
+/** `true` when the grade after the measure is one the recommender keeps (A–C). */
+export function isRecommended(evaluation: MeasureEvaluation): boolean {
+  return RECOMMENDED_GRADES.includes(evaluation.ciiGradeAfter);
+}
+
 /**
  * SEEMP recommendations: every measure evaluated in legacy order, kept when
  * the grade after is A–C, sorted by cost per year ascending (stable, so ties
- * keep the legacy order).
+ * keep the legacy order). With `includeAll`, the measures that do not reach
+ * grade C on their own are kept too (same order), so that a D/E vessel sees
+ * which measures are not enough; {@link isRecommended} tells them apart.
  *
  * Port of `SEEMPService.calculateSemp` (`be-legacy/src/services/seemp.service.ts`).
  *
@@ -154,12 +161,13 @@ export const RECOMMENDED_GRADES: readonly CiiGrade[] = ['A', 'B', 'C'];
 export function recommendMeasures(
   measures: readonly SeempMeasure[],
   context: SeempContext,
+  options: { readonly includeAll?: boolean } = {},
 ): MeasureEvaluation[] {
   return [...measures]
     .sort((a, b) => a.legacyOrder - b.legacyOrder)
     .map((measure) => evaluateMeasure(measure, context))
-    .filter((evaluation) =>
-      RECOMMENDED_GRADES.includes(evaluation.ciiGradeAfter),
+    .filter(
+      (evaluation) => options.includeAll === true || isRecommended(evaluation),
     )
     .sort((a, b) => a.cost - b.cost);
 }

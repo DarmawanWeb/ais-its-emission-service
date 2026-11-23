@@ -2,7 +2,6 @@ import {
   BadRequestError,
   ConflictError,
   DomainError,
-  ForbiddenError,
   NotFoundError,
 } from '@darmawanweb/ais-its-nest';
 
@@ -116,11 +115,43 @@ export class RecomputeJobNotFoundError extends NotFoundError {
   }
 }
 
-/** `403 SUPER_ADMIN_REQUIRED`. */
-export class SuperAdminRequiredError extends ForbiddenError {
-  constructor() {
-    super('Only platform administrators may do this', {
-      code: 'SUPER_ADMIN_REQUIRED',
+/** `404 REDUCTION_FACTOR_NOT_FOUND`. */
+export class ReductionFactorNotFoundError extends NotFoundError {
+  constructor(year: number) {
+    super(`No reduction factor (Z) is defined for ${year}`, {
+      code: 'REDUCTION_FACTOR_NOT_FOUND',
+      extra: { year },
     });
+  }
+}
+
+/**
+ * `409 REDUCTION_FACTOR_IN_USE`: CII data (segments or a manual record of
+ * any vessel) exists for the year, whose figures would become unavailable
+ * (`REDUCTION_FACTOR_MISSING`); correct the value with PUT instead.
+ */
+export class ReductionFactorInUseError extends ConflictError {
+  constructor(year: number, vessels: number) {
+    super(
+      `${vessels} vessel(s) have CII data for ${year}; correct the value with PUT /reduction-factors instead of removing it`,
+      { code: 'REDUCTION_FACTOR_IN_USE', extra: { year, vessels } },
+    );
+  }
+}
+
+/**
+ * `409 REDUCTION_FACTOR_TABLE_GAP`: only the first or the last year of the
+ * table can be removed; another year would leave a year without Z inside the
+ * table, which the SEEMP cost model needs for every year up to the last one.
+ */
+export class ReductionFactorTableGapError extends ConflictError {
+  constructor(year: number, firstYear: number, lastYear: number) {
+    super(
+      `Only the first (${firstYear}) or the last (${lastYear}) year can be removed; removing ${year} would leave a gap in the reduction factor table`,
+      {
+        code: 'REDUCTION_FACTOR_TABLE_GAP',
+        extra: { year, firstYear, lastYear },
+      },
+    );
   }
 }
